@@ -22,6 +22,11 @@
 	pointer-events: none;
 }
 
+.info-bar-container .management-bar-header-right {
+	display: flex;
+	justify-content: flex-end;
+}
+
 .info-content {
 	font-size: 0.875rem;
 	font-weight: 100;
