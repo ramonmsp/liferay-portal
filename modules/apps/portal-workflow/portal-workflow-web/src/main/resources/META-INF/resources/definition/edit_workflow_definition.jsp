@@ -268,26 +268,26 @@ renderResponse.setTitle((workflowDefinition == null) ? LanguageUtil.get(request,
 							<div class="workflow-definition-content-source" id="<portlet:namespace />contentEditor"></div>
 						</clay:col>
 					</aui:fieldset>
+				</div>
 
-					<div class="sheet-footer">
-						<c:if test="<%= workflowDefinitionDisplayContext.canPublishWorkflowDefinition() %>">
+				<div class="sheet-footer">
+					<c:if test="<%= workflowDefinitionDisplayContext.canPublishWorkflowDefinition() %>">
 
-							<%
-							String taglibUpdateOnClick = "Liferay.fire('" + liferayPortletResponse.getNamespace() + "publishDefinition');";
-							%>
+						<%
+						String taglibUpdateOnClick = "Liferay.fire('" + liferayPortletResponse.getNamespace() + "publishDefinition');";
+						%>
 
-							<aui:button onClick="<%= taglibUpdateOnClick %>" primary="<%= true %>" value='<%= ((workflowDefinition == null) || !active) ? "publish" : "update" %>' />
-						</c:if>
+						<aui:button onClick="<%= taglibUpdateOnClick %>" primary="<%= true %>" value='<%= ((workflowDefinition == null) || !active) ? "publish" : "update" %>' />
+					</c:if>
 
-						<c:if test="<%= (workflowDefinition == null) || !active %>">
+					<c:if test="<%= (workflowDefinition == null) || !active %>">
 
-							<%
-							String taglibSaveOnClick = "Liferay.fire('" + liferayPortletResponse.getNamespace() + "saveDefinition');";
-							%>
+						<%
+						String taglibSaveOnClick = "Liferay.fire('" + liferayPortletResponse.getNamespace() + "saveDefinition');";
+						%>
 
-							<aui:button onClick="<%= taglibSaveOnClick %>" value="save" />
-						</c:if>
-					</div>
+						<aui:button onClick="<%= taglibSaveOnClick %>" value="save" />
+					</c:if>
 				</div>
 			</aui:form>
 		</clay:container-fluid>
