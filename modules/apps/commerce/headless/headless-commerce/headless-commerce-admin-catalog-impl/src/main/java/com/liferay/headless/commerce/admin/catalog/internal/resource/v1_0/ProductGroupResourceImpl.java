@@ -182,11 +182,28 @@ public class ProductGroupResourceImpl
 	public ProductGroup postProductGroup(ProductGroup productGroup)
 		throws Exception {
 
-		CommercePricingClass commercePricingClass = _upsertProductGroup(
+		CommercePricingClass commercePricingClass = _addOrUpdateProductGroup(
 			productGroup);
 
 		return _toProductGroup(
 			commercePricingClass.getCommercePricingClassId());
+	}
+
+	private CommercePricingClass _addOrUpdateProductGroup(
+			ProductGroup productGroup)
+		throws Exception {
+
+		CommercePricingClass commercePricingClass =
+			_commercePricingClassService.upsertCommercePricingClass(
+				productGroup.getExternalReferenceCode(), 0L,
+				contextUser.getUserId(),
+				LanguageUtils.getLocalizedMap(productGroup.getTitle()),
+				LanguageUtils.getLocalizedMap(productGroup.getDescription()),
+				_serviceContextHelper.getServiceContext());
+
+		// Update nested resources
+
+		return _updateNestedResources(productGroup, commercePricingClass);
 	}
 
 	private ProductGroup _toProductGroup(Long commercePricingClassId)
@@ -276,22 +293,6 @@ public class ProductGroupResourceImpl
 				contextCompany.getCompanyId(), CommercePricingClass.class,
 				commercePricingClass.getPrimaryKey(), customFields);
 		}
-
-		// Update nested resources
-
-		return _updateNestedResources(productGroup, commercePricingClass);
-	}
-
-	private CommercePricingClass _upsertProductGroup(ProductGroup productGroup)
-		throws Exception {
-
-		CommercePricingClass commercePricingClass =
-			_commercePricingClassService.upsertCommercePricingClass(
-				productGroup.getExternalReferenceCode(), 0L,
-				contextUser.getUserId(),
-				LanguageUtils.getLocalizedMap(productGroup.getTitle()),
-				LanguageUtils.getLocalizedMap(productGroup.getDescription()),
-				_serviceContextHelper.getServiceContext());
 
 		// Update nested resources
 

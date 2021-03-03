@@ -20,6 +20,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.journal.web.internal.constants.JournalWebConstants;
 import com.liferay.journal.web.internal.security.permission.resource.DDMTemplatePermission;
 import com.liferay.journal.web.internal.servlet.taglib.util.JournalDDMTemplateActionDropdownItemsProvider;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.RowChecker;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -33,7 +34,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import java.util.Date;
 import java.util.List;
 
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -92,16 +92,15 @@ public class JournalDDMTemplateVerticalCard extends BaseVerticalCard {
 				return StringPool.BLANK;
 			}
 
-			PortletURL editDDMTemplateURL = _renderResponse.createRenderURL();
-
-			editDDMTemplateURL.setParameter(
-				"mvcPath", "/edit_ddm_template.jsp");
-			editDDMTemplateURL.setParameter(
-				"redirect", themeDisplay.getURLCurrent());
-			editDDMTemplateURL.setParameter(
-				"ddmTemplateId", String.valueOf(_ddmTemplate.getTemplateId()));
-
-			return editDDMTemplateURL.toString();
+			return PortletURLBuilder.createRenderURL(
+				_renderResponse
+			).setMVCPath(
+				"/edit_ddm_template.jsp"
+			).setRedirect(
+				themeDisplay.getURLCurrent()
+			).setParameter(
+				"ddmTemplateId", _ddmTemplate.getTemplateId()
+			).buildString();
 		}
 		catch (Exception exception) {
 			if (_log.isDebugEnabled()) {

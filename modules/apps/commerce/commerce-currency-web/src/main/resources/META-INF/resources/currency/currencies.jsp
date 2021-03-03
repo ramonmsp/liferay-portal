@@ -76,100 +76,98 @@ CommerceCurrenciesDisplayContext commerceCurrenciesDisplayContext = (CommerceCur
 		</liferay-frontend:management-bar-action-buttons>
 	</liferay-frontend:management-bar>
 
-	<div class="container-fluid container-fluid-max-xl">
-		<portlet:actionURL name="/commerce_currency/edit_commerce_currency" var="editCommerceCurrencyActionURL" />
+	<portlet:actionURL name="/commerce_currency/edit_commerce_currency" var="editCommerceCurrencyActionURL" />
 
-		<aui:form action="<%= editCommerceCurrencyActionURL %>" method="post" name="fm">
-			<aui:input name="<%= Constants.CMD %>" type="hidden" />
-			<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
-			<aui:input name="deleteCommerceCurrencyIds" type="hidden" />
-			<aui:input name="updateCommerceCurrencyExchangeRateIds" type="hidden" />
+	<aui:form action="<%= editCommerceCurrencyActionURL %>" method="post" name="fm">
+		<aui:input name="<%= Constants.CMD %>" type="hidden" />
+		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+		<aui:input name="deleteCommerceCurrencyIds" type="hidden" />
+		<aui:input name="updateCommerceCurrencyExchangeRateIds" type="hidden" />
 
-			<liferay-ui:search-container
-				id="commerceCurrencies"
-				searchContainer="<%= commerceCurrenciesDisplayContext.getSearchContainer() %>"
+		<liferay-ui:search-container
+			id="commerceCurrencies"
+			searchContainer="<%= commerceCurrenciesDisplayContext.getSearchContainer() %>"
+		>
+			<liferay-ui:search-container-row
+				className="com.liferay.commerce.currency.model.CommerceCurrency"
+				keyProperty="commerceCurrencyId"
+				modelVar="commerceCurrency"
 			>
-				<liferay-ui:search-container-row
-					className="com.liferay.commerce.currency.model.CommerceCurrency"
-					keyProperty="commerceCurrencyId"
-					modelVar="commerceCurrency"
+
+				<%
+				PortletURL rowURL = renderResponse.createRenderURL();
+
+				rowURL.setParameter("mvcRenderCommandName", "/commerce_currency/edit_commerce_currency");
+				rowURL.setParameter("redirect", currentURL);
+				rowURL.setParameter("commerceCurrencyId", String.valueOf(commerceCurrency.getCommerceCurrencyId()));
+				%>
+
+				<liferay-ui:search-container-column-text
+					cssClass="important table-cell-expand"
+					href="<%= rowURL %>"
+					name="name"
+					value="<%= HtmlUtil.escape(commerceCurrency.getName(locale)) %>"
+				/>
+
+				<liferay-ui:search-container-column-text
+					cssClass="table-cell-expand"
+					name="code"
+					value="<%= HtmlUtil.escape(commerceCurrency.getCode()) %>"
+				/>
+
+				<liferay-ui:search-container-column-text
+					name="exchange-rate"
+					value="<%= commerceCurrenciesDisplayContext.format(commerceCurrency.getRate()) %>"
+				/>
+
+				<liferay-ui:search-container-column-text
+					name="primary"
 				>
+					<c:if test="<%= commerceCurrency.isPrimary() %>">
+						<liferay-ui:icon
+							cssClass="commerce-admin-icon-check"
+							icon="check"
+							markupView="lexicon"
+						/>
+					</c:if>
+				</liferay-ui:search-container-column-text>
 
-					<%
-					PortletURL rowURL = renderResponse.createRenderURL();
-
-					rowURL.setParameter("mvcRenderCommandName", "/commerce_currency/edit_commerce_currency");
-					rowURL.setParameter("redirect", currentURL);
-					rowURL.setParameter("commerceCurrencyId", String.valueOf(commerceCurrency.getCommerceCurrencyId()));
-					%>
-
-					<liferay-ui:search-container-column-text
-						cssClass="important table-cell-expand"
-						href="<%= rowURL %>"
-						name="name"
-						value="<%= HtmlUtil.escape(commerceCurrency.getName(locale)) %>"
-					/>
-
-					<liferay-ui:search-container-column-text
-						cssClass="table-cell-expand"
-						name="code"
-						value="<%= HtmlUtil.escape(commerceCurrency.getCode()) %>"
-					/>
-
-					<liferay-ui:search-container-column-text
-						name="exchange-rate"
-						value="<%= commerceCurrenciesDisplayContext.format(commerceCurrency.getRate()) %>"
-					/>
-
-					<liferay-ui:search-container-column-text
-						name="primary"
-					>
-						<c:if test="<%= commerceCurrency.isPrimary() %>">
+				<liferay-ui:search-container-column-text
+					name="active"
+				>
+					<c:choose>
+						<c:when test="<%= commerceCurrency.isActive() %>">
 							<liferay-ui:icon
 								cssClass="commerce-admin-icon-check"
 								icon="check"
 								markupView="lexicon"
 							/>
-						</c:if>
-					</liferay-ui:search-container-column-text>
+						</c:when>
+						<c:otherwise>
+							<liferay-ui:icon
+								cssClass="commerce-admin-icon-times"
+								icon="times"
+								markupView="lexicon"
+							/>
+						</c:otherwise>
+					</c:choose>
+				</liferay-ui:search-container-column-text>
 
-					<liferay-ui:search-container-column-text
-						name="active"
-					>
-						<c:choose>
-							<c:when test="<%= commerceCurrency.isActive() %>">
-								<liferay-ui:icon
-									cssClass="commerce-admin-icon-check"
-									icon="check"
-									markupView="lexicon"
-								/>
-							</c:when>
-							<c:otherwise>
-								<liferay-ui:icon
-									cssClass="commerce-admin-icon-times"
-									icon="times"
-									markupView="lexicon"
-								/>
-							</c:otherwise>
-						</c:choose>
-					</liferay-ui:search-container-column-text>
-
-					<liferay-ui:search-container-column-text
-						property="priority"
-					/>
-
-					<liferay-ui:search-container-column-jsp
-						cssClass="entry-action-column"
-						path="/currency_action.jsp"
-					/>
-				</liferay-ui:search-container-row>
-
-				<liferay-ui:search-iterator
-					markupView="lexicon"
+				<liferay-ui:search-container-column-text
+					property="priority"
 				/>
-			</liferay-ui:search-container>
-		</aui:form>
-	</div>
+
+				<liferay-ui:search-container-column-jsp
+					cssClass="entry-action-column"
+					path="/currency_action.jsp"
+				/>
+			</liferay-ui:search-container-row>
+
+			<liferay-ui:search-iterator
+				markupView="lexicon"
+			/>
+		</liferay-ui:search-container>
+	</aui:form>
 
 	<aui:script>
 		function <portlet:namespace />deleteCommerceCurrencies() {

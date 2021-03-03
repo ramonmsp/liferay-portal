@@ -33,6 +33,7 @@ import com.liferay.journal.service.JournalFolderLocalServiceUtil;
 import com.liferay.journal.util.JournalConverter;
 import com.liferay.journal.web.internal.security.permission.resource.JournalArticlePermission;
 import com.liferay.journal.web.internal.security.permission.resource.JournalFolderPermission;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.bean.BeanParamUtil;
@@ -68,7 +69,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -396,15 +396,19 @@ public class JournalEditArticleDisplayContext {
 	}
 
 	public String getEditArticleURL() {
-		PortletURL editArticleURL = _liferayPortletResponse.createRenderURL();
-
-		editArticleURL.setParameter("redirect", getRedirect());
-		editArticleURL.setParameter("mvcPath", "/edit_article.jsp");
-		editArticleURL.setParameter("groupId", String.valueOf(getGroupId()));
-		editArticleURL.setParameter("articleId", getArticleId());
-		editArticleURL.setParameter("version", String.valueOf(getVersion()));
-
-		return editArticleURL.toString();
+		return PortletURLBuilder.createRenderURL(
+			_liferayPortletResponse
+		).setMVCPath(
+			"/edit_article.jsp"
+		).setRedirect(
+			getRedirect()
+		).setParameter(
+			"groupId", getGroupId()
+		).setParameter(
+			"articleId", getArticleId()
+		).setParameter(
+			"version", getVersion()
+		).buildString();
 	}
 
 	public long getFolderId() {
@@ -802,14 +806,14 @@ public class JournalEditArticleDisplayContext {
 					JournalArticleConstants.CLASS_NAME_ID_DEFAULT) &&
 				 (_article != null)) {
 
-			PortletURL backURL = _liferayPortletResponse.createRenderURL();
-
-			backURL.setParameter(
-				"groupId", String.valueOf(_article.getGroupId()));
-			backURL.setParameter(
-				"folderId", String.valueOf(_article.getFolderId()));
-
-			portletDisplay.setURLBack(backURL.toString());
+			portletDisplay.setURLBack(
+				PortletURLBuilder.createRenderURL(
+					_liferayPortletResponse
+				).setParameter(
+					"groupId", _article.getGroupId()
+				).setParameter(
+					"folderId", _article.getFolderId()
+				).buildString());
 		}
 
 		if (_liferayPortletResponse instanceof RenderResponse) {

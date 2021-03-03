@@ -17,6 +17,8 @@ package com.liferay.jenkins.results.parser.testray;
 import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
 import com.liferay.jenkins.results.parser.TopLevelBuild;
 
+import java.io.IOException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -68,6 +70,10 @@ public class TestrayCaseResult {
 		return jsonObject.optString("testrayCaseId");
 	}
 
+	public String getComponent() {
+		return jsonObject.getString("testrayComponentName");
+	}
+
 	public String getErrors() {
 		return jsonObject.optString("errors");
 	}
@@ -84,14 +90,51 @@ public class TestrayCaseResult {
 		return jsonObject.optString("testrayCaseName");
 	}
 
+	public int getPriority() {
+		TestrayCase testrayCase = getTestrayCase();
+
+		return testrayCase.getPriority();
+	}
+
 	public Status getStatus() {
 		int statusID = jsonObject.optInt("status");
 
 		return Status.get(statusID);
 	}
 
+	public String getTeamName() {
+		return jsonObject.getString("testrayTeamName");
+	}
+
 	public TestrayBuild getTestrayBuild() {
 		return _testrayBuild;
+	}
+
+	public TestrayCase getTestrayCase() {
+		if (_testrayCase != null) {
+			return _testrayCase;
+		}
+
+		TestrayServer testrayServer = getTestrayServer();
+
+		String testrayCaseURL = JenkinsResultsParserUtil.combine(
+			String.valueOf(testrayServer.getURL()), "/home/-/testray/cases/",
+			getCaseID(), ".json");
+
+		try {
+			_testrayCase = new TestrayCase(
+				getTestrayProject(),
+				JenkinsResultsParserUtil.toJSONObject(testrayCaseURL));
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+
+		return _testrayCase;
+	}
+
+	public TestrayProject getTestrayProject() {
+		return _testrayBuild.getTestrayProject();
 	}
 
 	public TestrayServer getTestrayServer() {
@@ -100,6 +143,26 @@ public class TestrayCaseResult {
 
 	public TopLevelBuild getTopLevelBuild() {
 		return _topLevelBuild;
+	}
+
+	public String getType() {
+		TestrayCase testrayCase = getTestrayCase();
+
+		return testrayCase.getType();
+	}
+
+	public URL getURL() {
+		TestrayServer testrayServer = getTestrayServer();
+
+		try {
+			return new URL(
+				testrayServer.getURL(),
+				JenkinsResultsParserUtil.combine(
+					"home/-/testray/case_results/", getID()));
+		}
+		catch (MalformedURLException malformedURLException) {
+			throw new RuntimeException(malformedURLException);
+		}
 	}
 
 	public String[] getWarnings() {
@@ -209,6 +272,7 @@ public class TestrayCaseResult {
 	protected final JSONObject jsonObject;
 
 	private final TestrayBuild _testrayBuild;
+	private TestrayCase _testrayCase;
 	private TopLevelBuild _topLevelBuild;
 
 }

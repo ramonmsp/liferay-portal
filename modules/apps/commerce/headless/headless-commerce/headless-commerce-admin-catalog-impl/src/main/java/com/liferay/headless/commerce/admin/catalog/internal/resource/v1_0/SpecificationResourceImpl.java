@@ -119,7 +119,44 @@ public class SpecificationResourceImpl
 	public Specification postSpecification(Specification specification)
 		throws Exception {
 
-		return _upsertSpecification(specification);
+		return _addOrUpdateSpecification(specification);
+	}
+
+	private Specification _addOrUpdateSpecification(Specification specification)
+		throws Exception {
+
+		Long specificationId = specification.getId();
+
+		if (specificationId != null) {
+			try {
+				CPSpecificationOption cpSpecificationOption =
+					_updateSpecification(specificationId, specification);
+
+				return _toSpecification(
+					cpSpecificationOption.getCPSpecificationOptionId());
+			}
+			catch (NoSuchCPSpecificationOptionException
+						noSuchCPSpecificationOptionException) {
+
+				if (_log.isDebugEnabled()) {
+					_log.debug(
+						"Unable to find specification with ID: " +
+							specificationId,
+						noSuchCPSpecificationOptionException);
+				}
+			}
+		}
+
+		CPSpecificationOption cpSpecificationOption =
+			_cpSpecificationOptionService.addCPSpecificationOption(
+				_getCPOptionCategoryId(specification),
+				LanguageUtils.getLocalizedMap(specification.getTitle()),
+				LanguageUtils.getLocalizedMap(specification.getDescription()),
+				_isFacetable(specification), specification.getKey(),
+				_serviceContextHelper.getServiceContext());
+
+		return _toSpecification(
+			cpSpecificationOption.getCPSpecificationOptionId());
 	}
 
 	private long _getCPOptionCategoryId(Specification specification) {
@@ -165,43 +202,6 @@ public class SpecificationResourceImpl
 			LanguageUtils.getLocalizedMap(specification.getDescription()),
 			_isFacetable(specification), specification.getKey(),
 			_serviceContextHelper.getServiceContext());
-	}
-
-	private Specification _upsertSpecification(Specification specification)
-		throws Exception {
-
-		Long specificationId = specification.getId();
-
-		if (specificationId != null) {
-			try {
-				CPSpecificationOption cpSpecificationOption =
-					_updateSpecification(specificationId, specification);
-
-				return _toSpecification(
-					cpSpecificationOption.getCPSpecificationOptionId());
-			}
-			catch (NoSuchCPSpecificationOptionException
-						noSuchCPSpecificationOptionException) {
-
-				if (_log.isDebugEnabled()) {
-					_log.debug(
-						"Unable to find specification with ID: " +
-							specificationId,
-						noSuchCPSpecificationOptionException);
-				}
-			}
-		}
-
-		CPSpecificationOption cpSpecificationOption =
-			_cpSpecificationOptionService.addCPSpecificationOption(
-				_getCPOptionCategoryId(specification),
-				LanguageUtils.getLocalizedMap(specification.getTitle()),
-				LanguageUtils.getLocalizedMap(specification.getDescription()),
-				_isFacetable(specification), specification.getKey(),
-				_serviceContextHelper.getServiceContext());
-
-		return _toSpecification(
-			cpSpecificationOption.getCPSpecificationOptionId());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

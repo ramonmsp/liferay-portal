@@ -51,8 +51,8 @@ create table CommerceAddress (
 	street3 VARCHAR(255) null,
 	city VARCHAR(75) null,
 	zip VARCHAR(75) null,
-	commerceRegionId LONG,
-	commerceCountryId LONG,
+	regionId LONG,
+	countryId LONG,
 	latitude DOUBLE,
 	longitude DOUBLE,
 	phoneNumber VARCHAR(75) null,
@@ -71,7 +71,7 @@ create table CommerceAddressRestriction (
 	modifiedDate DATE null,
 	classNameId LONG,
 	classPK LONG,
-	commerceCountryId LONG
+	countryId LONG
 );
 
 create table CommerceAvailabilityEstimate (
@@ -85,27 +85,6 @@ create table CommerceAvailabilityEstimate (
 	title STRING null,
 	priority DOUBLE,
 	lastPublishDate DATE null
-);
-
-create table CommerceCountry (
-	uuid_ VARCHAR(75) null,
-	commerceCountryId LONG not null primary key,
-	companyId LONG,
-	userId LONG,
-	userName VARCHAR(75) null,
-	createDate DATE null,
-	modifiedDate DATE null,
-	name STRING null,
-	billingAllowed BOOLEAN,
-	shippingAllowed BOOLEAN,
-	twoLettersISOCode VARCHAR(75) null,
-	threeLettersISOCode VARCHAR(75) null,
-	numericISOCode INTEGER,
-	subjectToVAT BOOLEAN,
-	priority DOUBLE,
-	active_ BOOLEAN,
-	lastPublishDate DATE null,
-	channelFilterEnabled BOOLEAN
 );
 
 create table CommerceOrder (
@@ -265,22 +244,6 @@ create table CommerceOrderPayment (
 	commercePaymentMethodKey VARCHAR(75) null,
 	content TEXT null,
 	status INTEGER
-);
-
-create table CommerceRegion (
-	uuid_ VARCHAR(75) null,
-	commerceRegionId LONG not null primary key,
-	companyId LONG,
-	userId LONG,
-	userName VARCHAR(75) null,
-	createDate DATE null,
-	modifiedDate DATE null,
-	commerceCountryId LONG,
-	name VARCHAR(75) null,
-	code_ VARCHAR(75) null,
-	priority DOUBLE,
-	active_ BOOLEAN,
-	lastPublishDate DATE null
 );
 
 create table CommerceShipment (

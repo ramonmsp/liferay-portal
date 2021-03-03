@@ -173,7 +173,40 @@ public class OptionResourceImpl
 
 	@Override
 	public Option postOption(Option option) throws Exception {
-		return _upsertOption(option);
+		return _addOrUpdateOption(option);
+	}
+
+	private Option _addOrUpdateOption(Option option) throws Exception {
+		Option.FieldType fieldType = option.getFieldType();
+
+		CPOption cpOption = _cpOptionService.upsertCPOption(
+			option.getExternalReferenceCode(),
+			LanguageUtils.getLocalizedMap(option.getName()),
+			LanguageUtils.getLocalizedMap(option.getDescription()),
+			fieldType.getValue(), GetterUtil.get(option.getFacetable(), false),
+			GetterUtil.get(option.getRequired(), false),
+			GetterUtil.get(option.getSkuContributor(), false), option.getKey(),
+			_serviceContextHelper.getServiceContext());
+
+		_addOrUpdateOptionValues(cpOption, option.getOptionValues());
+
+		return _toOption(cpOption.getCPOptionId());
+	}
+
+	private void _addOrUpdateOptionValues(
+			CPOption cpOption, OptionValue[] optionValues)
+		throws Exception {
+
+		if (ArrayUtil.isEmpty(optionValues)) {
+			return;
+		}
+
+		_optionValueResource.setContextAcceptLanguage(contextAcceptLanguage);
+
+		for (OptionValue optionValue : optionValues) {
+			_optionValueResource.postOptionIdOptionValue(
+				cpOption.getCPOptionId(), optionValue);
+		}
 	}
 
 	private Map<String, Map<String, String>> _getActions(long cpOptionId) {
@@ -221,39 +254,6 @@ public class OptionResourceImpl
 			option.getKey(), _serviceContextHelper.getServiceContext());
 
 		return _toOption(cpOption.getCPOptionId());
-	}
-
-	private Option _upsertOption(Option option) throws Exception {
-		Option.FieldType fieldType = option.getFieldType();
-
-		CPOption cpOption = _cpOptionService.upsertCPOption(
-			option.getExternalReferenceCode(),
-			LanguageUtils.getLocalizedMap(option.getName()),
-			LanguageUtils.getLocalizedMap(option.getDescription()),
-			fieldType.getValue(), GetterUtil.get(option.getFacetable(), false),
-			GetterUtil.get(option.getRequired(), false),
-			GetterUtil.get(option.getSkuContributor(), false), option.getKey(),
-			_serviceContextHelper.getServiceContext());
-
-		_upsertOptionValues(cpOption, option.getOptionValues());
-
-		return _toOption(cpOption.getCPOptionId());
-	}
-
-	private void _upsertOptionValues(
-			CPOption cpOption, OptionValue[] optionValues)
-		throws Exception {
-
-		if (ArrayUtil.isEmpty(optionValues)) {
-			return;
-		}
-
-		_optionValueResource.setContextAcceptLanguage(contextAcceptLanguage);
-
-		for (OptionValue optionValue : optionValues) {
-			_optionValueResource.postOptionIdOptionValue(
-				cpOption.getCPOptionId(), optionValue);
-		}
 	}
 
 	private static final EntityModel _entityModel = new OptionEntityModel();

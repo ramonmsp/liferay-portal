@@ -37,6 +37,7 @@ CommerceInventoryDisplayContext commerceInventoryDisplayContext = (CommerceInven
 		namespace="<%= liferayPortletResponse.getNamespace() %>"
 		pageNumber="<%= 1 %>"
 		portletURL="<%= commerceInventoryDisplayContext.getPortletURL() %>"
+		selectedItemsKey="commerceInventoryWarehouseItemId"
 		showSearch="<%= false %>"
 	/>
 </commerce-ui:panel>

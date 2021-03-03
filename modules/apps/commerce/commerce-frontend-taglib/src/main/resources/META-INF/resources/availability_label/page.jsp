@@ -27,6 +27,6 @@
 				"namespace", namespace
 			).build()
 		%>'
-		module="availability_label/js/CPInstanceChangeHandler"
+		module="availability_label/js/AvailabilityCPInstanceChangeHandler"
 	/>
 </c:if>

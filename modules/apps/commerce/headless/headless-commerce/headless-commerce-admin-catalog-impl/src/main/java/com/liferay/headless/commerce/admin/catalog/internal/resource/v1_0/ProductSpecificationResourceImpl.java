@@ -66,36 +66,10 @@ public class ProductSpecificationResourceImpl
 			Long id, ProductSpecification productSpecification)
 		throws Exception {
 
-		return _upsertProductSpecification(id, productSpecification);
+		return _addOrUpdateProductSpecification(id, productSpecification);
 	}
 
-	private ProductSpecification _toProductSpecification(
-			Long cpDefinitionSpecificationOptionValueId)
-		throws Exception {
-
-		return _productSpecificationDTOConverter.toDTO(
-			new DefaultDTOConverterContext(
-				cpDefinitionSpecificationOptionValueId,
-				contextAcceptLanguage.getPreferredLocale()));
-	}
-
-	private CPDefinitionSpecificationOptionValue _updateProductSpecification(
-			Long id, ProductSpecification productSpecification)
-		throws PortalException {
-
-		CPDefinitionSpecificationOptionValue
-			cpDefinitionSpecificationOptionValue =
-				_cpDefinitionSpecificationOptionValueService.
-					getCPDefinitionSpecificationOptionValue(id);
-
-		return ProductSpecificationUtil.
-			updateCPDefinitionSpecificationOptionValue(
-				_cpDefinitionSpecificationOptionValueService,
-				cpDefinitionSpecificationOptionValue, productSpecification,
-				_serviceContextHelper.getServiceContext());
-	}
-
-	private ProductSpecification _upsertProductSpecification(
+	private ProductSpecification _addOrUpdateProductSpecification(
 			Long id, ProductSpecification productSpecification)
 		throws Exception {
 
@@ -135,6 +109,32 @@ public class ProductSpecificationResourceImpl
 		return _toProductSpecification(
 			cpDefinitionSpecificationOptionValue.
 				getCPDefinitionSpecificationOptionValueId());
+	}
+
+	private ProductSpecification _toProductSpecification(
+			Long cpDefinitionSpecificationOptionValueId)
+		throws Exception {
+
+		return _productSpecificationDTOConverter.toDTO(
+			new DefaultDTOConverterContext(
+				cpDefinitionSpecificationOptionValueId,
+				contextAcceptLanguage.getPreferredLocale()));
+	}
+
+	private CPDefinitionSpecificationOptionValue _updateProductSpecification(
+			Long id, ProductSpecification productSpecification)
+		throws PortalException {
+
+		CPDefinitionSpecificationOptionValue
+			cpDefinitionSpecificationOptionValue =
+				_cpDefinitionSpecificationOptionValueService.
+					getCPDefinitionSpecificationOptionValue(id);
+
+		return ProductSpecificationUtil.
+			updateCPDefinitionSpecificationOptionValue(
+				_cpDefinitionSpecificationOptionValueService,
+				cpDefinitionSpecificationOptionValue, productSpecification,
+				_serviceContextHelper.getServiceContext());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

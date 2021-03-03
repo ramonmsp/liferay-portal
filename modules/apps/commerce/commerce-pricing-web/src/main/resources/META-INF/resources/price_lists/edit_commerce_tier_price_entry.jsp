@@ -54,30 +54,24 @@ if ((commerceTierPriceEntry != null) && (commerceTierPriceEntry.getExpirationDat
 
 		<liferay-ui:error exception="<%= DuplicateCommerceTierPriceEntryException.class %>" message="there-is-already-a-tier-price-entry-with-the-same-minimum-quantity" />
 
-		<div class="row">
-			<div class="col-12">
-				<commerce-ui:panel
-					title='<%= LanguageUtil.get(request, "details") %>'
-				>
-					<%@ include file="/price_lists/tier_price_entry/details.jspf" %>
-				</commerce-ui:panel>
-			</div>
+		<commerce-ui:panel
+			title='<%= LanguageUtil.get(request, "details") %>'
+		>
+			<%@ include file="/price_lists/tier_price_entry/details.jspf" %>
+		</commerce-ui:panel>
 
-			<c:if test="<%= commerceTierPriceEntryDisplayContext.hasCustomAttributes() %>">
-				<div class="col-12">
-					<commerce-ui:panel
-						title='<%= LanguageUtil.get(request, "custom-attributes") %>'
-					>
-						<liferay-expando:custom-attribute-list
-							className="<%= CommerceTierPriceEntry.class.getName() %>"
-							classPK="<%= (commerceTierPriceEntry != null) ? commerceTierPriceEntry.getCommerceTierPriceEntryId() : 0 %>"
-							editable="<%= true %>"
-							label="<%= true %>"
-						/>
-					</commerce-ui:panel>
-				</div>
-			</c:if>
-		</div>
+		<c:if test="<%= commerceTierPriceEntryDisplayContext.hasCustomAttributes() %>">
+			<commerce-ui:panel
+				title='<%= LanguageUtil.get(request, "custom-attributes") %>'
+			>
+				<liferay-expando:custom-attribute-list
+					className="<%= CommerceTierPriceEntry.class.getName() %>"
+					classPK="<%= (commerceTierPriceEntry != null) ? commerceTierPriceEntry.getCommerceTierPriceEntryId() : 0 %>"
+					editable="<%= true %>"
+					label="<%= true %>"
+				/>
+			</commerce-ui:panel>
+		</c:if>
 
 		<aui:button-row cssClass="tier-price-entry-button-row">
 			<aui:button cssClass="btn-lg" type="submit" />

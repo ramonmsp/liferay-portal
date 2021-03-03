@@ -11,6 +11,12 @@ definition {
 		User.firstLoginPG();
 
 		JSONGroup.addGroup(groupName = "Test Site Name");
+
+		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
+
+		NavItem.gotoStructures();
+
+		WebContentStructures.addCP(structureName = "WC Structure Name");
 	}
 
 	tearDown {
@@ -24,52 +30,23 @@ definition {
 		}
 	}
 
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
-	@ignore = "true"
-	@priority = "4"
-	test AddFieldsetOnBuilderWithSameFieldType {
-		property portal.acceptance = "false";
-
-		// TODO LPS-107630 AddFieldsetOnBuilderWithSameFieldType pending implementatio
-
-	}
-
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
-	@ignore = "true"
-	@priority = "4"
-	test AddFieldsetOnOtherFieldsetAlreadyOnBuilder {
-		property portal.acceptance = "false";
-
-		// TODO LPS-107630 AddFieldsetOnOtherFieldsetAlreadyOnBuilder pending implementation
-	}
-
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
+	@description = "This is a test for LPS-107630. Make sure Fieldsets can be duplicated"
 	@priority = "5"
 	test DuplicateFieldset {
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(
-			structureDescription = "DuplicateTest",
-			structureName = "DuplicateTest");
-
 		DataEngine.addFields(fieldNameList = "Text,Image,Upload");
 
-		WebContentStructures.saveCP(structureName = "DuplicateTest");
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
 
-		WebContentStructures.addCP(
-			structureDescription = "DuplicateTest1",
-			structureName = "DuplicateTest1");
+		WebContentStructures.addCP(structureName = "WC Structure Name Duplicate");
 
 		DataEngine.addFieldsets(
-			fieldsetLabel = "DuplicateTest",
-			fieldsetName = "DuplicateTest");
+			fieldsetLabel = "WC Structure Name",
+			fieldsetName = "WC Structure Name");
 
-		DataEngine.duplicate(fieldsetLabel = "DuplicateTest");
+		DataEngine.duplicate(fieldsetLabel = "WC Structure Name");
 
 		AssertElementPresent(
-			key_fieldsetLabel = "Copy of DuplicateTest",
+			key_fieldsetLabel = "Copy of WC Structure Name",
 			locator1 = "DDMEditStructure#FORM_FIELD_SETS_CONTAINER_LABEL");
 
 		for (var fieldLabelList : list "Copy of Text,Copy of Image,Copy of Upload") {
@@ -78,25 +55,19 @@ definition {
 				locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
 		}
 
-		WebContentStructures.saveCP(structureName = "DuplicateTest1");
+		WebContentStructures.saveCP(structureName = "WC Structure Name Duplicate");
 	}
 
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
+	@description = "This is a test for LPS-107630. Make sure the Fieldset does not crash when editing its properties directly from Object sidebar during reuse in a new form view"
 	@priority = "4"
 	test EditFieldsetPropertiesFromSideBar {
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(structureName = "WC Structure Name");
-
 		DataEngine.addFieldsets(
 			createNewFieldset = "true",
 			fieldNameList = "Text",
 			fieldsetLabel = "New Fieldset",
 			fieldsetName = "New Fieldset");
 
-		WebContentStructures.saveCP();
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
 
 		WebContentNavigator.gotoEditStructure(structureName = "WC Structure Name");
 
@@ -118,11 +89,9 @@ definition {
 			fieldHelp = "Edited Help Text",
 			fieldsetModal = "true");
 
-		Click(locator1 = "Modal#SAVE_BUTTON");
+		Modal.save();
 
-		Click(
-			key_text = "Propagate",
-			locator1 = "Button#ANY");
+		FormViewBuilder.propagateChange();
 
 		Alert.viewSuccessMessage();
 
@@ -196,15 +165,9 @@ definition {
 			value1 = "${textValue}");
 	}
 
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
+	@description = "This is a test for LPS-107630. Make sure Fieldsets can be set as collapsible"
 	@priority = "4"
 	test FieldsetSetAsCollapsible {
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(structureName = "WC Structure Name");
-
 		DataEngine.addFieldsets(
 			createNewFieldset = "true",
 			fieldNameList = "Numeric",
@@ -215,7 +178,7 @@ definition {
 			collapsible = "true",
 			fieldsetLabel = "New Fieldset");
 
-		WebContentStructures.saveCP();
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
 
 		WebContentNavigator.gotoEditStructure(structureName = "WC Structure Name");
 
@@ -232,17 +195,9 @@ definition {
 			locator1 = "DDMEditStructure#FORM_FIELD_CONTAINER_LABEL");
 	}
 
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
+	@description = "This is a test for LPS-107630. Make sure Fieldsets can be set as repeatable"
 	@priority = "4"
 	test FieldsetSetAsRepeatable {
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(
-			structureDescription = "WC Structure Description",
-			structureName = "WC Structure Name");
-
 		DataEngine.addFieldsets(
 			createNewFieldset = "true",
 			fieldNameList = "Rich Text",
@@ -251,7 +206,7 @@ definition {
 
 		DataEngine.editFieldsetsRepeatable(fieldsetLabel = "New Fieldset");
 
-		WebContentStructures.saveCP();
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
 
 		NavItem.gotoWebContent();
 
@@ -263,7 +218,7 @@ definition {
 
 		for (var n : list "1,2") {
 			DataEngine.assertFieldRepeated(
-				fieldName = "Rich Text",
+				fieldName = "FieldsGroup",
 				index = "${n}");
 		}
 
@@ -283,7 +238,7 @@ definition {
 
 		for (var n : list "1,2") {
 			DataEngine.assertFieldRepeated(
-				fieldName = "Rich Text",
+				fieldName = "FieldsGroup",
 				index = "${n}");
 		}
 
@@ -298,22 +253,16 @@ definition {
 			locator1 = "FormFields#FIELD_REMOVE");
 	}
 
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
+	@description = "This is a test for LPS-107630. Make sure the content is not duplicated when activating repeatable option on a Web Content"
 	@priority = "4"
 	test RepeatFieldsetWithoutDuplicatingContent {
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(structureName = "WC Structure Name");
-
 		DataEngine.addFieldsets(
 			fieldsetLabel = "Basic Web Content",
 			fieldsetName = "Basic Web Content");
 
 		DataEngine.editFieldsetsRepeatable(fieldsetLabel = "Basic Web Content");
 
-		WebContentStructures.saveCP();
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
 
 		NavItem.click(navItem = "Web Content");
 
@@ -345,24 +294,9 @@ definition {
 			value1 = "");
 	}
 
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
-	@ignore = "true"
-	@priority = "4"
-	test SaveStructureAddingBackFieldset {
-		property portal.acceptance = "false";
-
-		// TODO LPS-107630 SaveStructureAddingBackFieldset pending implementation
-	}
-
-	@description = "This is a test for LPS-107630. As an App Adm, I want to use an existing fieldset"
+	@description = "This is a test for LPS-107630. Make sure Fieldset Label can be shown or hidden"
 	@priority = "4"
 	test ShowAndHideFieldsetLabel {
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(structureName = "WC Structure Name");
-
 		DataEngine.addFieldsets(
 			createNewFieldset = "true",
 			fieldNameList = "Date",
@@ -373,7 +307,7 @@ definition {
 			fieldsetLabel = "New Fieldset",
 			showLabel = "true");
 
-		WebContentStructures.saveCP();
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
 
 		WebContentNavigator.gotoEditStructure(structureName = "WC Structure Name");
 
@@ -385,7 +319,7 @@ definition {
 			fieldsetLabel = "New Fieldset",
 			showLabel = "false");
 
-		WebContentStructures.saveCP();
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
 
 		WebContentNavigator.gotoEditStructure(structureName = "WC Structure Name");
 
@@ -397,12 +331,6 @@ definition {
 	@description = "This is a test for LPS-123538. As Content Creator, I cannot edit fieldset on the Advanced panel"
 	@priority = "4"
 	test VerifyFieldsetCannotBeEditedOnStructureBuilder {
-		WebContentNavigator.openWebContentAdmin(siteURLKey = "test-site-name");
-
-		NavItem.gotoStructures();
-
-		WebContentStructures.addCP(structureName = "WC Structure Name");
-
 		DataEngine.addFieldsets(
 			createNewFieldset = "true",
 			fieldNameList = "Upload",

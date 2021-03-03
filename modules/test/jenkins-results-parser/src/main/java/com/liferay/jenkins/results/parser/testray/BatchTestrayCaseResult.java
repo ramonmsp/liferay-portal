@@ -21,6 +21,8 @@ import com.liferay.jenkins.results.parser.JenkinsResultsParserUtil;
 import com.liferay.jenkins.results.parser.TopLevelBuild;
 import com.liferay.jenkins.results.parser.test.clazz.group.AxisTestClassGroup;
 
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -71,8 +73,40 @@ public class BatchTestrayCaseResult extends TestrayCaseResult {
 	}
 
 	@Override
+	public String getComponent() {
+		try {
+			return JenkinsResultsParserUtil.getProperty(
+				JenkinsResultsParserUtil.getBuildProperties(),
+				"testray.case.component", getBatchName());
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
+	}
+
+	@Override
 	public String getName() {
 		return getAxisName();
+	}
+
+	@Override
+	public int getPriority() {
+		try {
+			String testrayCasePriority = JenkinsResultsParserUtil.getProperty(
+				JenkinsResultsParserUtil.getBuildProperties(),
+				"testray.case.priority", getBatchName());
+
+			if ((testrayCasePriority != null) &&
+				testrayCasePriority.matches("\\d+")) {
+
+				return Integer.parseInt(testrayCasePriority);
+			}
+
+			return 5;
+		}
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
 	}
 
 	@Override
@@ -87,33 +121,27 @@ public class BatchTestrayCaseResult extends TestrayCaseResult {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(getStatus());
-		sb.append(" ");
-		sb.append(getBatchName());
-		sb.append(" ");
-		sb.append(getName());
-		sb.append(" ");
-
-		Build build = getBuild();
-
-		if (build != null) {
-			sb.append(build.getBuildURL());
+	public String getTeamName() {
+		try {
+			return JenkinsResultsParserUtil.getProperty(
+				JenkinsResultsParserUtil.getBuildProperties(),
+				"testray.case.team", getBatchName());
 		}
-		else {
-			sb.append(" No build found");
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
 		}
+	}
 
-		for (TestrayCaseResult.Attachment attachment : getAttachments()) {
-			sb.append("\n* ");
-			sb.append(attachment.getName());
-			sb.append("=");
-			sb.append(attachment.getURL());
+	@Override
+	public String getType() {
+		try {
+			return JenkinsResultsParserUtil.getProperty(
+				JenkinsResultsParserUtil.getBuildProperties(),
+				"testray.case.type", getBatchName());
 		}
-
-		return sb.toString();
+		catch (IOException ioException) {
+			throw new RuntimeException(ioException);
+		}
 	}
 
 	protected String getAxisBuildURLPath() {

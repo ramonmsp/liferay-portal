@@ -41,6 +41,8 @@ public class AccountMemberResourceTest
 	public void setUp() throws Exception {
 		super.setUp();
 
+		_user = UserTestUtil.addUser(testCompany);
+
 		_serviceContext = ServiceContextTestUtil.getServiceContext(
 			testCompany.getCompanyId(), testGroup.getGroupId(),
 			_user.getUserId());
@@ -51,8 +53,6 @@ public class AccountMemberResourceTest
 			RandomTestUtil.randomString() + "@liferay.com", null,
 			CommerceAccountConstants.ACCOUNT_TYPE_GUEST, true,
 			RandomTestUtil.randomString(), _serviceContext);
-
-		_user = UserTestUtil.addCompanyAdminUser(testCompany);
 	}
 
 	@Override

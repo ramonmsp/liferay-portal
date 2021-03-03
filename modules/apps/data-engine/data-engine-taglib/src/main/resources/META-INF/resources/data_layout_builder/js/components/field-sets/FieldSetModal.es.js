@@ -21,6 +21,7 @@ import App from '../../App.es';
 import AppContext from '../../AppContext.es';
 import {
 	UPDATE_CONFIG,
+	UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE,
 	UPDATE_EDITING_DATA_DEFINITION_ID,
 	UPDATE_EDITING_LANGUAGE_ID,
 } from '../../actions.es';
@@ -71,6 +72,14 @@ const ModalContent = ({
 		},
 		[dispatch]
 	);
+
+	useEffect(() => {
+		dispatch({
+			payload: editingLanguageId,
+			type: UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE,
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [dispatch]);
 
 	const actionProps = {
 		availableLanguageIds: dataDefinition?.availableLanguageIds,

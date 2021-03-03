@@ -22,6 +22,9 @@ import com.liferay.commerce.price.list.model.CommerceTierPriceEntry;
 import com.liferay.commerce.price.list.service.CommercePriceEntryService;
 import com.liferay.commerce.price.list.service.CommerceTierPriceEntryService;
 import com.liferay.commerce.pricing.constants.CommercePricingPortletKeys;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
@@ -43,6 +46,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
+import javax.portlet.WindowStateException;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -174,6 +178,13 @@ public class EditCommerceTierPriceEntryMVCActionCommand
 				String.valueOf(commerceTierPriceEntryId));
 		}
 
+		try {
+			portletURL.setWindowState(LiferayWindowState.POP_UP);
+		}
+		catch (WindowStateException windowStateException) {
+			_log.error(windowStateException, windowStateException);
+		}
+
 		return portletURL.toString();
 	}
 
@@ -276,6 +287,9 @@ public class EditCommerceTierPriceEntryMVCActionCommand
 
 		return commerceTierPriceEntry;
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		EditCommerceTierPriceEntryMVCActionCommand.class);
 
 	@Reference
 	private CommercePriceEntryService _commercePriceEntryService;

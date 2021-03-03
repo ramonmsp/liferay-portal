@@ -254,7 +254,7 @@ public class ProductResourceImpl
 
 	@Override
 	public Product postProduct(Product product) throws Exception {
-		CPDefinition cpDefinition = _upsertProduct(product);
+		CPDefinition cpDefinition = _addOrUpdateProduct(product);
 
 		return _toProduct(cpDefinition.getCPDefinitionId());
 	}
@@ -314,6 +314,137 @@ public class ProductResourceImpl
 			cpDefinition.getCPDefinitionId(), commerceCatalog.getGroupId());
 
 		return _toProduct(cpDefinition.getCPDefinitionId());
+	}
+
+	private CPDefinition _addOrUpdateProduct(Product product) throws Exception {
+		CommerceCatalog commerceCatalog =
+			_commerceCatalogLocalService.getCommerceCatalog(
+				product.getCatalogId());
+
+		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
+			commerceCatalog.getGroupId());
+
+		Calendar displayCalendar = CalendarFactoryUtil.getCalendar(
+			serviceContext.getTimeZone());
+
+		DateConfig displayDateConfig = new DateConfig(displayCalendar);
+
+		Calendar expirationCalendar = CalendarFactoryUtil.getCalendar(
+			serviceContext.getTimeZone());
+
+		expirationCalendar.add(Calendar.MONTH, 1);
+
+		DateConfig expirationDateConfig = new DateConfig(expirationCalendar);
+
+		ProductShippingConfiguration shippingConfiguration =
+			_getProductShippingConfiguration(product);
+		ProductSubscriptionConfiguration subscriptionConfiguration =
+			_getProductSubscriptionConfiguration(product);
+		ProductTaxConfiguration taxConfiguration = _getProductTaxConfiguration(
+			product);
+
+		CPDefinition cpDefinition =
+			_cpDefinitionService.
+				fetchCPDefinitionByCProductExternalReferenceCode(
+					product.getExternalReferenceCode(),
+					contextCompany.getCompanyId());
+
+		if ((product.getCategories() == null) && (cpDefinition != null)) {
+			long[] categoryIds = _assetCategoryLocalService.getCategoryIds(
+				cpDefinition.getModelClassName(),
+				cpDefinition.getCPDefinitionId());
+
+			serviceContext.setAssetCategoryIds(categoryIds);
+		}
+
+		Map<String, String> nameMap = product.getName();
+
+		if ((cpDefinition != null) && (nameMap == null)) {
+			nameMap = LanguageUtils.getLanguageIdMap(cpDefinition.getNameMap());
+		}
+
+		Map<String, String> shortDescriptionMap = product.getShortDescription();
+
+		if ((cpDefinition != null) && (shortDescriptionMap == null)) {
+			shortDescriptionMap = LanguageUtils.getLanguageIdMap(
+				cpDefinition.getShortDescriptionMap());
+		}
+
+		Map<String, String> descriptionMap = product.getDescription();
+
+		if ((cpDefinition != null) && (descriptionMap == null)) {
+			descriptionMap = LanguageUtils.getLanguageIdMap(
+				cpDefinition.getDescriptionMap());
+		}
+
+		boolean ignoreSKUCombinations = true;
+
+		if (cpDefinition != null) {
+			ignoreSKUCombinations = cpDefinition.isIgnoreSKUCombinations();
+		}
+
+		cpDefinition = _cpDefinitionService.upsertCPDefinition(
+			product.getExternalReferenceCode(), commerceCatalog.getGroupId(),
+			contextUser.getUserId(), LanguageUtils.getLocalizedMap(nameMap),
+			LanguageUtils.getLocalizedMap(shortDescriptionMap),
+			LanguageUtils.getLocalizedMap(descriptionMap), null,
+			LanguageUtils.getLocalizedMap(product.getMetaTitle()),
+			LanguageUtils.getLocalizedMap(product.getMetaDescription()),
+			LanguageUtils.getLocalizedMap(product.getMetaKeyword()),
+			product.getProductType(), ignoreSKUCombinations,
+			GetterUtil.getBoolean(shippingConfiguration.getShippable(), true),
+			GetterUtil.getBoolean(
+				shippingConfiguration.getFreeShipping(), true),
+			GetterUtil.getBoolean(
+				shippingConfiguration.getShippingSeparately(), true),
+			GetterUtil.getDouble(shippingConfiguration.getShippingExtraPrice()),
+			GetterUtil.getDouble(shippingConfiguration.getWidth()),
+			GetterUtil.getDouble(shippingConfiguration.getHeight()),
+			GetterUtil.getDouble(shippingConfiguration.getDepth()),
+			GetterUtil.getDouble(shippingConfiguration.getWeight()),
+			GetterUtil.getLong(taxConfiguration.getId()),
+			ProductUtil.isTaxExempt(null, taxConfiguration), false, null, true,
+			displayDateConfig.getMonth(), displayDateConfig.getDay(),
+			displayDateConfig.getYear(), displayDateConfig.getHour(),
+			displayDateConfig.getMinute(), expirationDateConfig.getMonth(),
+			expirationDateConfig.getDay(), expirationDateConfig.getYear(),
+			expirationDateConfig.getHour(), expirationDateConfig.getMinute(),
+			GetterUtil.getBoolean(product.getNeverExpire(), true),
+			product.getDefaultSku(),
+			GetterUtil.getBoolean(subscriptionConfiguration.getEnable()),
+			GetterUtil.getInteger(subscriptionConfiguration.getLength(), 1),
+			GetterUtil.getString(
+				subscriptionConfiguration.getSubscriptionTypeAsString()),
+			null,
+			GetterUtil.getLong(subscriptionConfiguration.getNumberOfLength()),
+			serviceContext);
+
+		// Workflow
+
+		if ((product.getActive() != null) && !product.getActive()) {
+			Map<String, Serializable> workflowContext = new HashMap<>();
+
+			_cpDefinitionService.updateStatus(
+				contextUser.getUserId(), cpDefinition.getCPDefinitionId(),
+				WorkflowConstants.STATUS_INACTIVE, serviceContext,
+				workflowContext);
+		}
+
+		// Expando
+
+		Map<String, ?> expando = product.getExpando();
+
+		if ((expando != null) && !expando.isEmpty()) {
+			ExpandoUtil.updateExpando(
+				serviceContext.getCompanyId(), CPDefinition.class,
+				cpDefinition.getPrimaryKey(), expando);
+		}
+
+		// Update nested resources
+
+		_updateNestedResources(product, cpDefinition, serviceContext);
+
+		return cpDefinition;
 	}
 
 	private Map<String, Map<String, String>> _getActions(
@@ -698,137 +829,6 @@ public class ProductResourceImpl
 		// Update nested resources
 
 		return _updateNestedResources(product, cpDefinition, serviceContext);
-	}
-
-	private CPDefinition _upsertProduct(Product product) throws Exception {
-		CommerceCatalog commerceCatalog =
-			_commerceCatalogLocalService.getCommerceCatalog(
-				product.getCatalogId());
-
-		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
-			commerceCatalog.getGroupId());
-
-		Calendar displayCalendar = CalendarFactoryUtil.getCalendar(
-			serviceContext.getTimeZone());
-
-		DateConfig displayDateConfig = new DateConfig(displayCalendar);
-
-		Calendar expirationCalendar = CalendarFactoryUtil.getCalendar(
-			serviceContext.getTimeZone());
-
-		expirationCalendar.add(Calendar.MONTH, 1);
-
-		DateConfig expirationDateConfig = new DateConfig(expirationCalendar);
-
-		ProductShippingConfiguration shippingConfiguration =
-			_getProductShippingConfiguration(product);
-		ProductSubscriptionConfiguration subscriptionConfiguration =
-			_getProductSubscriptionConfiguration(product);
-		ProductTaxConfiguration taxConfiguration = _getProductTaxConfiguration(
-			product);
-
-		CPDefinition cpDefinition =
-			_cpDefinitionService.
-				fetchCPDefinitionByCProductExternalReferenceCode(
-					product.getExternalReferenceCode(),
-					contextCompany.getCompanyId());
-
-		if ((product.getCategories() == null) && (cpDefinition != null)) {
-			long[] categoryIds = _assetCategoryLocalService.getCategoryIds(
-				cpDefinition.getModelClassName(),
-				cpDefinition.getCPDefinitionId());
-
-			serviceContext.setAssetCategoryIds(categoryIds);
-		}
-
-		Map<String, String> nameMap = product.getName();
-
-		if ((cpDefinition != null) && (nameMap == null)) {
-			nameMap = LanguageUtils.getLanguageIdMap(cpDefinition.getNameMap());
-		}
-
-		Map<String, String> shortDescriptionMap = product.getShortDescription();
-
-		if ((cpDefinition != null) && (shortDescriptionMap == null)) {
-			shortDescriptionMap = LanguageUtils.getLanguageIdMap(
-				cpDefinition.getShortDescriptionMap());
-		}
-
-		Map<String, String> descriptionMap = product.getDescription();
-
-		if ((cpDefinition != null) && (descriptionMap == null)) {
-			descriptionMap = LanguageUtils.getLanguageIdMap(
-				cpDefinition.getDescriptionMap());
-		}
-
-		boolean ignoreSKUCombinations = true;
-
-		if (cpDefinition != null) {
-			ignoreSKUCombinations = cpDefinition.isIgnoreSKUCombinations();
-		}
-
-		cpDefinition = _cpDefinitionService.upsertCPDefinition(
-			product.getExternalReferenceCode(), commerceCatalog.getGroupId(),
-			contextUser.getUserId(), LanguageUtils.getLocalizedMap(nameMap),
-			LanguageUtils.getLocalizedMap(shortDescriptionMap),
-			LanguageUtils.getLocalizedMap(descriptionMap), null,
-			LanguageUtils.getLocalizedMap(product.getMetaTitle()),
-			LanguageUtils.getLocalizedMap(product.getMetaDescription()),
-			LanguageUtils.getLocalizedMap(product.getMetaKeyword()),
-			product.getProductType(), ignoreSKUCombinations,
-			GetterUtil.getBoolean(shippingConfiguration.getShippable(), true),
-			GetterUtil.getBoolean(
-				shippingConfiguration.getFreeShipping(), true),
-			GetterUtil.getBoolean(
-				shippingConfiguration.getShippingSeparately(), true),
-			GetterUtil.getDouble(shippingConfiguration.getShippingExtraPrice()),
-			GetterUtil.getDouble(shippingConfiguration.getWidth()),
-			GetterUtil.getDouble(shippingConfiguration.getHeight()),
-			GetterUtil.getDouble(shippingConfiguration.getDepth()),
-			GetterUtil.getDouble(shippingConfiguration.getWeight()),
-			GetterUtil.getLong(taxConfiguration.getId()),
-			ProductUtil.isTaxExempt(null, taxConfiguration), false, null, true,
-			displayDateConfig.getMonth(), displayDateConfig.getDay(),
-			displayDateConfig.getYear(), displayDateConfig.getHour(),
-			displayDateConfig.getMinute(), expirationDateConfig.getMonth(),
-			expirationDateConfig.getDay(), expirationDateConfig.getYear(),
-			expirationDateConfig.getHour(), expirationDateConfig.getMinute(),
-			GetterUtil.getBoolean(product.getNeverExpire(), true),
-			product.getDefaultSku(),
-			GetterUtil.getBoolean(subscriptionConfiguration.getEnable()),
-			GetterUtil.getInteger(subscriptionConfiguration.getLength(), 1),
-			GetterUtil.getString(
-				subscriptionConfiguration.getSubscriptionTypeAsString()),
-			null,
-			GetterUtil.getLong(subscriptionConfiguration.getNumberOfLength()),
-			serviceContext);
-
-		// Workflow
-
-		if ((product.getActive() != null) && !product.getActive()) {
-			Map<String, Serializable> workflowContext = new HashMap<>();
-
-			_cpDefinitionService.updateStatus(
-				contextUser.getUserId(), cpDefinition.getCPDefinitionId(),
-				WorkflowConstants.STATUS_INACTIVE, serviceContext,
-				workflowContext);
-		}
-
-		// Expando
-
-		Map<String, ?> expando = product.getExpando();
-
-		if ((expando != null) && !expando.isEmpty()) {
-			ExpandoUtil.updateExpando(
-				serviceContext.getCompanyId(), CPDefinition.class,
-				cpDefinition.getPrimaryKey(), expando);
-		}
-
-		// Update nested resources
-
-		_updateNestedResources(product, cpDefinition, serviceContext);
-
-		return cpDefinition;
 	}
 
 	@Reference

@@ -15,20 +15,25 @@
 package com.liferay.portlet;
 
 import com.liferay.petra.lang.HashUtil;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.petra.xml.XMLUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.portlet.PortalPreferences;
 import com.liferay.portal.kernel.service.PortalPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.service.persistence.PortalPreferencesUtil;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.TransactionConfig;
 import com.liferay.portal.kernel.transaction.TransactionInvokerUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.kernel.xml.simple.Element;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -36,13 +41,12 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Callable;
-
-import javax.portlet.ReadOnlyException;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.StaleObjectStateException;
 
@@ -51,7 +55,6 @@ import org.hibernate.StaleObjectStateException;
  * @author Alexander Chow
  */
 public class PortalPreferencesImpl
-	extends BasePreferencesImpl
 	implements Cloneable, PortalPreferences, Serializable {
 
 	public static final TransactionConfig SUPPORTS_TRANSACTION_CONFIG;
@@ -68,19 +71,29 @@ public class PortalPreferencesImpl
 	}
 
 	public PortalPreferencesImpl() {
-		this(0, 0, null, Collections.<String, Preference>emptyMap(), false);
+		this(0, 0, null, Collections.emptyMap(), false);
 	}
 
 	public PortalPreferencesImpl(
 		com.liferay.portal.kernel.model.PortalPreferences portalPreferences,
 		boolean signedIn) {
 
-		this(
-			portalPreferences.getOwnerId(), portalPreferences.getOwnerType(),
-			portalPreferences.getPreferences(),
-			PortletPreferencesFactoryImpl.createPreferencesMap(
-				portalPreferences.getPreferences()),
-			signedIn);
+		_signedIn = signedIn;
+
+		_originalXML = portalPreferences.getPreferences();
+
+		_originalPreferences = new HashMap<>();
+
+		Map<String, Preference> preferencesMap =
+			PortletPreferencesFactoryImpl.createPreferencesMap(_originalXML);
+
+		for (Preference preference : preferencesMap.values()) {
+			_originalPreferences.put(
+				preference.getName(), preference.getValues());
+		}
+
+		_ownerId = portalPreferences.getOwnerId();
+		_ownerType = portalPreferences.getOwnerType();
 
 		_portalPreferences =
 			(com.liferay.portal.kernel.model.PortalPreferences)
@@ -89,28 +102,29 @@ public class PortalPreferencesImpl
 
 	public PortalPreferencesImpl(
 		long ownerId, int ownerType, String xml,
-		Map<String, Preference> preferences, boolean signedIn) {
+		Map<String, String[]> preferences, boolean signedIn) {
 
-		super(ownerId, ownerType, xml, preferences);
-
+		_ownerId = ownerId;
+		_ownerType = ownerType;
 		_signedIn = signedIn;
+
+		_originalXML = xml;
+		_originalPreferences = preferences;
 	}
 
 	@Override
 	public PortalPreferencesImpl clone() {
-		String originalXML = getOriginalXML();
-
 		if (_portalPreferences == null) {
 			return new PortalPreferencesImpl(
-				getOwnerId(), getOwnerType(), originalXML,
-				new HashMap<>(getOriginalPreferences()), isSignedIn());
+				getOwnerId(), getOwnerType(), _originalXML,
+				new HashMap<>(_getOriginalPreferences()), isSignedIn());
 		}
 
-		if (Objects.equals(originalXML, _portalPreferences.getPreferences())) {
+		if (Objects.equals(_originalXML, _portalPreferences.getPreferences())) {
 			PortalPreferencesImpl portalPreferencesImpl =
 				new PortalPreferencesImpl(
-					getOwnerId(), getOwnerType(), originalXML,
-					new HashMap<>(getOriginalPreferences()), isSignedIn());
+					getOwnerId(), getOwnerType(), _originalXML,
+					new HashMap<>(_getOriginalPreferences()), isSignedIn());
 
 			portalPreferencesImpl._portalPreferences =
 				(com.liferay.portal.kernel.model.PortalPreferences)
@@ -137,12 +151,41 @@ public class PortalPreferencesImpl
 
 		if ((getOwnerId() == portalPreferencesImpl.getOwnerId()) &&
 			(getOwnerType() == portalPreferencesImpl.getOwnerType()) &&
-			getPreferences().equals(portalPreferencesImpl.getPreferences())) {
+			Objects.equals(
+				getPreferences(), portalPreferencesImpl.getPreferences())) {
 
 			return true;
 		}
 
 		return false;
+	}
+
+	public Map<String, String[]> getMap(String namespace) {
+		Map<String, String[]> preferences = getPreferences();
+
+		if (preferences.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, String[]> preferenceMap = new HashMap<>();
+
+		for (Map.Entry<String, String[]> entry : preferences.entrySet()) {
+			String key = entry.getKey();
+
+			if (Validator.isNull(namespace)) {
+				if (key.indexOf(CharPool.POUND) < 0) {
+					preferenceMap.put(key, entry.getValue());
+				}
+			}
+			else if ((key.length() > namespace.length()) &&
+					 key.startsWith(namespace) &&
+					 (key.charAt(namespace.length()) == CharPool.POUND)) {
+
+				preferenceMap.put(key, entry.getValue());
+			}
+		}
+
+		return preferenceMap;
 	}
 
 	public long getMvccVersion() {
@@ -151,6 +194,28 @@ public class PortalPreferencesImpl
 		}
 
 		return _portalPreferences.getMvccVersion();
+	}
+
+	public Enumeration<String> getNames(String namespace) {
+		Map<String, String[]> preferences = getMap(namespace);
+
+		return Collections.enumeration(preferences.keySet());
+	}
+
+	public long getOwnerId() {
+		return _ownerId;
+	}
+
+	public int getOwnerType() {
+		return _ownerType;
+	}
+
+	public Map<String, String[]> getPreferences() {
+		if (_modifiedPreferences != null) {
+			return _modifiedPreferences;
+		}
+
+		return _originalPreferences;
 	}
 
 	@Override
@@ -167,7 +232,19 @@ public class PortalPreferencesImpl
 	public String getValue(String namespace, String key, String defaultValue) {
 		key = _encodeKey(namespace, key);
 
-		return super.getValue(key, defaultValue);
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+
+		Map<String, String[]> preferences = getPreferences();
+
+		String[] values = preferences.get(key);
+
+		if (_isNull(values)) {
+			return defaultValue;
+		}
+
+		return _getActualValue(values[0]);
 	}
 
 	@Override
@@ -181,7 +258,7 @@ public class PortalPreferencesImpl
 
 		key = _encodeKey(namespace, key);
 
-		return super.getValues(key, defaultValue);
+		return _getValues(key, defaultValue);
 	}
 
 	@Override
@@ -199,34 +276,24 @@ public class PortalPreferencesImpl
 		return _signedIn;
 	}
 
-	@Override
-	public void reset(final String key) throws ReadOnlyException {
-		if (isReadOnly(key)) {
-			throw new ReadOnlyException(key);
-		}
+	public void reset(String namespace, String key) {
+		String encodedKey = _encodeKey(namespace, key);
 
-		String[] values = super.getValues(key, null);
+		String[] values = _getValues(encodedKey, null);
 
 		if (values == null) {
 			return;
 		}
 
-		Callable<Void> callable = new Callable<Void>() {
+		Runnable runnable = () -> {
+			Map<String, String[]> modifiedPreferences =
+				_getModifiedPreferences();
 
-			@Override
-			public Void call() {
-				Map<String, Preference> modifiedPreferences =
-					getModifiedPreferences();
-
-				modifiedPreferences.remove(key);
-
-				return null;
-			}
-
+			modifiedPreferences.remove(encodedKey);
 		};
 
 		try {
-			retryableStore(callable, key);
+			_retryableStore(runnable, encodedKey);
 		}
 		catch (ConcurrentModificationException
 					concurrentModificationException) {
@@ -240,14 +307,22 @@ public class PortalPreferencesImpl
 
 	@Override
 	public void resetValues(String namespace) {
-		Map<String, Preference> preferences = getPreferences();
+		Map<String, String[]> preferences = getPreferences();
 
 		try {
-			for (Map.Entry<String, Preference> entry : preferences.entrySet()) {
+			for (Map.Entry<String, String[]> entry : preferences.entrySet()) {
 				String key = entry.getKey();
 
-				if (key.startsWith(namespace) && !isReadOnly(key)) {
-					reset(key);
+				if (Validator.isNull(namespace)) {
+					if (key.indexOf(CharPool.POUND) < 0) {
+						reset(null, key);
+					}
+				}
+				else if ((key.length() > namespace.length()) &&
+						 key.startsWith(namespace) &&
+						 (key.charAt(namespace.length()) == CharPool.POUND)) {
+
+					reset(namespace, key.substring(namespace.length() + 1));
 				}
 			}
 		}
@@ -272,21 +347,21 @@ public class PortalPreferencesImpl
 	}
 
 	@Override
-	public void setValue(String namespace, String key, final String value) {
+	public void setValue(String namespace, String key, String value) {
 		if (Validator.isNull(key) || key.equals(_RANDOM_KEY)) {
 			return;
 		}
 
-		final String encodedKey = _encodeKey(namespace, key);
-
 		try {
 			if (value == null) {
-				reset(encodedKey);
+				reset(namespace, key);
 
 				return;
 			}
 
-			String[] oldValues = super.getValues(encodedKey, null);
+			String encodedKey = _encodeKey(namespace, key);
+
+			String[] oldValues = _getValues(encodedKey, null);
 
 			if ((oldValues != null) && (oldValues.length == 1) &&
 				value.equals(oldValues[0])) {
@@ -294,22 +369,19 @@ public class PortalPreferencesImpl
 				return;
 			}
 
-			Callable<Void> callable = new Callable<Void>() {
+			Runnable runnable = () -> {
+				Map<String, String[]> modifiedPreferences =
+					_getModifiedPreferences();
 
-				@Override
-				public Void call() throws ReadOnlyException {
-					PortalPreferencesImpl.super.setValue(encodedKey, value);
-
-					return null;
-				}
-
+				modifiedPreferences.put(
+					encodedKey, new String[] {_getXMLSafeValue(value)});
 			};
 
 			if (_signedIn) {
-				retryableStore(callable, encodedKey);
+				_retryableStore(runnable, encodedKey);
 			}
 			else {
-				callable.call();
+				runnable.run();
 			}
 		}
 		catch (ConcurrentModificationException
@@ -323,16 +395,14 @@ public class PortalPreferencesImpl
 	}
 
 	@Override
-	public void setValues(String namespace, String key, final String[] values) {
+	public void setValues(String namespace, String key, String[] values) {
 		if (Validator.isNull(key) || key.equals(_RANDOM_KEY)) {
 			return;
 		}
 
-		final String encodedKey = _encodeKey(namespace, key);
-
 		try {
 			if (values == null) {
-				reset(encodedKey);
+				reset(namespace, key);
 
 				return;
 			}
@@ -343,7 +413,9 @@ public class PortalPreferencesImpl
 				return;
 			}
 
-			String[] oldValues = super.getValues(encodedKey, null);
+			String encodedKey = _encodeKey(namespace, key);
+
+			String[] oldValues = _getValues(encodedKey, null);
 
 			if (oldValues != null) {
 				Set<String> valuesSet = SetUtil.fromArray(values);
@@ -354,22 +426,18 @@ public class PortalPreferencesImpl
 				}
 			}
 
-			Callable<Void> callable = new Callable<Void>() {
+			Runnable runnable = () -> {
+				Map<String, String[]> modifiedPreferences =
+					_getModifiedPreferences();
 
-				@Override
-				public Void call() throws ReadOnlyException {
-					PortalPreferencesImpl.super.setValues(encodedKey, values);
-
-					return null;
-				}
-
+				modifiedPreferences.put(encodedKey, _getXMLSafeValues(values));
 			};
 
 			if (_signedIn) {
-				retryableStore(callable, encodedKey);
+				_retryableStore(runnable, encodedKey);
 			}
 			else {
-				callable.call();
+				runnable.run();
 			}
 		}
 		catch (ConcurrentModificationException
@@ -383,6 +451,12 @@ public class PortalPreferencesImpl
 	}
 
 	@Override
+	public int size() {
+		Map<String, String[]> preferences = getPreferences();
+
+		return preferences.size();
+	}
+
 	public void store() throws IOException {
 		try {
 			if (_portalPreferences == null) {
@@ -407,7 +481,136 @@ public class PortalPreferencesImpl
 		}
 	}
 
-	protected boolean isCausedByStaleObjectException(Throwable throwable) {
+	protected String toXML() {
+		if ((_modifiedPreferences == null) && (_originalXML != null)) {
+			return _originalXML;
+		}
+
+		Map<String, String[]> preferences = getPreferences();
+
+		if ((preferences == null) || preferences.isEmpty()) {
+			return PortletConstants.DEFAULT_PREFERENCES;
+		}
+
+		Element portletPreferencesElement = new Element(
+			"portlet-preferences", false);
+
+		for (Map.Entry<String, String[]> entry : preferences.entrySet()) {
+			String[] values = entry.getValue();
+
+			Element preferenceElement = portletPreferencesElement.addElement(
+				"preference");
+
+			preferenceElement.addElement("name", entry.getKey());
+
+			for (String value : values) {
+				preferenceElement.addElement("value", value);
+			}
+		}
+
+		return portletPreferencesElement.toXMLString();
+	}
+
+	private String _encodeKey(String namespace, String key) {
+		if (Validator.isNull(namespace)) {
+			return key;
+		}
+
+		return StringBundler.concat(namespace, StringPool.POUND, key);
+	}
+
+	private String _getActualValue(String value) {
+		if ((value == null) || value.equals(_NULL_VALUE)) {
+			return null;
+		}
+
+		return XMLUtil.fromCompactSafe(value);
+	}
+
+	private String[] _getActualValues(String[] values) {
+		if (values == null) {
+			return null;
+		}
+
+		if (values.length == 1) {
+			String actualValue = _getActualValue(values[0]);
+
+			if (actualValue == null) {
+				return null;
+			}
+			else if (actualValue.equals(_NULL_ELEMENT)) {
+				return new String[] {null};
+			}
+			else {
+				return new String[] {actualValue};
+			}
+		}
+
+		String[] actualValues = new String[values.length];
+
+		for (int i = 0; i < actualValues.length; i++) {
+			actualValues[i] = _getActualValue(values[i]);
+		}
+
+		return actualValues;
+	}
+
+	private Map<String, String[]> _getModifiedPreferences() {
+		if (_modifiedPreferences == null) {
+			_modifiedPreferences = new ConcurrentHashMap<>(
+				_originalPreferences);
+		}
+
+		return _modifiedPreferences;
+	}
+
+	private Map<String, String[]> _getOriginalPreferences() {
+		return _originalPreferences;
+	}
+
+	private String[] _getValues(String key, String[] def) {
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+
+		Map<String, String[]> preferences = getPreferences();
+
+		String[] values = preferences.get(key);
+
+		if (_isNull(values)) {
+			return def;
+		}
+
+		return _getActualValues(values);
+	}
+
+	private String _getXMLSafeValue(String value) {
+		if (value == null) {
+			return _NULL_VALUE;
+		}
+
+		return XMLUtil.toCompactSafe(value);
+	}
+
+	private String[] _getXMLSafeValues(String[] values) {
+		if (values == null) {
+			return new String[] {_NULL_VALUE};
+		}
+
+		if ((values.length == 1) && (values[0] == null)) {
+			return new String[] {_NULL_ELEMENT};
+		}
+
+		String[] xmlSafeValues = new String[values.length];
+
+		for (int i = 0; i < xmlSafeValues.length; i++) {
+			xmlSafeValues[i] = _getXMLSafeValue(values[i]);
+		}
+
+		return xmlSafeValues;
+	}
+
+	private boolean _isCausedByStaleObjectException(Throwable throwable) {
 		Throwable causeThrowable = throwable.getCause();
 
 		while (throwable != causeThrowable) {
@@ -427,21 +630,40 @@ public class PortalPreferencesImpl
 		return false;
 	}
 
-	protected void retryableStore(Callable<?> callable, String key)
+	private boolean _isNull(String[] values) {
+		if (ArrayUtil.isEmpty(values) ||
+			((values.length == 1) && (_getActualValue(values[0]) == null))) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private com.liferay.portal.kernel.model.PortalPreferences _reload(
+			long ownerId, int ownerType)
 		throws Throwable {
 
-		String[] originalValues = super.getValues(key, null);
+		return TransactionInvokerUtil.invoke(
+			SUPPORTS_TRANSACTION_CONFIG,
+			() -> PortalPreferencesUtil.fetchByO_O(ownerId, ownerType, false));
+	}
+
+	private void _retryableStore(Runnable runnable, String key)
+		throws Throwable {
+
+		String[] originalValues = _getValues(key, null);
 
 		while (true) {
 			try {
-				callable.call();
+				runnable.run();
 
 				store();
 
 				return;
 			}
 			catch (Exception exception) {
-				if (isCausedByStaleObjectException(exception)) {
+				if (_isCausedByStaleObjectException(exception)) {
 					com.liferay.portal.kernel.model.PortalPreferences
 						portalPreferences = _reload(
 							getOwnerId(), getOwnerType());
@@ -456,18 +678,17 @@ public class PortalPreferencesImpl
 
 					if (!Arrays.equals(
 							originalValues,
-							portalPreferencesImpl.getValues(
-								key, (String[])null))) {
+							portalPreferencesImpl._getValues(key, null))) {
 
 						throw new ConcurrentModificationException();
 					}
 
-					reset();
+					_modifiedPreferences = null;
 
-					setOriginalPreferences(
-						portalPreferencesImpl.getOriginalPreferences());
+					_originalPreferences =
+						portalPreferencesImpl._getOriginalPreferences();
 
-					setOriginalXML(portalPreferences.getPreferences());
+					_originalXML = portalPreferences.getPreferences();
 
 					_portalPreferences = portalPreferences;
 				}
@@ -478,38 +699,20 @@ public class PortalPreferencesImpl
 		}
 	}
 
-	private String _encodeKey(String namespace, String key) {
-		if (Validator.isNull(namespace)) {
-			return key;
-		}
+	private static final String _NULL_ELEMENT = "NULL_ELEMENT";
 
-		return StringBundler.concat(namespace, StringPool.POUND, key);
-	}
-
-	private com.liferay.portal.kernel.model.PortalPreferences _reload(
-			final long ownerId, final int ownerType)
-		throws Throwable {
-
-		return TransactionInvokerUtil.invoke(
-			SUPPORTS_TRANSACTION_CONFIG,
-			new Callable<com.liferay.portal.kernel.model.PortalPreferences>() {
-
-				@Override
-				public com.liferay.portal.kernel.model.PortalPreferences
-					call() {
-
-					return PortalPreferencesUtil.fetchByO_O(
-						ownerId, ownerType, false);
-				}
-
-			});
-	}
+	private static final String _NULL_VALUE = "NULL_VALUE";
 
 	private static final String _RANDOM_KEY = "r";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortalPreferencesImpl.class);
 
+	private Map<String, String[]> _modifiedPreferences;
+	private Map<String, String[]> _originalPreferences;
+	private String _originalXML;
+	private final long _ownerId;
+	private final int _ownerType;
 	private com.liferay.portal.kernel.model.PortalPreferences
 		_portalPreferences;
 	private boolean _signedIn;

@@ -22,6 +22,7 @@ import com.liferay.petra.sql.dsl.expression.Predicate;
 import com.liferay.petra.sql.dsl.query.FromStep;
 import com.liferay.petra.sql.dsl.query.GroupByStep;
 import com.liferay.petra.sql.dsl.query.JoinStep;
+import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.model.Country;
 import com.liferay.portal.kernel.model.CountryTable;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
@@ -37,9 +38,38 @@ import org.osgi.service.component.annotations.Reference;
  * @author Pei-Jung Lan
  */
 @Component(
-	enabled = false, immediate = true, service = CommerceCountryManager.class
+	enabled = false, immediate = true,
+	property = {
+		"json.web.service.context.name=commerce",
+		"json.web.service.context.path=CommerceCountryManager"
+	},
+	service = CommerceCountryManager.class
 )
+@JSONWebService
 public class CommerceCountryManagerImpl implements CommerceCountryManager {
+
+	public List<Country> getBillingCountries(
+		long companyId, boolean active, boolean billingAllowed) {
+
+		return _countryLocalService.dslQuery(
+			DSLQueryFactoryUtil.selectDistinct(
+				CountryTable.INSTANCE
+			).from(
+				CountryTable.INSTANCE
+			).where(
+				() -> {
+					Predicate predicate = CountryTable.INSTANCE.companyId.eq(
+						companyId);
+
+					predicate = predicate.and(
+						CountryTable.INSTANCE.active.eq(active));
+
+					return predicate.and(
+						CountryTable.INSTANCE.billingAllowed.eq(
+							billingAllowed));
+				}
+			));
+	}
 
 	public List<Country> getBillingCountriesByChannelId(
 		long channelId, int start, int end) {
@@ -53,6 +83,29 @@ public class CommerceCountryManagerImpl implements CommerceCountryManager {
 				OrderByComparatorFactoryUtil.create("Country", "position", true)
 			).limit(
 				start, end
+			));
+	}
+
+	public List<Country> getShippingCountries(
+		long companyId, boolean active, boolean shippingAllowed) {
+
+		return _countryLocalService.dslQuery(
+			DSLQueryFactoryUtil.selectDistinct(
+				CountryTable.INSTANCE
+			).from(
+				CountryTable.INSTANCE
+			).where(
+				() -> {
+					Predicate predicate = CountryTable.INSTANCE.companyId.eq(
+						companyId);
+
+					predicate = predicate.and(
+						CountryTable.INSTANCE.active.eq(active));
+
+					return predicate.and(
+						CountryTable.INSTANCE.shippingAllowed.eq(
+							shippingAllowed));
+				}
 			));
 	}
 

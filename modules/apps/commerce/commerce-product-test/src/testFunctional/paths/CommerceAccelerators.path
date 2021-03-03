@@ -25,12 +25,17 @@
 </tr>
 <tr>
 	<td>ACCOUNT_SELECTOR_DROPDOWN</td>
-	<td>//button[contains(@class,'commerce-account-selector-button')]</td>
+	<td>//div[@class='dropdown account-selector-dropdown']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>ACCOUNT_SELECTOR_SELECTED_ACCOUNT</td>
-	<td>//div[contains(@class,'commerce-account-switcher__section--header')]/div</td>
+	<td>ACCOUNT_SELECTOR_NO_ACCOUNTS_WERE_FOUND</td>
+	<td>//div[contains(@class,'account-selector-dropdown-menu')]//div[text()='No accounts were found.']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>ACCOUNT_SELECTOR_DROPDOWN_MENU_SELECTED_ACCOUNT</td>
+	<td>//div[contains(@class,'account-selector-dropdown-menu')]//h4</td>
 	<td></td>
 </tr>
 <tr>
@@ -45,7 +50,7 @@
 </tr>
 <tr>
 	<td>ADD_TO_CART_BUTTON</td>
-	<td>//a[contains(.,'${key_productName}')]//..//button[contains(@class,'add-to-cart')]</td>
+	<td>//p[@title='${key_productName}']//../..//button[contains(@class,'add-to-cart')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -91,6 +96,11 @@
 <tr>
 	<td>PORTLET_LOADED</td>
 	<td>//div[contains(@class,'portlet-title-default') and contains(.,'${key_portletName}')]/../../../div[@data-qa-id='app-loaded']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PRODUCT_CARD_QUANTITY_SELECTOR_SELECT_FIELD</td>
+	<td>//p[@title='${key_productName}']//../..//select[(@class='form-control quantity-selector')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -267,6 +277,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>MINI_CART_OPENED</td>
+	<td>//div[@class='is-open mini-cart']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>MINI_CART_SUMMARY_TABLE_ITEM</td>
 	<td>//div[contains(@class,'summary-table')]//span[contains(.,'${key_summaryTableItem}')]/following::span</td>
 	<td></td>
@@ -279,7 +294,7 @@
 <!--ORDERS-->
 <tr>
 	<td>ORDER_DETAILS_DISCOUNT</td>
-	<td>//tbody//td[5]</td>
+	<td>//tbody//td[6]</td>
 	<td></td>
 </tr>
 <tr>
@@ -289,12 +304,12 @@
 </tr>
 <tr>
 	<td>ORDER_DETAILS_PRICE</td>
-	<td>//tbody//td[7]</td>
+	<td>//tbody//td[8]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ORDER_DETAILS_QUANTITY</td>
-	<td>//tbody//td[6]</td>
+	<td>//tbody//td[7]</td>
 	<td></td>
 </tr>
 <tr>

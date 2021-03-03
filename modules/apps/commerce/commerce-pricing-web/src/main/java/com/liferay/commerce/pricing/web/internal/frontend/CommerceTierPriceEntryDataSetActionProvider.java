@@ -134,6 +134,13 @@ public class CommerceTierPriceEntryDataSetActionProvider
 			"commercePriceListId",
 			String.valueOf(commercePriceEntry.getCommercePriceListId()));
 
+		try {
+			portletURL.setWindowState(LiferayWindowState.POP_UP);
+		}
+		catch (WindowStateException windowStateException) {
+			_log.error(windowStateException, windowStateException);
+		}
+
 		return portletURL;
 	}
 

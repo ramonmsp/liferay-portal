@@ -25,6 +25,7 @@ import com.liferay.journal.util.comparator.ArticleVersionComparator;
 import com.liferay.journal.web.internal.constants.JournalWebConstants;
 import com.liferay.journal.web.internal.security.permission.resource.JournalArticlePermission;
 import com.liferay.journal.web.internal.servlet.taglib.util.JournalArticleActionDropdownItemsProvider;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.search.RowChecker;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -47,7 +48,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -112,25 +112,25 @@ public class JournalArticleVerticalCard extends BaseVerticalCard {
 				return StringPool.BLANK;
 			}
 
-			String referringPortletResource = ParamUtil.getString(
-				_httpServletRequest, "referringPortletResource");
-
-			PortletURL editArticleURL = _renderResponse.createRenderURL();
-
-			editArticleURL.setParameter("mvcPath", "/edit_article.jsp");
-			editArticleURL.setParameter(
-				"redirect", themeDisplay.getURLCurrent());
-			editArticleURL.setParameter(
-				"referringPortletResource", referringPortletResource);
-			editArticleURL.setParameter(
-				"groupId", String.valueOf(_article.getGroupId()));
-			editArticleURL.setParameter(
-				"folderId", String.valueOf(_article.getFolderId()));
-			editArticleURL.setParameter("articleId", _article.getArticleId());
-			editArticleURL.setParameter(
-				"version", String.valueOf(_article.getVersion()));
-
-			return editArticleURL.toString();
+			return PortletURLBuilder.createRenderURL(
+				_renderResponse
+			).setMVCPath(
+				"/edit_article.jsp"
+			).setRedirect(
+				themeDisplay.getURLCurrent()
+			).setParameter(
+				"referringPortletResource",
+				ParamUtil.getString(
+					_httpServletRequest, "referringPortletResource")
+			).setParameter(
+				"groupId", _article.getGroupId()
+			).setParameter(
+				"folderId", _article.getFolderId()
+			).setParameter(
+				"articleId", _article.getArticleId()
+			).setParameter(
+				"version", _article.getVersion()
+			).buildString();
 		}
 		catch (Exception exception) {
 			if (_log.isDebugEnabled()) {

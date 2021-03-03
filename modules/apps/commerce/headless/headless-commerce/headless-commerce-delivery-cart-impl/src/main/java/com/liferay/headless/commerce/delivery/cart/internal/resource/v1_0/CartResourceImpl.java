@@ -271,6 +271,154 @@ public class CartResourceImpl extends BaseCartResourceImpl {
 			commerceAccount.getCommerceAccountId(), commerceCurrencyId);
 	}
 
+	private void _addOrUpdateBillingAddress(
+			CommerceOrder commerceOrder, Address address, int type,
+			CommerceContext commerceContext, ServiceContext serviceContext)
+		throws Exception {
+
+		if (commerceOrder.getBillingAddressId() > 0) {
+			_updateCommerceOrderAddress(
+				commerceOrder, address, type, serviceContext);
+		}
+		else {
+			CommerceAddress commerceAddress = _addCommerceAddress(
+				commerceOrder, address, type, serviceContext);
+
+			commerceOrder.setBillingAddressId(
+				commerceAddress.getCommerceAddressId());
+		}
+
+		_commerceOrderService.updateCommerceOrder(
+			commerceOrder.getCommerceOrderId(),
+			commerceOrder.getBillingAddressId(),
+			commerceOrder.getShippingAddressId(),
+			commerceOrder.getCommercePaymentMethodKey(),
+			commerceOrder.getCommerceShippingMethodId(),
+			commerceOrder.getShippingOptionName(),
+			commerceOrder.getPurchaseOrderNumber(), commerceOrder.getSubtotal(),
+			commerceOrder.getShippingAmount(), commerceOrder.getTotal(),
+			commerceOrder.getAdvanceStatus(), commerceContext);
+	}
+
+	private void _addOrUpdateCommerceOrderItem(
+			CartItem cartItem, CommerceOrder commerceOrder,
+			CommerceContext commerceContext, ServiceContext serviceContext)
+		throws Exception {
+
+		CPInstance cpInstance = null;
+
+		if (cartItem.getSkuId() != null) {
+			cpInstance = _cpInstanceLocalService.getCPInstance(
+				cartItem.getSkuId());
+		}
+
+		_commerceOrderItemService.upsertCommerceOrderItem(
+			commerceOrder.getCommerceOrderId(), cpInstance.getCPInstanceId(),
+			cartItem.getOptions(), GetterUtil.get(cartItem.getQuantity(), 1), 0,
+			commerceContext, serviceContext);
+	}
+
+	private void _addOrUpdateNestedResources(
+			Cart cart, CommerceOrder commerceOrder,
+			CommerceContext commerceContext)
+		throws Exception {
+
+		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
+			commerceOrder.getGroupId());
+
+		// Order items
+
+		CartItem[] orderItems = cart.getCartItems();
+
+		if (orderItems != null) {
+			_commerceOrderItemService.deleteCommerceOrderItems(
+				commerceOrder.getCommerceOrderId());
+
+			for (CartItem cartItem : orderItems) {
+				_addOrUpdateCommerceOrderItem(
+					cartItem, commerceOrder, commerceContext, serviceContext);
+			}
+		}
+
+		commerceOrder.setBillingAddressId(
+			GetterUtil.get(cart.getBillingAddressId(), 0));
+		commerceOrder.setShippingAddressId(
+			GetterUtil.get(cart.getShippingAddressId(), 0));
+
+		boolean useAsBilling = GetterUtil.get(cart.getUseAsBilling(), false);
+		int type = CommerceAddressConstants.ADDRESS_TYPE_SHIPPING;
+
+		if (useAsBilling) {
+			type = CommerceAddressConstants.ADDRESS_TYPE_BILLING_AND_SHIPPING;
+		}
+
+		// Shipping Address
+
+		Address shippingAddress = cart.getShippingAddress();
+
+		if (shippingAddress != null) {
+			commerceOrder = _addOrUpdateShippingAddress(
+				commerceOrder, shippingAddress, type, commerceContext,
+				serviceContext);
+		}
+
+		if (useAsBilling) {
+			_commerceOrderService.updateCommerceOrder(
+				commerceOrder.getCommerceOrderId(),
+				commerceOrder.getShippingAddressId(),
+				commerceOrder.getShippingAddressId(),
+				commerceOrder.getCommercePaymentMethodKey(),
+				commerceOrder.getCommerceShippingMethodId(),
+				commerceOrder.getShippingOptionName(),
+				commerceOrder.getPurchaseOrderNumber(),
+				commerceOrder.getSubtotal(), commerceOrder.getShippingAmount(),
+				commerceOrder.getTotal(), commerceOrder.getAdvanceStatus(),
+				commerceContext);
+		}
+		else {
+
+			// Billing Address
+
+			type = CommerceAddressConstants.ADDRESS_TYPE_BILLING;
+			Address billingAddress = cart.getBillingAddress();
+
+			if (billingAddress != null) {
+				_addOrUpdateBillingAddress(
+					commerceOrder, billingAddress, type, commerceContext,
+					serviceContext);
+			}
+		}
+	}
+
+	private CommerceOrder _addOrUpdateShippingAddress(
+			CommerceOrder commerceOrder, Address address, int type,
+			CommerceContext commerceContext, ServiceContext serviceContext)
+		throws Exception {
+
+		if (commerceOrder.getShippingAddressId() > 0) {
+			_updateCommerceOrderAddress(
+				commerceOrder, address, type, serviceContext);
+		}
+		else {
+			CommerceAddress commerceAddress = _addCommerceAddress(
+				commerceOrder, address, type, serviceContext);
+
+			commerceOrder.setShippingAddressId(
+				commerceAddress.getCommerceAddressId());
+		}
+
+		return _commerceOrderService.updateCommerceOrder(
+			commerceOrder.getCommerceOrderId(),
+			commerceOrder.getBillingAddressId(),
+			commerceOrder.getShippingAddressId(),
+			commerceOrder.getCommercePaymentMethodKey(),
+			commerceOrder.getCommerceShippingMethodId(),
+			commerceOrder.getShippingOptionName(),
+			commerceOrder.getPurchaseOrderNumber(), commerceOrder.getSubtotal(),
+			commerceOrder.getShippingAmount(), commerceOrder.getTotal(),
+			commerceOrder.getAdvanceStatus(), commerceContext);
+	}
+
 	private long _getRegionId(
 			CommerceAddress commerceAddress, Country country, Address address)
 		throws Exception {
@@ -278,7 +426,7 @@ public class CartResourceImpl extends BaseCartResourceImpl {
 		if (Validator.isNull(address.getRegionISOCode()) &&
 			(commerceAddress != null)) {
 
-			return commerceAddress.getCommerceRegionId();
+			return commerceAddress.getRegionId();
 		}
 
 		if (Validator.isNull(address.getRegionISOCode()) || (country == null)) {
@@ -450,155 +598,7 @@ public class CartResourceImpl extends BaseCartResourceImpl {
 
 		// Update nested resources
 
-		_upsertNestedResources(cart, commerceOrder, commerceContext);
-	}
-
-	private void _upsertBillingAddress(
-			CommerceOrder commerceOrder, Address address, int type,
-			CommerceContext commerceContext, ServiceContext serviceContext)
-		throws Exception {
-
-		if (commerceOrder.getBillingAddressId() > 0) {
-			_updateCommerceOrderAddress(
-				commerceOrder, address, type, serviceContext);
-		}
-		else {
-			CommerceAddress commerceAddress = _addCommerceAddress(
-				commerceOrder, address, type, serviceContext);
-
-			commerceOrder.setBillingAddressId(
-				commerceAddress.getCommerceAddressId());
-		}
-
-		_commerceOrderService.updateCommerceOrder(
-			commerceOrder.getCommerceOrderId(),
-			commerceOrder.getBillingAddressId(),
-			commerceOrder.getShippingAddressId(),
-			commerceOrder.getCommercePaymentMethodKey(),
-			commerceOrder.getCommerceShippingMethodId(),
-			commerceOrder.getShippingOptionName(),
-			commerceOrder.getPurchaseOrderNumber(), commerceOrder.getSubtotal(),
-			commerceOrder.getShippingAmount(), commerceOrder.getTotal(),
-			commerceOrder.getAdvanceStatus(), commerceContext);
-	}
-
-	private void _upsertCommerceOrderItem(
-			CartItem cartItem, CommerceOrder commerceOrder,
-			CommerceContext commerceContext, ServiceContext serviceContext)
-		throws Exception {
-
-		CPInstance cpInstance = null;
-
-		if (cartItem.getSkuId() != null) {
-			cpInstance = _cpInstanceLocalService.getCPInstance(
-				cartItem.getSkuId());
-		}
-
-		_commerceOrderItemService.upsertCommerceOrderItem(
-			commerceOrder.getCommerceOrderId(), cpInstance.getCPInstanceId(),
-			cartItem.getOptions(), GetterUtil.get(cartItem.getQuantity(), 1), 0,
-			commerceContext, serviceContext);
-	}
-
-	private void _upsertNestedResources(
-			Cart cart, CommerceOrder commerceOrder,
-			CommerceContext commerceContext)
-		throws Exception {
-
-		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
-			commerceOrder.getGroupId());
-
-		// Order items
-
-		CartItem[] orderItems = cart.getCartItems();
-
-		if (orderItems != null) {
-			_commerceOrderItemService.deleteCommerceOrderItems(
-				commerceOrder.getCommerceOrderId());
-
-			for (CartItem cartItem : orderItems) {
-				_upsertCommerceOrderItem(
-					cartItem, commerceOrder, commerceContext, serviceContext);
-			}
-		}
-
-		commerceOrder.setBillingAddressId(
-			GetterUtil.get(cart.getBillingAddressId(), 0));
-		commerceOrder.setShippingAddressId(
-			GetterUtil.get(cart.getShippingAddressId(), 0));
-
-		boolean useAsBilling = GetterUtil.get(cart.getUseAsBilling(), false);
-		int type = CommerceAddressConstants.ADDRESS_TYPE_SHIPPING;
-
-		if (useAsBilling) {
-			type = CommerceAddressConstants.ADDRESS_TYPE_BILLING_AND_SHIPPING;
-		}
-
-		// Shipping Address
-
-		Address shippingAddress = cart.getShippingAddress();
-
-		if (shippingAddress != null) {
-			commerceOrder = _upsertShippingAddress(
-				commerceOrder, shippingAddress, type, commerceContext,
-				serviceContext);
-		}
-
-		if (useAsBilling) {
-			_commerceOrderService.updateCommerceOrder(
-				commerceOrder.getCommerceOrderId(),
-				commerceOrder.getShippingAddressId(),
-				commerceOrder.getShippingAddressId(),
-				commerceOrder.getCommercePaymentMethodKey(),
-				commerceOrder.getCommerceShippingMethodId(),
-				commerceOrder.getShippingOptionName(),
-				commerceOrder.getPurchaseOrderNumber(),
-				commerceOrder.getSubtotal(), commerceOrder.getShippingAmount(),
-				commerceOrder.getTotal(), commerceOrder.getAdvanceStatus(),
-				commerceContext);
-		}
-		else {
-
-			// Billing Address
-
-			type = CommerceAddressConstants.ADDRESS_TYPE_BILLING;
-			Address billingAddress = cart.getBillingAddress();
-
-			if (billingAddress != null) {
-				_upsertBillingAddress(
-					commerceOrder, billingAddress, type, commerceContext,
-					serviceContext);
-			}
-		}
-	}
-
-	private CommerceOrder _upsertShippingAddress(
-			CommerceOrder commerceOrder, Address address, int type,
-			CommerceContext commerceContext, ServiceContext serviceContext)
-		throws Exception {
-
-		if (commerceOrder.getShippingAddressId() > 0) {
-			_updateCommerceOrderAddress(
-				commerceOrder, address, type, serviceContext);
-		}
-		else {
-			CommerceAddress commerceAddress = _addCommerceAddress(
-				commerceOrder, address, type, serviceContext);
-
-			commerceOrder.setShippingAddressId(
-				commerceAddress.getCommerceAddressId());
-		}
-
-		return _commerceOrderService.updateCommerceOrder(
-			commerceOrder.getCommerceOrderId(),
-			commerceOrder.getBillingAddressId(),
-			commerceOrder.getShippingAddressId(),
-			commerceOrder.getCommercePaymentMethodKey(),
-			commerceOrder.getCommerceShippingMethodId(),
-			commerceOrder.getShippingOptionName(),
-			commerceOrder.getPurchaseOrderNumber(), commerceOrder.getSubtotal(),
-			commerceOrder.getShippingAmount(), commerceOrder.getTotal(),
-			commerceOrder.getAdvanceStatus(), commerceContext);
+		_addOrUpdateNestedResources(cart, commerceOrder, commerceContext);
 	}
 
 	private Cart _validateOrder(CommerceOrder commerceOrder) throws Exception {

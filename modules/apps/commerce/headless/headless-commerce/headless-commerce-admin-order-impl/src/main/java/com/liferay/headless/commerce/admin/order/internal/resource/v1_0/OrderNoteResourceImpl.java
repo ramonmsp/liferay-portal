@@ -189,15 +189,34 @@ public class OrderNoteResourceImpl extends BaseOrderNoteResourceImpl {
 					externalReferenceCode);
 		}
 
-		return _upsertOrderNote(commerceOrder, orderNote);
+		return _addOrUpdateOrderNote(commerceOrder, orderNote);
 	}
 
 	@Override
 	public OrderNote postOrderIdOrderNote(Long id, OrderNote orderNote)
 		throws Exception {
 
-		return _upsertOrderNote(
+		return _addOrUpdateOrderNote(
 			_commerceOrderService.getCommerceOrder(id), orderNote);
+	}
+
+	private OrderNote _addOrUpdateOrderNote(
+			CommerceOrder commerceOrder, OrderNote orderNote)
+		throws Exception {
+
+		CommerceOrderNote commerceOrderNote =
+			_commerceOrderNoteService.upsertCommerceOrderNote(
+				orderNote.getExternalReferenceCode(),
+				GetterUtil.get(orderNote.getId(), 0L),
+				commerceOrder.getCommerceOrderId(), orderNote.getContent(),
+				GetterUtil.get(orderNote.getRestricted(), false),
+				_serviceContextHelper.getServiceContext(
+					commerceOrder.getGroupId()));
+
+		return _orderNoteDTOConverter.toDTO(
+			new DefaultDTOConverterContext(
+				commerceOrderNote.getCommerceOrderNoteId(),
+				contextAcceptLanguage.getPreferredLocale()));
 	}
 
 	private List<OrderNote> _toOrderNotes(
@@ -227,25 +246,6 @@ public class OrderNoteResourceImpl extends BaseOrderNoteResourceImpl {
 				orderNote.getContent(), commerceOrderNote.getContent()),
 			GetterUtil.get(
 				orderNote.getRestricted(), commerceOrderNote.isRestricted()));
-
-		return _orderNoteDTOConverter.toDTO(
-			new DefaultDTOConverterContext(
-				commerceOrderNote.getCommerceOrderNoteId(),
-				contextAcceptLanguage.getPreferredLocale()));
-	}
-
-	private OrderNote _upsertOrderNote(
-			CommerceOrder commerceOrder, OrderNote orderNote)
-		throws Exception {
-
-		CommerceOrderNote commerceOrderNote =
-			_commerceOrderNoteService.upsertCommerceOrderNote(
-				orderNote.getExternalReferenceCode(),
-				GetterUtil.get(orderNote.getId(), 0L),
-				commerceOrder.getCommerceOrderId(), orderNote.getContent(),
-				GetterUtil.get(orderNote.getRestricted(), false),
-				_serviceContextHelper.getServiceContext(
-					commerceOrder.getGroupId()));
 
 		return _orderNoteDTOConverter.toDTO(
 			new DefaultDTOConverterContext(

@@ -28,6 +28,7 @@ import {
 	UPDATE_APP_PROPS,
 	UPDATE_CONFIG,
 	UPDATE_DATA_DEFINITION,
+	UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE,
 	UPDATE_DATA_DEFINITION_FIELDS,
 	UPDATE_DATA_LAYOUT,
 	UPDATE_DATA_LAYOUT_FIELDS,
@@ -409,6 +410,22 @@ const createReducer = (dataLayoutBuilder) => {
 						dataDefinition.availableLanguageIds,
 				};
 			}
+			case UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE: {
+				const {dataDefinition} = state;
+
+				return {
+					...state,
+					dataDefinition: {
+						...dataDefinition,
+						availableLanguageIds: [
+							...new Set([
+								...dataDefinition.availableLanguageIds,
+								action.payload,
+							]),
+						],
+					},
+				};
+			}
 			case UPDATE_DATA_DEFINITION_FIELDS: {
 				const {dataDefinitionFields} = action.payload;
 
@@ -485,19 +502,8 @@ const createReducer = (dataLayoutBuilder) => {
 				};
 			}
 			case UPDATE_EDITING_LANGUAGE_ID: {
-				const {dataDefinition} = state;
-
 				return {
 					...state,
-					dataDefinition: {
-						...dataDefinition,
-						availableLanguageIds: [
-							...new Set([
-								...dataDefinition.availableLanguageIds,
-								action.payload,
-							]),
-						],
-					},
 					editingLanguageId: action.payload,
 				};
 			}

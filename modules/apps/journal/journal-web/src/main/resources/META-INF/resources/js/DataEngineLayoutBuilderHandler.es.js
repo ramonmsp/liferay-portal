@@ -15,6 +15,32 @@
 export default function ({defaultLanguageId, namespace}) {
 	const form = document.getElementById(`${namespace}fm`);
 
+	const clearNameInputIfNeeded = () => {
+		const inputComponent = Liferay.component(`${namespace}name`);
+
+		if (inputComponent) {
+			const selectedLanguageId = document.getElementById(
+				`${namespace}languageId`
+			).value;
+			const translatedLanguages = inputComponent.get(
+				'translatedLanguages'
+			);
+
+			if (
+				!translatedLanguages.has(selectedLanguageId) &&
+				selectedLanguageId !== defaultLanguageId
+			) {
+				inputComponent.updateInput('');
+
+				const form = Liferay.Form.get(`${namespace}fm`);
+
+				if (form) {
+					form.removeRule(`${namespace}name`, 'required');
+				}
+			}
+		}
+	};
+
 	const getDataLayoutBuilder = () => {
 		return Liferay.componentReady(`${namespace}dataLayoutBuilder`);
 	};
@@ -42,7 +68,7 @@ export default function ({defaultLanguageId, namespace}) {
 		getDataLayoutBuilder().then((dataLayoutBuilder) => {
 			const nameInput = document.getElementById(`${namespace}name`);
 
-			var name = getInputLocalizedValues('name');
+			const name = getInputLocalizedValues('name');
 
 			if (!nameInput.value || !name[defaultLanguageId]) {
 				Liferay.Util.openToast({
@@ -74,6 +100,8 @@ export default function ({defaultLanguageId, namespace}) {
 
 			dataLayout.description = description;
 			dataLayout.name = name;
+
+			clearNameInputIfNeeded();
 
 			Liferay.Util.postForm(form, {
 				data: {

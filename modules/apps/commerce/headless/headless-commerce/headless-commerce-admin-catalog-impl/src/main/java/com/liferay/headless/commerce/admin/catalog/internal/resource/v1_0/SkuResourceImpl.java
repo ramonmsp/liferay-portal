@@ -223,7 +223,7 @@ public class SkuResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertSKU(cpDefinition, sku);
+		return _addOrUpdateSKU(cpDefinition, sku);
 	}
 
 	@Override
@@ -236,7 +236,17 @@ public class SkuResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return _upsertSKU(cpDefinition, sku);
+		return _addOrUpdateSKU(cpDefinition, sku);
+	}
+
+	private Sku _addOrUpdateSKU(CPDefinition cpDefinition, Sku sku)
+		throws Exception {
+
+		CPInstance cpInstance = SkuUtil.upsertCPInstance(
+			_cpInstanceService, sku, cpDefinition,
+			_serviceContextHelper.getServiceContext(cpDefinition.getGroupId()));
+
+		return _toSku(cpInstance.getCPInstanceId());
 	}
 
 	private Sku _toSku(Long cpInstanceId) throws Exception {
@@ -285,16 +295,6 @@ public class SkuResourceImpl
 				sku.getNeverExpire(),
 				(cpInstance.getExpirationDate() == null) ? true : false),
 			sku.getUnspsc(), serviceContext);
-
-		return _toSku(cpInstance.getCPInstanceId());
-	}
-
-	private Sku _upsertSKU(CPDefinition cpDefinition, Sku sku)
-		throws Exception {
-
-		CPInstance cpInstance = SkuUtil.upsertCPInstance(
-			_cpInstanceService, sku, cpDefinition,
-			_serviceContextHelper.getServiceContext(cpDefinition.getGroupId()));
 
 		return _toSku(cpInstance.getCPInstanceId());
 	}

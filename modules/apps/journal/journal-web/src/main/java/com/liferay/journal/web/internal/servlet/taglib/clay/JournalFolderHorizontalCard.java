@@ -19,6 +19,7 @@ import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.journal.model.JournalFolder;
 import com.liferay.journal.web.internal.constants.JournalWebConstants;
 import com.liferay.journal.web.internal.servlet.taglib.util.JournalFolderActionDropdownItems;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.dao.search.RowChecker;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -29,7 +30,6 @@ import com.liferay.trash.TrashHelper;
 
 import java.util.List;
 
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -79,13 +79,15 @@ public class JournalFolderHorizontalCard extends BaseHorizontalCard {
 
 	@Override
 	public String getHref() {
-		PortletURL rowURL = _renderResponse.createRenderURL();
-
-		rowURL.setParameter("groupId", String.valueOf(_folder.getGroupId()));
-		rowURL.setParameter("folderId", String.valueOf(_folder.getFolderId()));
-		rowURL.setParameter("displayStyle", _displayStyle);
-
-		return rowURL.toString();
+		return PortletURLBuilder.createRenderURL(
+			_renderResponse
+		).setParameter(
+			"groupId", _folder.getGroupId()
+		).setParameter(
+			"folderId", _folder.getFolderId()
+		).setParameter(
+			"displayStyle", _displayStyle
+		).buildString();
 	}
 
 	@Override

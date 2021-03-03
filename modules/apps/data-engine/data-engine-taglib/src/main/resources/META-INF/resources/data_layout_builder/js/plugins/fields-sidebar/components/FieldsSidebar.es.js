@@ -19,6 +19,7 @@ import React, {useContext, useState} from 'react';
 import AppContext from '../../../AppContext.es';
 import {
 	EDIT_CUSTOM_OBJECT_FIELD,
+	UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE,
 	dropLayoutBuilderField,
 } from '../../../actions.es';
 import Sidebar from '../../../components/sidebar/Sidebar.es';
@@ -36,6 +37,7 @@ export const DataEngineFieldsSidebar = ({title}) => {
 		{
 			config,
 			customFields,
+			dataDefinition,
 			dataLayout,
 			editingLanguageId,
 			focusedCustomObjectField,
@@ -65,15 +67,28 @@ export const DataEngineFieldsSidebar = ({title}) => {
 			dataLayout={dataLayout}
 			defaultLanguageId={dataLayoutBuilder.props.defaultLanguageId}
 			dispatchEvent={(type, payload) => {
-				if (
-					hasFocusedCustomObjectField(focusedCustomObjectField) &&
-					type === 'fieldEdited'
-				) {
-					dispatch({payload, type: EDIT_CUSTOM_OBJECT_FIELD});
+				if (type === 'fieldEdited') {
+					const {editingLanguageId} = payload;
+
+					if (
+						!dataDefinition.availableLanguageIds.includes(
+							editingLanguageId
+						)
+					) {
+						dispatch({
+							payload: editingLanguageId,
+							type: UPDATE_DATA_DEFINITION_AVAILABLE_LANGUAGE,
+						});
+					}
+
+					if (hasFocusedCustomObjectField(focusedCustomObjectField)) {
+						dispatch({payload, type: EDIT_CUSTOM_OBJECT_FIELD});
+
+						return;
+					}
 				}
-				else if (
-					!hasFocusedCustomObjectField(focusedCustomObjectField)
-				) {
+
+				if (!hasFocusedCustomObjectField(focusedCustomObjectField)) {
 					dataLayoutBuilder.dispatch(type, payload);
 				}
 			}}

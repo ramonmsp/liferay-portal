@@ -33,6 +33,7 @@ export default function SelectTableView({openButtonProps, ...props}) {
 
 	return (
 		<div className="d-flex">
+			
 			<SelectDropdown {...props} />
 
 			<OpenButton {...openButtonProps} />

@@ -38,7 +38,7 @@ if (Validator.isNotNull(backURL)) {
 
 <portlet:actionURL name="/commerce_currency/edit_commerce_currency" var="editCommerceCurrencyActionURL" />
 
-<aui:form action="<%= editCommerceCurrencyActionURL %>" cssClass="container-fluid container-fluid-max-xl" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + liferayPortletResponse.getNamespace() + "saveCommerceCurrency();" %>'>
+<aui:form action="<%= editCommerceCurrencyActionURL %>" cssClass="container mt-4" method="post" name="fm" onSubmit='<%= "event.preventDefault(); " + liferayPortletResponse.getNamespace() + "saveCommerceCurrency();" %>'>
 	<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= (commerceCurrency == null) ? Constants.ADD : Constants.UPDATE %>" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 	<aui:input name="commerceCurrencyId" type="hidden" value="<%= (commerceCurrency == null) ? 0 : commerceCurrency.getCommerceCurrencyId() %>" />
@@ -48,7 +48,7 @@ if (Validator.isNotNull(backURL)) {
 		<liferay-ui:error exception="<%= CommerceCurrencyFractionDigitsException.class %>" message="the-decimal-place-bounds-are-invalid" />
 		<liferay-ui:error exception="<%= CommerceCurrencyNameException.class %>" message="please-enter-a-valid-name" />
 
-		<aui:fieldset-group markupView="lexicon">
+		<aui:fieldset-group cssClass="mb-4" markupView="lexicon">
 			<aui:fieldset>
 				<aui:input bean="<%= commerceCurrency %>" model="<%= CommerceCurrency.class %>" name="name" />
 
@@ -102,14 +102,13 @@ if (Validator.isNotNull(backURL)) {
 
 				<aui:input bean="<%= commerceCurrency %>" checked="<%= (commerceCurrency == null) ? false : commerceCurrency.isActive() %>" inlineLabel="right" labelCssClass="simple-toggle-switch" model="<%= CommerceCurrency.class %>" name="active" type="toggle-switch" />
 			</aui:fieldset>
+
+			<aui:button-row>
+				<aui:button cssClass="btn-lg" type="submit" />
+				<aui:button cssClass="btn-lg" href="<%= redirect %>" type="cancel" />
+			</aui:button-row>
 		</aui:fieldset-group>
 	</div>
-
-	<aui:button-row>
-		<aui:button cssClass="btn-lg" type="submit" />
-
-		<aui:button cssClass="btn-lg" href="<%= redirect %>" type="cancel" />
-	</aui:button-row>
 </aui:form>
 
 <aui:script>

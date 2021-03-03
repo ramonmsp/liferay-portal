@@ -216,7 +216,7 @@ public class PriceModifierResourceImpl extends BasePriceModifierResourceImpl {
 		}
 
 		CommercePriceModifier commercePriceModifier =
-			_upsertCommercePriceModifier(commercePriceList, priceModifier);
+			_addOrUpdateCommercePriceModifier(commercePriceList, priceModifier);
 
 		return _toPriceModifier(
 			commercePriceModifier.getCommercePriceModifierId());
@@ -228,12 +228,53 @@ public class PriceModifierResourceImpl extends BasePriceModifierResourceImpl {
 		throws Exception {
 
 		CommercePriceModifier commercePriceModifier =
-			_upsertCommercePriceModifier(
+			_addOrUpdateCommercePriceModifier(
 				_commercePriceListService.getCommercePriceList(id),
 				priceModifier);
 
 		return _toPriceModifier(
 			commercePriceModifier.getCommercePriceModifierId());
+	}
+
+	private CommercePriceModifier _addOrUpdateCommercePriceModifier(
+			CommercePriceList commercePriceList, PriceModifier priceModifier)
+		throws Exception {
+
+		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
+			commercePriceList.getGroupId());
+
+		DateConfig displayDateConfig = _getDisplayDateConfig(
+			priceModifier.getDisplayDate(), serviceContext.getTimeZone());
+
+		DateConfig expirationDateConfig = _getExpirationDateConfig(
+			priceModifier.getExpirationDate(), serviceContext.getTimeZone());
+
+		CommercePriceModifier commercePriceModifier =
+			_commercePriceModifierService.upsertCommercePriceModifier(
+				priceModifier.getExternalReferenceCode(),
+				serviceContext.getUserId(),
+				GetterUtil.getLong(priceModifier.getId()),
+				commercePriceList.getGroupId(), priceModifier.getTitle(),
+				priceModifier.getTarget(),
+				commercePriceList.getCommercePriceListId(),
+				priceModifier.getModifierType(),
+				priceModifier.getModifierAmount(),
+				GetterUtil.get(priceModifier.getPriority(), 0D),
+				GetterUtil.getBoolean(priceModifier.getActive(), true),
+				displayDateConfig.getMonth(), displayDateConfig.getDay(),
+				displayDateConfig.getYear(), displayDateConfig.getHour(),
+				displayDateConfig.getMinute(), expirationDateConfig.getMonth(),
+				expirationDateConfig.getDay(), expirationDateConfig.getYear(),
+				expirationDateConfig.getHour(),
+				expirationDateConfig.getMinute(),
+				GetterUtil.getBoolean(priceModifier.getNeverExpire(), true),
+				serviceContext);
+
+		// Update nested resources
+
+		_updateNestedResources(priceModifier, commercePriceModifier);
+
+		return commercePriceModifier;
 	}
 
 	private Map<String, Map<String, String>> _getActions(
@@ -361,47 +402,6 @@ public class PriceModifierResourceImpl extends BasePriceModifierResourceImpl {
 				expirationDateConfig.getHour(),
 				expirationDateConfig.getMinute(),
 				GetterUtil.getBoolean(priceModifier, true), serviceContext);
-
-		// Update nested resources
-
-		_updateNestedResources(priceModifier, commercePriceModifier);
-
-		return commercePriceModifier;
-	}
-
-	private CommercePriceModifier _upsertCommercePriceModifier(
-			CommercePriceList commercePriceList, PriceModifier priceModifier)
-		throws Exception {
-
-		ServiceContext serviceContext = _serviceContextHelper.getServiceContext(
-			commercePriceList.getGroupId());
-
-		DateConfig displayDateConfig = _getDisplayDateConfig(
-			priceModifier.getDisplayDate(), serviceContext.getTimeZone());
-
-		DateConfig expirationDateConfig = _getExpirationDateConfig(
-			priceModifier.getExpirationDate(), serviceContext.getTimeZone());
-
-		CommercePriceModifier commercePriceModifier =
-			_commercePriceModifierService.upsertCommercePriceModifier(
-				priceModifier.getExternalReferenceCode(),
-				serviceContext.getUserId(),
-				GetterUtil.getLong(priceModifier.getId()),
-				commercePriceList.getGroupId(), priceModifier.getTitle(),
-				priceModifier.getTarget(),
-				commercePriceList.getCommercePriceListId(),
-				priceModifier.getModifierType(),
-				priceModifier.getModifierAmount(),
-				GetterUtil.get(priceModifier.getPriority(), 0D),
-				GetterUtil.getBoolean(priceModifier.getActive(), true),
-				displayDateConfig.getMonth(), displayDateConfig.getDay(),
-				displayDateConfig.getYear(), displayDateConfig.getHour(),
-				displayDateConfig.getMinute(), expirationDateConfig.getMonth(),
-				expirationDateConfig.getDay(), expirationDateConfig.getYear(),
-				expirationDateConfig.getHour(),
-				expirationDateConfig.getMinute(),
-				GetterUtil.getBoolean(priceModifier.getNeverExpire(), true),
-				serviceContext);
 
 		// Update nested resources
 

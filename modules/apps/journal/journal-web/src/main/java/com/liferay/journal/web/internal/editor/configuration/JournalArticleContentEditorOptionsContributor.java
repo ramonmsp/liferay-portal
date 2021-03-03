@@ -15,6 +15,7 @@
 package com.liferay.journal.web.internal.editor.configuration;
 
 import com.liferay.journal.constants.JournalPortletKeys;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.editor.configuration.EditorOptions;
 import com.liferay.portal.kernel.editor.configuration.EditorOptionsContributor;
 import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
@@ -23,9 +24,6 @@ import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.Validator;
 
 import java.util.Map;
-
-import javax.portlet.ActionRequest;
-import javax.portlet.PortletURL;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -52,13 +50,13 @@ public class JournalArticleContentEditorOptionsContributor
 			return;
 		}
 
-		PortletURL portletURL = requestBackedPortletURLFactory.createActionURL(
-			portletDisplay.getId());
-
-		portletURL.setParameter(
-			ActionRequest.ACTION_NAME, "/journal/upload_image");
-
-		editorOptions.setUploadURL(portletURL.toString());
+		editorOptions.setUploadURL(
+			PortletURLBuilder.create(
+				requestBackedPortletURLFactory.createActionURL(
+					portletDisplay.getId())
+			).setActionName(
+				"/journal/upload_image"
+			).buildString());
 	}
 
 }

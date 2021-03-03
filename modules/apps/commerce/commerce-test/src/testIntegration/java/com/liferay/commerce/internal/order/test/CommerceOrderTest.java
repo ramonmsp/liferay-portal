@@ -25,6 +25,8 @@ import com.liferay.commerce.account.util.CommerceAccountHelper;
 import com.liferay.commerce.constants.CommerceAddressConstants;
 import com.liferay.commerce.constants.CommerceConstants;
 import com.liferay.commerce.constants.CommerceOrderConstants;
+import com.liferay.commerce.context.CommerceContext;
+import com.liferay.commerce.context.CommerceContextFactory;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.test.util.CommerceCurrencyTestUtil;
 import com.liferay.commerce.exception.CommerceOrderAccountLimitException;
@@ -37,6 +39,9 @@ import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.commerce.service.CommerceAddressLocalService;
 import com.liferay.commerce.service.CommerceOrderLocalService;
 import com.liferay.commerce.service.CommerceOrderService;
+import com.liferay.commerce.test.util.CommerceTestUtil;
+import com.liferay.commerce.test.util.context.TestCustomCommerceContextFactory;
+import com.liferay.commerce.test.util.context.TestCustomCommerceContextHttp;
 import com.liferay.petra.lang.CentralizedThreadLocal;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -73,6 +78,8 @@ import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
+import com.liferay.registry.Registry;
+import com.liferay.registry.RegistryUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,10 +89,18 @@ import org.frutilla.FrutillaRule;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.runtime.ServiceComponentRuntime;
+import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
+import org.osgi.util.promise.Promise;
+
+import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  * @author Alec Sloan
@@ -100,6 +115,24 @@ public class CommerceOrderTest {
 		new AggregateTestRule(
 			new LiferayIntegrationTestRule(),
 			PermissionCheckerMethodTestRule.INSTANCE);
+
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		Registry registry = RegistryUtil.getRegistry();
+
+		ServiceComponentRuntime serviceComponentRuntime = registry.getService(
+			registry.getServiceReference(ServiceComponentRuntime.class));
+
+		ComponentDescriptionDTO componentDescriptionDTO =
+			serviceComponentRuntime.getComponentDescriptionDTO(
+				FrameworkUtil.getBundle(TestCustomCommerceContextFactory.class),
+				TestCustomCommerceContextFactory.class.getName());
+
+		Promise<Void> voidPromise = serviceComponentRuntime.enableComponent(
+			componentDescriptionDTO);
+
+		voidPromise.getValue();
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -140,6 +173,45 @@ public class CommerceOrderTest {
 			_commerceChannel.getGroupId());
 
 		CentralizedThreadLocal.clearShortLivedThreadLocals();
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		ServiceComponentRuntime serviceComponentRuntime = registry.getService(
+			registry.getServiceReference(ServiceComponentRuntime.class));
+
+		ComponentDescriptionDTO componentDescriptionDTO =
+			serviceComponentRuntime.getComponentDescriptionDTO(
+				FrameworkUtil.getBundle(TestCustomCommerceContextFactory.class),
+				TestCustomCommerceContextFactory.class.getName());
+
+		Promise<Void> voidPromise = serviceComponentRuntime.disableComponent(
+			componentDescriptionDTO);
+
+		voidPromise.getValue();
+	}
+
+	@Test
+	public void testCommerceOrderCurrency() throws Exception {
+		CommerceContext commerceContext = _commerceContextFactory.create(
+			new MockHttpServletRequest());
+
+		Assert.assertTrue(
+			commerceContext instanceof TestCustomCommerceContextHttp);
+
+		CommerceOrder commerceOrder = CommerceTestUtil.addB2CCommerceOrder(
+			_user.getUserId(), _group.getGroupId(),
+			commerceContext.getCommerceCurrency());
+
+		Assert.assertEquals(
+			commerceContext.getCommerceCurrency(),
+			commerceOrder.getCommerceCurrency());
+
+		CommerceCurrency commerceOrderCommerceCurrency =
+			commerceOrder.getCommerceCurrency();
+
+		Assert.assertNotEquals(
+			commerceOrderCommerceCurrency.getCode(),
+			_commerceChannel.getCommerceCurrencyCode());
 	}
 
 	@Test
@@ -1028,6 +1100,9 @@ public class CommerceOrderTest {
 
 	@Inject
 	private CommerceChannelLocalService _commerceChannelLocalService;
+
+	@Inject
+	private CommerceContextFactory _commerceContextFactory;
 
 	@DeleteAfterTestRun
 	private CommerceCurrency _commerceCurrency;

@@ -306,24 +306,28 @@ definition {
 			locator1 = "CommerceEntry#NAME_FIELD",
 			value1 = "${optionName}");
 
-		Type(
-			locator1 = "CommerceEntry#DESCRIPTION_FIELD",
-			value1 = "${optionDescription}");
-
 		Select(
 			locator1 = "CommerceEntry#FIELD_TYPE_SELECT",
 			value1 = "${optionFieldType}");
+
+		Button.click(button = "Submit");
+
+		Type(
+			locator1 = "CommerceEntry#DESCRIPTION_FIELD",
+			value1 = "${optionDescription}");
 
 		Check.checkToggleSwitch(locator1 = "CommerceEntry#FACETABLE_CHECKBOX");
 
 		Check.checkToggleSwitch(locator1 = "CommerceEntry#REQUIRED_CHECKBOX");
 
-		Check.checkToggleSwitch(locator1 = "CommerceEntry#SKU_CONTRIBUTOR_CHECKBOX");
+		if (("${optionFieldType}" == "checkbox-multiple") || ("${optionFieldType}" == "Select from List") || ("${optionFieldType}" == "Radio")) {
+			Check.checkToggleSwitch(locator1 = "CommerceEntry#SKU_CONTRIBUTOR_CHECKBOX");
+		}
 	}
 
 	macro addOptionValue {
 		Type(
-			locator1 = "CommerceEntry#MODAL_NAME_FIELD",
+			locator1 = "CommerceEntry#NAME_FIELD",
 			value1 = "${valueName}");
 
 		Type(
@@ -551,12 +555,6 @@ definition {
 	}
 
 	macro publishProductImage {
-		SelectFrameTop(value1 = "relative=top");
-
-		//SelectFrame(locator1 = "ItemSelector#ITEM_SELECTOR_IFRAME");
-
-		SelectFrame(locator1 = "CommerceEntry#IFRAME_SIDE_PANEL");
-
 		Button.clickPublish();
 
 		AssertElementPresent(locator1 = "Message#SUCCESS");
@@ -985,8 +983,12 @@ definition {
 
 			Refresh();
 
-			Click(
+			AssertTextEquals(
 				key_entryName = "${sku}",
+				locator1 = "CommerceNavigation#DATA_SET_ENTRY_NAME");
+
+			Click(
+				key_entryName = "${sku}SKU",
 				locator1 = "CommerceNavigation#ENTRY_NAME");
 
 			SelectFrame.selectFrameNoLoading(locator1 = "CommerceEntry#IFRAME_SIDE_PANEL");

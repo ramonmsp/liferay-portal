@@ -15,19 +15,27 @@
 package com.liferay.portlet;
 
 import com.liferay.petra.lang.HashUtil;
+import com.liferay.petra.xml.XMLUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.xml.simple.Element;
 
 import java.io.IOException;
 import java.io.Serializable;
 
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PreferencesValidator;
@@ -39,23 +47,24 @@ import javax.portlet.ValidatorException;
  * @author Alexander Chow
  */
 public class PortletPreferencesImpl
-	extends BasePreferencesImpl
 	implements Cloneable, PortletPreferences, Serializable {
 
 	public PortletPreferencesImpl() {
-		this(
-			0, 0, 0, 0, null, null, Collections.<String, Preference>emptyMap());
+		this(0, 0, 0, 0, null, null, Collections.emptyMap());
 	}
 
 	public PortletPreferencesImpl(
 		long companyId, long ownerId, int ownerType, long plid,
 		String portletId, String xml, Map<String, Preference> preferences) {
 
-		super(ownerId, ownerType, xml, preferences);
-
-		this.companyId = companyId;
+		_companyId = companyId;
+		_ownerId = ownerId;
+		_ownerType = ownerType;
 		_plid = plid;
 		_portletId = portletId;
+
+		_originalXML = xml;
+		_originalPreferences = preferences;
 	}
 
 	public PortletPreferencesImpl(
@@ -67,7 +76,7 @@ public class PortletPreferencesImpl
 	@Override
 	public Object clone() {
 		return new PortletPreferencesImpl(
-			companyId, getOwnerId(), getOwnerType(), _plid, _portletId,
+			getCompanyId(), getOwnerId(), getOwnerType(), _plid, _portletId,
 			getOriginalXML(), getOriginalPreferences());
 	}
 
@@ -84,12 +93,14 @@ public class PortletPreferencesImpl
 		PortletPreferencesImpl portletPreferencesImpl =
 			(PortletPreferencesImpl)object;
 
-		if ((companyId == portletPreferencesImpl.companyId) &&
+		if ((getCompanyId() == portletPreferencesImpl.getCompanyId()) &&
 			(getOwnerId() == portletPreferencesImpl.getOwnerId()) &&
 			(getOwnerType() == portletPreferencesImpl.getOwnerType()) &&
 			(getPlid() == portletPreferencesImpl.getPlid()) &&
-			getPortletId().equals(portletPreferencesImpl.getPortletId()) &&
-			getPreferences().equals(portletPreferencesImpl.getPreferences())) {
+			Objects.equals(
+				getPortletId(), portletPreferencesImpl.getPortletId()) &&
+			Objects.equals(
+				getPreferences(), portletPreferencesImpl.getPreferences())) {
 
 			return true;
 		}
@@ -97,21 +108,128 @@ public class PortletPreferencesImpl
 		return false;
 	}
 
+	@Override
+	public Map<String, String[]> getMap() {
+		Map<String, Preference> preferences = getPreferences();
+
+		if (preferences.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, String[]> map = new HashMap<>();
+
+		for (Map.Entry<String, Preference> entry : preferences.entrySet()) {
+			String key = entry.getKey();
+
+			Preference preference = entry.getValue();
+
+			map.put(key, _getActualValues(preference.getValues()));
+		}
+
+		return map;
+	}
+
+	@Override
+	public Enumeration<String> getNames() {
+		Map<String, Preference> preferences = getPreferences();
+
+		return Collections.enumeration(preferences.keySet());
+	}
+
+	public long getOwnerId() {
+		return _ownerId;
+	}
+
+	public int getOwnerType() {
+		return _ownerType;
+	}
+
 	public long getPlid() {
 		return _plid;
 	}
 
+	public Map<String, Preference> getPreferences() {
+		if (_modifiedPreferences != null) {
+			return _modifiedPreferences;
+		}
+
+		return _originalPreferences;
+	}
+
+	@Override
+	public String getValue(String key, String def) {
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+
+		Map<String, Preference> preferences = getPreferences();
+
+		Preference preference = preferences.get(key);
+
+		if (preference == null) {
+			return def;
+		}
+
+		String[] values = preference.getValues();
+
+		if (_isNull(values)) {
+			return def;
+		}
+
+		return _getActualValue(values[0]);
+	}
+
+	@Override
+	public String[] getValues(String key, String[] def) {
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+
+		Map<String, Preference> preferences = getPreferences();
+
+		Preference preference = preferences.get(key);
+
+		if (preference == null) {
+			return def;
+		}
+
+		String[] values = preference.getValues();
+
+		if (_isNull(values)) {
+			return def;
+		}
+
+		return _getActualValues(values);
+	}
+
 	@Override
 	public int hashCode() {
-		int hashCode = HashUtil.hash(0, companyId);
+		int hashCode = HashUtil.hash(0, getCompanyId());
 
 		hashCode = HashUtil.hash(hashCode, getOwnerId());
 		hashCode = HashUtil.hash(hashCode, getOwnerType());
-		hashCode = HashUtil.hash(hashCode, _plid);
-		hashCode = HashUtil.hash(hashCode, _portletId);
+		hashCode = HashUtil.hash(hashCode, getPlid());
+		hashCode = HashUtil.hash(hashCode, getPortletId());
 		hashCode = HashUtil.hash(hashCode, getPreferences());
 
 		return hashCode;
+	}
+
+	@Override
+	public boolean isReadOnly(String key) {
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+
+		Map<String, Preference> preferences = getPreferences();
+
+		Preference preference = preferences.get(key);
+
+		if ((preference != null) && preference.isReadOnly()) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -124,7 +242,7 @@ public class PortletPreferencesImpl
 			try {
 				_defaultPreferences =
 					PortletPreferencesLocalServiceUtil.getDefaultPreferences(
-						companyId, _portletId);
+						_companyId, _portletId);
 			}
 			catch (Exception exception) {
 				if (_log.isWarnEnabled()) {
@@ -155,6 +273,52 @@ public class PortletPreferencesImpl
 	}
 
 	@Override
+	public void setValue(String key, String value) throws ReadOnlyException {
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+
+		value = _getXMLSafeValue(value);
+
+		Map<String, Preference> modifiedPreferences = getModifiedPreferences();
+
+		Preference preference = modifiedPreferences.get(key);
+
+		if ((preference != null) && preference.isReadOnly()) {
+			throw new ReadOnlyException(key);
+		}
+
+		modifiedPreferences.put(key, new Preference(key, value));
+	}
+
+	@Override
+	public void setValues(String key, String... values)
+		throws ReadOnlyException {
+
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+
+		values = _getXMLSafeValues(values);
+
+		Map<String, Preference> modifiedPreferences = getModifiedPreferences();
+
+		Preference preference = modifiedPreferences.get(key);
+
+		if ((preference != null) && preference.isReadOnly()) {
+			throw new ReadOnlyException(key);
+		}
+
+		modifiedPreferences.put(key, new Preference(key, values));
+	}
+
+	public int size() {
+		Map<String, Preference> preferences = getPreferences();
+
+		return preferences.size();
+	}
+
+	@Override
 	public void store() throws IOException, ValidatorException {
 		if (_portletId == null) {
 			throw new UnsupportedOperationException();
@@ -162,7 +326,7 @@ public class PortletPreferencesImpl
 
 		try {
 			Portlet portlet = PortletLocalServiceUtil.getPortletById(
-				companyId, _portletId);
+				_companyId, _portletId);
 
 			if (portlet != null) {
 				PreferencesValidator preferencesValidator =
@@ -181,17 +345,152 @@ public class PortletPreferencesImpl
 		}
 	}
 
+	protected long getCompanyId() {
+		return _companyId;
+	}
+
+	protected Map<String, Preference> getModifiedPreferences() {
+		if (_modifiedPreferences == null) {
+			_modifiedPreferences = new ConcurrentHashMap<>(
+				_originalPreferences);
+		}
+
+		return _modifiedPreferences;
+	}
+
+	protected Map<String, Preference> getOriginalPreferences() {
+		return _originalPreferences;
+	}
+
+	protected String getOriginalXML() {
+		return _originalXML;
+	}
+
 	protected String getPortletId() {
 		return _portletId;
 	}
 
-	protected long companyId;
+	protected String toXML() {
+		if ((_modifiedPreferences == null) && (_originalXML != null)) {
+			return _originalXML;
+		}
+
+		Map<String, Preference> preferences = getPreferences();
+
+		if ((preferences == null) || preferences.isEmpty()) {
+			return PortletConstants.DEFAULT_PREFERENCES;
+		}
+
+		Element portletPreferencesElement = new Element(
+			"portlet-preferences", false);
+
+		for (Map.Entry<String, Preference> entry : preferences.entrySet()) {
+			Preference preference = entry.getValue();
+
+			Element preferenceElement = portletPreferencesElement.addElement(
+				"preference");
+
+			preferenceElement.addElement("name", preference.getName());
+
+			for (String value : preference.getValues()) {
+				preferenceElement.addElement("value", value);
+			}
+
+			if (preference.isReadOnly()) {
+				preferenceElement.addElement("read-only", Boolean.TRUE);
+			}
+		}
+
+		return portletPreferencesElement.toXMLString();
+	}
+
+	private String _getActualValue(String value) {
+		if ((value == null) || value.equals(_NULL_VALUE)) {
+			return null;
+		}
+
+		return XMLUtil.fromCompactSafe(value);
+	}
+
+	private String[] _getActualValues(String[] values) {
+		if (values == null) {
+			return null;
+		}
+
+		if (values.length == 1) {
+			String actualValue = _getActualValue(values[0]);
+
+			if (actualValue == null) {
+				return null;
+			}
+			else if (actualValue.equals(_NULL_ELEMENT)) {
+				return new String[] {null};
+			}
+			else {
+				return new String[] {actualValue};
+			}
+		}
+
+		String[] actualValues = new String[values.length];
+
+		for (int i = 0; i < actualValues.length; i++) {
+			actualValues[i] = _getActualValue(values[i]);
+		}
+
+		return actualValues;
+	}
+
+	private String _getXMLSafeValue(String value) {
+		if (value == null) {
+			return _NULL_VALUE;
+		}
+
+		return XMLUtil.toCompactSafe(value);
+	}
+
+	private String[] _getXMLSafeValues(String[] values) {
+		if (values == null) {
+			return new String[] {_NULL_VALUE};
+		}
+
+		if ((values.length == 1) && (values[0] == null)) {
+			return new String[] {_NULL_ELEMENT};
+		}
+
+		String[] xmlSafeValues = new String[values.length];
+
+		for (int i = 0; i < xmlSafeValues.length; i++) {
+			xmlSafeValues[i] = _getXMLSafeValue(values[i]);
+		}
+
+		return xmlSafeValues;
+	}
+
+	private boolean _isNull(String[] values) {
+		if (ArrayUtil.isEmpty(values) ||
+			((values.length == 1) && (_getActualValue(values[0]) == null))) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private static final String _NULL_ELEMENT = "NULL_ELEMENT";
+
+	private static final String _NULL_VALUE = "NULL_VALUE";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		PortletPreferencesImpl.class);
 
+	private final long _companyId;
 	private PortletPreferences _defaultPreferences;
+	private Map<String, Preference> _modifiedPreferences;
+	private final Map<String, Preference> _originalPreferences;
+	private final String _originalXML;
+	private final long _ownerId;
+	private final int _ownerType;
 	private long _plid;
-	private String _portletId;
+	private final String _portletId;
 
 }

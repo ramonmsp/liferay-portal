@@ -45,7 +45,7 @@ else {
 
 <div id="<portlet:namespace />editInventoryItemContainer">
 	<liferay-frontend:screen-navigation
-		containerWrapperCssClass="container"
+		containerWrapperCssClass="container mt-4"
 		key="<%= CommerceInventoryScreenNavigationConstants.SCREEN_NAVIGATION_KEY_COMMERCE_INVENTORY %>"
 		portletURL="<%= currentURLObj %>"
 	/>

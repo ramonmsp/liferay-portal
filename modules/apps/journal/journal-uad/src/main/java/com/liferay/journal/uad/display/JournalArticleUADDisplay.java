@@ -16,6 +16,7 @@ package com.liferay.journal.uad.display;
 
 import com.liferay.journal.constants.JournalPortletKeys;
 import com.liferay.journal.model.JournalArticle;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
@@ -23,7 +24,6 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.user.associated.data.display.UADDisplay;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,20 +45,21 @@ public class JournalArticleUADDisplay extends BaseJournalArticleUADDisplay {
 			return StringPool.BLANK;
 		}
 
-		PortletURL portletURL = _portal.getControlPanelPortletURL(
-			liferayPortletRequest, JournalPortletKeys.JOURNAL,
-			PortletRequest.RENDER_PHASE);
-
-		portletURL.setParameter("mvcPath", "/edit_article.jsp");
-		portletURL.setParameter(
-			"redirect", _portal.getCurrentURL(liferayPortletRequest));
-		portletURL.setParameter(
-			"groupId", String.valueOf(journalArticle.getGroupId()));
-		portletURL.setParameter("articleId", journalArticle.getArticleId());
-		portletURL.setParameter(
-			"version", String.valueOf(journalArticle.getVersion()));
-
-		return portletURL.toString();
+		return PortletURLBuilder.create(
+			_portal.getControlPanelPortletURL(
+				liferayPortletRequest, JournalPortletKeys.JOURNAL,
+				PortletRequest.RENDER_PHASE)
+		).setMVCPath(
+			"/edit_article.jsp"
+		).setRedirect(
+			_portal.getCurrentURL(liferayPortletRequest)
+		).setParameter(
+			"groupId", journalArticle.getGroupId()
+		).setParameter(
+			"articleId", journalArticle.getArticleId()
+		).setParameter(
+			"version", journalArticle.getVersion()
+		).buildString();
 	}
 
 	@Reference

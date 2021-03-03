@@ -171,6 +171,14 @@ const EditTableView = withRouter(({history}) => {
 		</ClayButton.Group>
 	);
 
+	const languageIds = dataDefinition.availableLanguageIds.reduce(
+		(languages, languageId) => ({
+			...languages,
+			[languageId]: languageId,
+		}),
+		{}
+	);
+
 	return (
 		<div
 			className={classNames(
@@ -201,19 +209,13 @@ const EditTableView = withRouter(({history}) => {
 					<UpperToolbar>
 						<UpperToolbar.Group>
 							<TranslationManager
-								availableLanguageIds={dataDefinition.availableLanguageIds.reduce(
-									(languages, languageId) => ({
-										...languages,
-										[languageId]: languageId,
-									}),
-									{}
-								)}
+								availableLanguageIds={languageIds}
 								defaultLanguageId={defaultLanguageId}
 								editingLanguageId={editingLanguageId}
 								onEditingLanguageIdChange={
 									onEditingLanguageIdChange
 								}
-								translatedLanguageIds={dataListView.name}
+								translatedLanguageIds={languageIds}
 							/>
 						</UpperToolbar.Group>
 

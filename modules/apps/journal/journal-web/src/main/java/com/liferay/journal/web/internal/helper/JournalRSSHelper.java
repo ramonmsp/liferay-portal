@@ -30,6 +30,7 @@ import com.liferay.journal.service.JournalFeedLocalService;
 import com.liferay.journal.util.JournalContent;
 import com.liferay.journal.util.comparator.ArticleDisplayDateComparator;
 import com.liferay.journal.util.comparator.ArticleModifiedDateComparator;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -80,7 +81,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceURL;
@@ -514,13 +514,14 @@ public class JournalRSSHelper {
 		long plid = _portal.getPlidFromFriendlyURL(
 			feed.getCompanyId(), feed.getTargetLayoutFriendlyUrl());
 
-		PortletURL entryURL = PortletURLFactoryUtil.create(
-			resourceRequest, portletId, plid, PortletRequest.RENDER_PHASE);
-
-		entryURL.setParameter("groupId", String.valueOf(article.getGroupId()));
-		entryURL.setParameter("articleId", article.getArticleId());
-
-		return entryURL.toString();
+		return PortletURLBuilder.create(
+			PortletURLFactoryUtil.create(
+				resourceRequest, portletId, plid, PortletRequest.RENDER_PHASE)
+		).setParameter(
+			"groupId", article.getGroupId()
+		).setParameter(
+			"articleId", article.getArticleId()
+		).buildString();
 	}
 
 	protected Object[] getImageProperties(String url) {

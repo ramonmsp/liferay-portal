@@ -72,8 +72,7 @@ public class ShippingMethodCheckoutStepDisplayContext {
 		CommerceAddress shippingAddress = _commerceOrder.getShippingAddress();
 
 		return _commerceShippingMethodLocalService.getCommerceShippingMethods(
-			_commerceOrder.getGroupId(), shippingAddress.getCommerceCountryId(),
-			true);
+			_commerceOrder.getGroupId(), shippingAddress.getCountryId(), true);
 	}
 
 	public String getCommerceShippingOptionKey(
@@ -100,11 +99,9 @@ public class ShippingMethodCheckoutStepDisplayContext {
 		sb.append(commerceShippingOption.getLabel());
 		sb.append(" (+");
 
-		CommerceContext commerceContext = _getCommerceContext();
-
 		sb.append(
 			_commercePriceFormatter.format(
-				commerceContext.getCommerceCurrency(),
+				_commerceOrder.getCommerceCurrency(),
 				commerceShippingOption.getAmount(), themeDisplay.getLocale()));
 
 		sb.append(CharPool.CLOSE_PARENTHESIS);

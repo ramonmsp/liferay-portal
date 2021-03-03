@@ -38,7 +38,7 @@ if ((commercePriceEntry != null) && (commercePriceEntry.getExpirationDate() != n
 <commerce-ui:side-panel-content
 	title='<%= LanguageUtil.get(request, "edit-price") %>'
 >
-	<aui:form action="<%= editCommercePriceEntryActionURL %>" cssClass="container-fluid container-fluid-max-xl" method="post" name="fm">
+	<aui:form action="<%= editCommercePriceEntryActionURL %>" method="post" name="fm">
 		<aui:input name="<%= Constants.CMD %>" type="hidden" value="<%= Constants.UPDATE %>" />
 		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 		<aui:input name="commercePriceEntryId" type="hidden" value="<%= commercePriceEntryId %>" />
@@ -58,7 +58,7 @@ if ((commercePriceEntry != null) && (commercePriceEntry.getExpirationDate() != n
 					bodyClasses="p-0"
 					title='<%= LanguageUtil.get(request, "price-tiers") %>'
 				>
-					<div class="align-items-center d-flex justify-content-end px-3">
+					<div class="align-items-center d-flex justify-content-end p-3">
 						<div class="mr-3">
 							<aui:input checked="<%= commercePriceEntry.isBulkPricing() %>" label="bulk-pricing" name="bulkPricing" type="radio" value="<%= true %>" />
 						</div>
@@ -82,6 +82,7 @@ if ((commercePriceEntry != null) && (commercePriceEntry.getExpirationDate() != n
 						namespace="<%= liferayPortletResponse.getNamespace() %>"
 						pageNumber="<%= 1 %>"
 						portletURL="<%= currentURLObj %>"
+						selectedItemsKey="tierPriceEntryId"
 						showManagementBar="<%= true %>"
 						showSearch="<%= false %>"
 					/>

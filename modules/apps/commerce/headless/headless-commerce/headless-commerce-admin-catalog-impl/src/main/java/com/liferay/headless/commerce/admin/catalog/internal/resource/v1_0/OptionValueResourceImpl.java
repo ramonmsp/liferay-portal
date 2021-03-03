@@ -183,7 +183,7 @@ public class OptionValueResourceImpl
 		CPOptionValue cpOptionValue = _cpOptionValueService.getCPOptionValue(
 			id);
 
-		_upsertOptionValue(cpOptionValue.getCPOption(), optionValue);
+		_addOrUpdateOptionValue(cpOptionValue.getCPOption(), optionValue);
 
 		Response.ResponseBuilder responseBuilder = Response.ok();
 
@@ -205,7 +205,7 @@ public class OptionValueResourceImpl
 					externalReferenceCode);
 		}
 
-		_upsertOptionValue(cpOptionValue.getCPOption(), optionValue);
+		_addOrUpdateOptionValue(cpOptionValue.getCPOption(), optionValue);
 
 		Response.ResponseBuilder responseBuilder = Response.ok();
 
@@ -226,14 +226,14 @@ public class OptionValueResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertOptionValue(cpOption, optionValue);
+		return _addOrUpdateOptionValue(cpOption, optionValue);
 	}
 
 	@Override
 	public OptionValue postOptionIdOptionValue(Long id, OptionValue optionValue)
 		throws Exception {
 
-		return _upsertOptionValue(
+		return _addOrUpdateOptionValue(
 			_cpOptionService.getCPOption(id), optionValue);
 	}
 
@@ -266,6 +266,19 @@ public class OptionValueResourceImpl
 		).put(
 			"method", _getHttpMethodName(clazz, _getMethod(clazz, methodName))
 		).build();
+	}
+
+	private OptionValue _addOrUpdateOptionValue(
+			CPOption cpOption, OptionValue optionValue)
+		throws Exception {
+
+		CPOptionValue cpOptionValue = _cpOptionValueService.upsertCPOptionValue(
+			optionValue.getExternalReferenceCode(), cpOption.getCPOptionId(),
+			LanguageUtils.getLocalizedMap(optionValue.getName()),
+			GetterUtil.get(optionValue.getPriority(), 0D), optionValue.getKey(),
+			_serviceContextHelper.getServiceContext());
+
+		return _toOptionValue(cpOptionValue.getCPOptionValueId());
 	}
 
 	private Map<String, Map<String, String>> _getActions(long cpOptionValueId)
@@ -359,19 +372,6 @@ public class OptionValueResourceImpl
 		}
 
 		return productOptionValues;
-	}
-
-	private OptionValue _upsertOptionValue(
-			CPOption cpOption, OptionValue optionValue)
-		throws Exception {
-
-		CPOptionValue cpOptionValue = _cpOptionValueService.upsertCPOptionValue(
-			optionValue.getExternalReferenceCode(), cpOption.getCPOptionId(),
-			LanguageUtils.getLocalizedMap(optionValue.getName()),
-			GetterUtil.get(optionValue.getPriority(), 0D), optionValue.getKey(),
-			_serviceContextHelper.getServiceContext());
-
-		return _toOptionValue(cpOptionValue.getCPOptionValueId());
 	}
 
 	@Reference

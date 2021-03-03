@@ -154,7 +154,7 @@ public class AttachmentResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertProductAttachment(cpDefinition, attachment);
+		return _addOrUpdateProductAttachment(cpDefinition, attachment);
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class AttachmentResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertProductAttachment(cpDefinition, attachmentBase64);
+		return _addOrUpdateProductAttachment(cpDefinition, attachmentBase64);
 	}
 
 	@Override
@@ -192,7 +192,7 @@ public class AttachmentResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertProductAttachment(cpDefinition, attachmentUrl);
+		return _addOrUpdateProductAttachment(cpDefinition, attachmentUrl);
 	}
 
 	@Override
@@ -211,7 +211,7 @@ public class AttachmentResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertProductImage(cpDefinition, attachment);
+		return _addOrUpdateProductImage(cpDefinition, attachment);
 	}
 
 	@Override
@@ -230,7 +230,7 @@ public class AttachmentResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertProductImage(cpDefinition, attachmentBase64);
+		return _addOrUpdateProductImage(cpDefinition, attachmentBase64);
 	}
 
 	@Override
@@ -249,7 +249,7 @@ public class AttachmentResourceImpl
 					externalReferenceCode);
 		}
 
-		return _upsertProductImage(cpDefinition, attachmentUrl);
+		return _addOrUpdateProductImage(cpDefinition, attachmentUrl);
 	}
 
 	@Override
@@ -264,7 +264,7 @@ public class AttachmentResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return _upsertProductAttachment(cpDefinition, attachment);
+		return _addOrUpdateProductAttachment(cpDefinition, attachment);
 	}
 
 	@Override
@@ -280,7 +280,7 @@ public class AttachmentResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return _upsertProductAttachment(cpDefinition, attachmentBase64);
+		return _addOrUpdateProductAttachment(cpDefinition, attachmentBase64);
 	}
 
 	@Override
@@ -296,7 +296,7 @@ public class AttachmentResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return _upsertProductAttachment(cpDefinition, attachmentUrl);
+		return _addOrUpdateProductAttachment(cpDefinition, attachmentUrl);
 	}
 
 	@Override
@@ -311,7 +311,7 @@ public class AttachmentResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return _upsertProductImage(cpDefinition, attachment);
+		return _addOrUpdateProductImage(cpDefinition, attachment);
 	}
 
 	@Override
@@ -327,7 +327,7 @@ public class AttachmentResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return _upsertProductImage(cpDefinition, attachmentBase64);
+		return _addOrUpdateProductImage(cpDefinition, attachmentBase64);
 	}
 
 	@Override
@@ -343,7 +343,116 @@ public class AttachmentResourceImpl
 				"Unable to find Product with ID: " + id);
 		}
 
-		return _upsertProductImage(cpDefinition, attachmentUrl);
+		return _addOrUpdateProductImage(cpDefinition, attachmentUrl);
+	}
+
+	private Attachment _addOrUpdateAttachment(
+			CPDefinition cpDefinition, int type, Attachment attachment)
+		throws Exception {
+
+		CPAttachmentFileEntry cpAttachmentFileEntry =
+			AttachmentUtil.upsertCPAttachmentFileEntry(
+				cpDefinition.getGroupId(), _cpAttachmentFileEntryService,
+				_uniqueFileNameProvider, attachment,
+				_classNameLocalService.getClassNameId(
+					cpDefinition.getModelClassName()),
+				cpDefinition.getCPDefinitionId(), type,
+				_serviceContextHelper.getServiceContext(
+					cpDefinition.getGroupId()));
+
+		return _toAttachment(
+			cpAttachmentFileEntry.getCPAttachmentFileEntryId());
+	}
+
+	private Attachment _addOrUpdateAttachment(
+			CPDefinition cpDefinition, int type,
+			AttachmentBase64 attachmentBase64)
+		throws Exception {
+
+		CPAttachmentFileEntry cpAttachmentFileEntry =
+			AttachmentUtil.upsertCPAttachmentFileEntry(
+				_cpAttachmentFileEntryService, _uniqueFileNameProvider,
+				attachmentBase64,
+				_classNameLocalService.getClassNameId(
+					cpDefinition.getModelClassName()),
+				cpDefinition.getCPDefinitionId(), type,
+				_serviceContextHelper.getServiceContext(
+					cpDefinition.getGroupId()));
+
+		return _toAttachment(
+			cpAttachmentFileEntry.getCPAttachmentFileEntryId());
+	}
+
+	private Attachment _addOrUpdateAttachment(
+			CPDefinition cpDefinition, int type, AttachmentUrl attachmentUrl)
+		throws Exception {
+
+		CPAttachmentFileEntry cpAttachmentFileEntry =
+			AttachmentUtil.upsertCPAttachmentFileEntry(
+				_cpAttachmentFileEntryService, _uniqueFileNameProvider,
+				attachmentUrl,
+				_classNameLocalService.getClassNameId(
+					cpDefinition.getModelClassName()),
+				cpDefinition.getCPDefinitionId(), type,
+				_serviceContextHelper.getServiceContext(
+					cpDefinition.getGroupId()));
+
+		return _toAttachment(
+			cpAttachmentFileEntry.getCPAttachmentFileEntryId());
+	}
+
+	private Attachment _addOrUpdateProductAttachment(
+			CPDefinition cpDefinition, Attachment attachment)
+		throws Exception {
+
+		return _addOrUpdateAttachment(
+			cpDefinition, CPAttachmentFileEntryConstants.TYPE_OTHER,
+			attachment);
+	}
+
+	private Attachment _addOrUpdateProductAttachment(
+			CPDefinition cpDefinition, AttachmentBase64 attachment)
+		throws Exception {
+
+		return _addOrUpdateAttachment(
+			cpDefinition, CPAttachmentFileEntryConstants.TYPE_OTHER,
+			attachment);
+	}
+
+	private Attachment _addOrUpdateProductAttachment(
+			CPDefinition cpDefinition, AttachmentUrl attachment)
+		throws Exception {
+
+		return _addOrUpdateAttachment(
+			cpDefinition, CPAttachmentFileEntryConstants.TYPE_OTHER,
+			attachment);
+	}
+
+	private Attachment _addOrUpdateProductImage(
+			CPDefinition cpDefinition, Attachment attachment)
+		throws Exception {
+
+		return _addOrUpdateAttachment(
+			cpDefinition, CPAttachmentFileEntryConstants.TYPE_IMAGE,
+			attachment);
+	}
+
+	private Attachment _addOrUpdateProductImage(
+			CPDefinition cpDefinition, AttachmentBase64 attachment)
+		throws Exception {
+
+		return _addOrUpdateAttachment(
+			cpDefinition, CPAttachmentFileEntryConstants.TYPE_IMAGE,
+			attachment);
+	}
+
+	private Attachment _addOrUpdateProductImage(
+			CPDefinition cpDefinition, AttachmentUrl attachment)
+		throws Exception {
+
+		return _addOrUpdateAttachment(
+			cpDefinition, CPAttachmentFileEntryConstants.TYPE_IMAGE,
+			attachment);
 	}
 
 	private Page<Attachment> _getAttachmentPage(
@@ -393,115 +502,6 @@ public class AttachmentResourceImpl
 		}
 
 		return attachments;
-	}
-
-	private Attachment _upsertAttachment(
-			CPDefinition cpDefinition, int type, Attachment attachment)
-		throws Exception {
-
-		CPAttachmentFileEntry cpAttachmentFileEntry =
-			AttachmentUtil.upsertCPAttachmentFileEntry(
-				cpDefinition.getGroupId(), _cpAttachmentFileEntryService,
-				_uniqueFileNameProvider, attachment,
-				_classNameLocalService.getClassNameId(
-					cpDefinition.getModelClassName()),
-				cpDefinition.getCPDefinitionId(), type,
-				_serviceContextHelper.getServiceContext(
-					cpDefinition.getGroupId()));
-
-		return _toAttachment(
-			cpAttachmentFileEntry.getCPAttachmentFileEntryId());
-	}
-
-	private Attachment _upsertAttachment(
-			CPDefinition cpDefinition, int type,
-			AttachmentBase64 attachmentBase64)
-		throws Exception {
-
-		CPAttachmentFileEntry cpAttachmentFileEntry =
-			AttachmentUtil.upsertCPAttachmentFileEntry(
-				_cpAttachmentFileEntryService, _uniqueFileNameProvider,
-				attachmentBase64,
-				_classNameLocalService.getClassNameId(
-					cpDefinition.getModelClassName()),
-				cpDefinition.getCPDefinitionId(), type,
-				_serviceContextHelper.getServiceContext(
-					cpDefinition.getGroupId()));
-
-		return _toAttachment(
-			cpAttachmentFileEntry.getCPAttachmentFileEntryId());
-	}
-
-	private Attachment _upsertAttachment(
-			CPDefinition cpDefinition, int type, AttachmentUrl attachmentUrl)
-		throws Exception {
-
-		CPAttachmentFileEntry cpAttachmentFileEntry =
-			AttachmentUtil.upsertCPAttachmentFileEntry(
-				_cpAttachmentFileEntryService, _uniqueFileNameProvider,
-				attachmentUrl,
-				_classNameLocalService.getClassNameId(
-					cpDefinition.getModelClassName()),
-				cpDefinition.getCPDefinitionId(), type,
-				_serviceContextHelper.getServiceContext(
-					cpDefinition.getGroupId()));
-
-		return _toAttachment(
-			cpAttachmentFileEntry.getCPAttachmentFileEntryId());
-	}
-
-	private Attachment _upsertProductAttachment(
-			CPDefinition cpDefinition, Attachment attachment)
-		throws Exception {
-
-		return _upsertAttachment(
-			cpDefinition, CPAttachmentFileEntryConstants.TYPE_OTHER,
-			attachment);
-	}
-
-	private Attachment _upsertProductAttachment(
-			CPDefinition cpDefinition, AttachmentBase64 attachment)
-		throws Exception {
-
-		return _upsertAttachment(
-			cpDefinition, CPAttachmentFileEntryConstants.TYPE_OTHER,
-			attachment);
-	}
-
-	private Attachment _upsertProductAttachment(
-			CPDefinition cpDefinition, AttachmentUrl attachment)
-		throws Exception {
-
-		return _upsertAttachment(
-			cpDefinition, CPAttachmentFileEntryConstants.TYPE_OTHER,
-			attachment);
-	}
-
-	private Attachment _upsertProductImage(
-			CPDefinition cpDefinition, Attachment attachment)
-		throws Exception {
-
-		return _upsertAttachment(
-			cpDefinition, CPAttachmentFileEntryConstants.TYPE_IMAGE,
-			attachment);
-	}
-
-	private Attachment _upsertProductImage(
-			CPDefinition cpDefinition, AttachmentBase64 attachment)
-		throws Exception {
-
-		return _upsertAttachment(
-			cpDefinition, CPAttachmentFileEntryConstants.TYPE_IMAGE,
-			attachment);
-	}
-
-	private Attachment _upsertProductImage(
-			CPDefinition cpDefinition, AttachmentUrl attachment)
-		throws Exception {
-
-		return _upsertAttachment(
-			cpDefinition, CPAttachmentFileEntryConstants.TYPE_IMAGE,
-			attachment);
 	}
 
 	@Reference

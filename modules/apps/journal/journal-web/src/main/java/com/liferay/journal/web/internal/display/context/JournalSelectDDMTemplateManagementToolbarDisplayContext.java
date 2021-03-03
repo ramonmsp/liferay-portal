@@ -15,11 +15,10 @@
 package com.liferay.journal.web.internal.display.context;
 
 import com.liferay.frontend.taglib.clay.servlet.taglib.display.context.SearchContainerManagementToolbarDisplayContext;
+import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
-
-import javax.portlet.PortletURL;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -47,31 +46,28 @@ public class JournalSelectDDMTemplateManagementToolbarDisplayContext
 
 	@Override
 	public String getClearResultsURL() {
-		PortletURL clearResultsURL = getPortletURL();
-
-		clearResultsURL.setParameter("keywords", StringPool.BLANK);
-
-		return clearResultsURL.toString();
+		return PortletURLBuilder.create(
+			getPortletURL()
+		).setParameter(
+			"keywords", StringPool.BLANK
+		).buildString();
 	}
 
 	@Override
 	public String getSearchActionURL() {
-		PortletURL portletURL = liferayPortletResponse.createRenderURL();
-
-		portletURL.setParameter("mvcPath", "/select_ddm_template.jsp");
-		portletURL.setParameter(
+		return PortletURLBuilder.createRenderURL(
+			liferayPortletResponse
+		).setMVCPath(
+			"/select_ddm_template.jsp"
+		).setParameter(
 			"ddmTemplateId",
-			String.valueOf(
-				_journalSelectDDMTemplateDisplayContext.getDDMTemplateId()));
-		portletURL.setParameter(
+			_journalSelectDDMTemplateDisplayContext.getDDMTemplateId()
+		).setParameter(
 			"ddmStructureId",
-			String.valueOf(
-				_journalSelectDDMTemplateDisplayContext.getDDMStructureId()));
-		portletURL.setParameter(
-			"eventName",
-			_journalSelectDDMTemplateDisplayContext.getEventName());
-
-		return portletURL.toString();
+			_journalSelectDDMTemplateDisplayContext.getDDMStructureId()
+		).setParameter(
+			"eventName", _journalSelectDDMTemplateDisplayContext.getEventName()
+		).buildString();
 	}
 
 	@Override

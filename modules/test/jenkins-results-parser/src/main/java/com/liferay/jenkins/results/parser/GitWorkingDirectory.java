@@ -1755,6 +1755,21 @@ public class GitWorkingDirectory {
 		return false;
 	}
 
+	public boolean isOnlyPoshiFilesModified() {
+		for (File modifiedFile : getModifiedFilesList()) {
+			String modifiedFileName = modifiedFile.getName();
+
+			String fileExtension = modifiedFileName.replaceAll(
+				".*(\\..+)", "$1");
+
+			if (!_poshiFileExtensions.contains(fileExtension.toLowerCase())) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public boolean isRemoteGitRepositoryAlive(String remoteURL) {
 		String command = JenkinsResultsParserUtil.combine(
 			"git ls-remote -h ", remoteURL, " HEAD");
@@ -2635,6 +2650,8 @@ public class GitWorkingDirectory {
 			"(?<message>.*)");
 	private static final Map<String, List<File>> _modifiedFilesMap =
 		new HashMap<>();
+	private static final List<String> _poshiFileExtensions = Arrays.asList(
+		".function", ".macro", ".path", ".prose", ".testcase");
 	private static final List<String> _privateOnlyGitRepositoryNames =
 		_getBuildPropertyAsList(
 			"git.working.directory.private.only.repository.names");

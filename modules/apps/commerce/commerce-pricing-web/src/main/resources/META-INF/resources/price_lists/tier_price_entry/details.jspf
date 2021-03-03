@@ -60,10 +60,10 @@ boolean discountDiscovery = BeanParamUtil.getBoolean(commerceTierPriceEntry, req
 
 <liferay-ui:error exception="<%= CommercePriceListExpirationDateException.class %>" message="please-enter-a-valid-expiration-date" />
 
-<aui:fieldset>
+<aui:fieldset cssClass="mb-0">
 	<aui:input formName="fm" label="publish-date" name="displayDate" />
 
-	<aui:input dateTogglerCheckboxLabel="never-expire" disabled="<%= neverExpire %>" formName="fm" name="expirationDate" />
+	<aui:input cssClass="mb-0" dateTogglerCheckboxLabel="never-expire" disabled="<%= neverExpire %>" formName="fm" name="expirationDate" />
 </aui:fieldset>
 
 <c:if test="<%= commercePriceEntry.isBulkPricing() %>">

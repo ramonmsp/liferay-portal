@@ -39,7 +39,7 @@ sortingURL.setParameter("displayStyle", displayStyle);
 sortingURL.setParameter("orderByType", orderByAsc ? "desc" : "asc");
 %>
 
-<clay:management-toolbar-v2
+<clay:management-toolbar
 	creationMenu='<%=
 		new JSPCreationMenu(pageContext) {
 			{
@@ -48,7 +48,6 @@ sortingURL.setParameter("orderByType", orderByAsc ? "desc" : "asc");
 		}
 	%>'
 	disabled="<%= sapEntriesCount == 0 %>"
-	namespace="<%= liferayPortletResponse.getNamespace() %>"
 	selectable="<%= false %>"
 	showCreationMenu="<%= SAPPermission.contains(permissionChecker, SAPActionKeys.ACTION_ADD_SAP_ENTRY) %>"
 	showSearch="<%= false %>"
