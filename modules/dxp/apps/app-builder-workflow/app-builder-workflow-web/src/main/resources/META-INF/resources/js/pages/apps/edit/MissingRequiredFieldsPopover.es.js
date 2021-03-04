@@ -16,6 +16,7 @@ import {sub} from 'app-builder-web/js/utils/lang.es';
 import React from 'react';
 
 export default function MissingRequiredFieldsPopover({
+	alignPosition = 'left',
 	dataObjectName,
 	message = {},
 	nativeField,
@@ -67,7 +68,7 @@ export default function MissingRequiredFieldsPopover({
 
 	return (
 		<ClayPopover
-			alignPosition="left"
+			alignPosition={alignPosition}
 			disableScroll
 			header={
 				<>
