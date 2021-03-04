@@ -115,6 +115,7 @@ const Card = ({
 
 			{!app.active && appId && initial && (customField || nativeField) && (
 				<MissingRequiredFieldsPopover
+					alignPosition="right"
 					dataObjectName={dataObject.name}
 					message={{
 						custom: sub(
