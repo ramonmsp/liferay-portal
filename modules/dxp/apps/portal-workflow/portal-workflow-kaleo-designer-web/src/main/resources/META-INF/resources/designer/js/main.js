@@ -475,6 +475,22 @@ AUI.add(
 						'destroyPortlet',
 						A.bind(instance._onDestroyPortlet, instance)
 					);
+
+					document.addEventListener('keydown', (event) => {
+						const baseCellEditorPopup = document.querySelector(
+							'.basecelleditor'
+						);
+
+						if (
+							baseCellEditorPopup &&
+							!baseCellEditorPopup.contains(event.target) &&
+							event.code === 'Enter'
+						) {
+							baseCellEditorPopup.classList.add(
+								'actions-cell-editor-hidden'
+							);
+						}
+					});
 				},
 
 				setEditorContent(content) {
