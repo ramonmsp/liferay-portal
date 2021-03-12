@@ -25,6 +25,14 @@
 .info-bar-container .management-bar-header-right {
 	display: flex;
 	justify-content: flex-end;
+
+	a {
+		align-items: center;
+		display: flex;
+		height: 32px;
+		justify-content: center;
+		width: 32px;
+	}
 }
 
 .info-content {
@@ -40,9 +48,10 @@
 .sidenav-container {
 	padding-bottom: 75px;
 
-	.sidenav-content {
-		padding-top: 20px;
+	.sidenav-content .container-form-lg {
+		padding-top: 2rem;
 	}
+
 	.sidenav-menu-slider {
 		z-index: 101;
 	}
@@ -53,6 +62,10 @@
 
 	.tbar-visible-xs {
 		display: none;
+	}
+
+	@media (min-width: 1880px) {
+		padding-right: 320px;
 	}
 
 	@media (max-width: 767px) {
@@ -75,6 +88,7 @@
 .lfr-sidebar-list-group-workflow {
 	&.sidebar-list-group {
 		margin-top: 0;
+		padding-top: 0;
 	}
 
 	.list-group-item {
