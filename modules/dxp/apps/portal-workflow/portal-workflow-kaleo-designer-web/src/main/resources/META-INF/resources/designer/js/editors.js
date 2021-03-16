@@ -1266,6 +1266,10 @@ AUI.add(
 							value: 'roleType',
 						},
 						{
+							label: strings.resourceActions,
+							value: 'resourceActions',
+						},
+						{
 							label: strings.scriptedRecipient,
 							value: 'scriptedRecipient',
 						},
@@ -1363,6 +1367,22 @@ AUI.add(
 						assignmentsViewTpl.parse({
 							content: roleIdContent,
 							viewId: 'roleId',
+						})
+					);
+
+					var resourceActionContent = textareaTpl.parse({
+						auiCssClass:
+							'celleditor-textarea-small form-control input-sm',
+						auiLabelCssClass: 'celleditor-label',
+						id: A.guid(),
+						label: strings.resourceActions,
+						name: 'resourceAction',
+					});
+
+					buffer.push(
+						assignmentsViewTpl.parse({
+							content: resourceActionContent,
+							viewId: 'resourceActions',
 						})
 					);
 
@@ -1622,7 +1642,6 @@ AUI.add(
 								size: 35,
 								type: 'text',
 							}),
-
 							textareaTpl.parse({
 								auiCssClass:
 									'celleditor-textarea-small form-control input-sm',
