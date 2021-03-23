@@ -278,7 +278,10 @@ export default function ViewEntry({
 							{dataRecordValues &&
 								dataLayouts.map(
 									({dataLayoutPages = [], ...dataLayout}) => (
-										<div key={dataLayout.id}>
+										<div
+											className="data-layout-item"
+											key={dataLayout.id}
+										>
 											<h3>
 												{getLocalizedUserPreferenceValue(
 													dataLayout.name,
