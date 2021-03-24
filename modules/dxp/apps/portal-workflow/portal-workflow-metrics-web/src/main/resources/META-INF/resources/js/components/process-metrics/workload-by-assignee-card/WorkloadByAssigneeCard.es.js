@@ -88,7 +88,7 @@ const WorkloadByAssigneeCard = ({routeParams}) => {
 			<Panel elementClasses="workload-by-assignee-card">
 				<WorkloadByAssigneeCard.Header processId={processId} />
 
-				<div className="border-bottom">
+				<div className="border-bottom container-nav">
 					<Tabs
 						currentTab={currentTab}
 						setCurrentTab={setCurrentTab}
