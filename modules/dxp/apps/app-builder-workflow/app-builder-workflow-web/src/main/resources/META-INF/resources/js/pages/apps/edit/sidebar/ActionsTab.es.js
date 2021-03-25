@@ -20,10 +20,7 @@ import {
 	UPDATE_STEP_ACTION,
 } from '../configReducer.es';
 
-export default function ActionsTab({
-	config: {currentStep, stepIndex},
-	dispatchConfig,
-}) {
+export default function ActionsTab({config: {currentStep}, dispatchConfig}) {
 	const {
 		appWorkflowTransitions: [primaryAction = {}, secondaryAction] = [{}],
 	} = currentStep;
@@ -76,7 +73,7 @@ export default function ActionsTab({
 				</ClayButton>
 			</ClayForm.Group>
 
-			{stepIndex > 1 && !secondaryAction && (
+			{currentStep.id > 1 && !secondaryAction && (
 				<ClayButton
 					className="w-100"
 					displayType="secondary"

@@ -35,7 +35,6 @@ export default function EditAppSidebar() {
 			dataObject,
 			formView,
 			listItems: {assigneeRoles},
-			stepIndex,
 			steps,
 			tableView,
 		},
@@ -71,61 +70,62 @@ export default function EditAppSidebar() {
 	const tabs = [
 		{
 			content: DataAndViewsTab,
-			disabled: stepIndex > 0 && !dataObject.id,
+			disabled: !currentStep?.initial && !dataObject.id,
 			error:
-				stepIndex > 0 &&
-				stepIndex < steps.length - 1 &&
-				steps[stepIndex].errors.formViews.duplicatedFields.length > 0,
-			infoItems:
-				stepIndex === 0
-					? [
-							{
-								...dataObject,
-								label: Liferay.Language.get('data-object'),
-							},
-							{
-								...formView,
-								label: Liferay.Language.get('form-view'),
-							},
-							{
-								...tableView,
-								label: Liferay.Language.get('table-view'),
-							},
-					  ]
-					: [
-							{
-								label: Liferay.Language.get('form-view'),
-								name:
-									appWorkflowDataLayoutLinks.length > 0
-										? appWorkflowDataLayoutLinks
-												.map(({name}) => name)
-												.reduce(
-													(acc, cur) =>
-														`${acc}, ${cur}`
-												)
-										: '',
-							},
-					  ],
+				!currentStep?.initial &&
+				currentStep.id < steps.length - 1 &&
+				currentStep.errors.formViews.duplicatedFields.length > 0,
+			infoItems: currentStep?.initial
+				? [
+						{
+							...dataObject,
+							label: Liferay.Language.get('data-object'),
+						},
+						{
+							...formView,
+							label: Liferay.Language.get('form-view'),
+						},
+						{
+							...tableView,
+							label: Liferay.Language.get('table-view'),
+						},
+				  ]
+				: [
+						{
+							label: Liferay.Language.get('form-view'),
+							name:
+								appWorkflowDataLayoutLinks.length > 0
+									? appWorkflowDataLayoutLinks
+											.map(({name}) => name)
+											.reduce(
+												(acc, cur) => `${acc}, ${cur}`
+											)
+									: '',
+						},
+				  ],
 			onClickBack: () => {
-				if (stepIndex > 0) {
+				if (!currentStep?.initial) {
 					dispatchConfig({
-						stepIndex,
 						type: REMOVE_STEP_EMPTY_FORM_VIEWS,
 					});
 				}
 			},
-			show: stepIndex !== steps.length - 1,
+			show:
+				currentStep?.initial ||
+				(currentStep?.initial && !currentStep.initial),
 			showPopoverIcon:
 				!app.active &&
 				appId &&
-				stepIndex == 0 &&
+				currentStep?.initial &&
 				(customField || nativeField),
 			title: Liferay.Language.get('data-and-views'),
 		},
 		{
 			content: ActionsTab,
 			infoItems: actionsInfo,
-			show: stepIndex !== steps.length - 1,
+			show:
+				currentStep?.initial ||
+				(currentStep?.initial && !currentStep.initial),
 			title: Liferay.Language.get('actions'),
 		},
 	];
@@ -139,7 +139,6 @@ export default function EditAppSidebar() {
 					roleName: name,
 				})),
 			},
-			stepIndex,
 			type: UPDATE_STEP,
 		});
 	};
@@ -147,7 +146,6 @@ export default function EditAppSidebar() {
 	const onChangeStepName = ({target}) => {
 		dispatchConfig({
 			step: {...currentStep, name: target.value},
-			stepIndex,
 			type: UPDATE_STEP,
 		});
 	};

@@ -10,44 +10,32 @@
  */
 
 import EditAppContext from 'app-builder-web/js/pages/apps/edit/EditAppContext.es';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
+import ReactFlow from 'react-flow-renderer';
 
-import {
-	ADD_STEP,
-	REMOVE_STEP,
-	REMOVE_STEP_EMPTY_FORM_VIEWS,
-	UPDATE_STEP_INDEX,
-} from '../configReducer.es';
+import {ADD_STEP, REMOVE_STEP, UPDATE_CURRENT_STEP} from '../configReducer.es';
+import PlusButton from './PlusButton.es';
 import WorkflowStep from './WorkflowStep.es';
 
 export default function WorkflowBuilder() {
 	const {
-		config: {dataObject, stepIndex, steps},
+		config: {currentStep, dataObject, steps, transitions},
 		dispatchConfig,
 	} = useContext(EditAppContext);
+	const [elements, setElements] = useState([]);
 
-	const badgeLabel = (stepIndex) => {
-		if (stepIndex === 0) {
+	const badgeLabel = (index) => {
+		if (index === 0) {
 			return Liferay.Language.get('start');
-		}
-		else if (stepIndex === steps.length - 1) {
+		} else if (index === steps.length - 1) {
 			return Liferay.Language.get('end');
 		}
 
-		return stepIndex;
+		return index;
 	};
 
-	const onClickStep = (index) => {
-		if (index !== stepIndex) {
-			if (steps[stepIndex].initial === undefined) {
-				dispatchConfig({
-					stepIndex,
-					type: REMOVE_STEP_EMPTY_FORM_VIEWS,
-				});
-			}
-
-			dispatchConfig({stepIndex: index, type: UPDATE_STEP_INDEX});
-		}
+	const onClickStep = ({id}) => {
+		dispatchConfig({id, type: UPDATE_CURRENT_STEP});
 	};
 
 	const stepInfo = [
@@ -73,35 +61,118 @@ export default function WorkflowBuilder() {
 			),
 	];
 
-	return (
-		<div className="app-builder-workflow-app__builder">
-			{steps.map((step, index) => (
-				<WorkflowStep
-					actions={[
+	let customElements = steps.map((step, index) => {
+		return {
+			...step,
+			data: {
+				props: {
+					actions: [
 						{
 							label: Liferay.Language.get('delete-step'),
 							onClick: () =>
 								dispatchConfig({
-									stepIndex: index,
+									id: index,
 									type: REMOVE_STEP,
 								}),
 						},
-					]}
-					addStep={() =>
-						dispatchConfig({stepIndex: index, type: ADD_STEP})
-					}
-					badgeLabel={badgeLabel(index)}
-					{...step}
-					key={index}
-					onClick={() => onClickStep(index)}
-					selected={stepIndex === index}
-					stepInfo={
-						index < steps.length - 1 && stepInfo[index]
-							? stepInfo[index]
-							: []
-					}
+					],
+					badgeLabel: badgeLabel(index),
+					errors: step.errors,
+					initial: step.initial,
+					isInitialOrFinalSteps: step.isInitialOrFinalSteps,
+					name: step.name,
+					selected: index === currentStep?.id,
+					stepInfo: stepInfo[index] ?? [],
+				},
+			},
+			id: `${step.id}`,
+		};
+	});
+
+	const addStep = () => {
+		dispatchConfig({
+			id: 1,
+			stepPosition: {x: 500, y: 200},
+			stepType: 'workflowNode',
+			type: ADD_STEP,
+		});
+	};
+
+	customElements = [
+		...customElements,
+		{
+			data: {addStep},
+			id: '500',
+			position: {x: 446, y: 200},
+			type: 'plusButton',
+		},
+	];
+
+	useEffect(() => {
+		setElements([...customElements, ...transitions]);
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	useEffect(() => {
+		if (steps.length > 2) {
+			let newNode = steps.find(({id}) => id == currentStep.id);
+
+			newNode = {
+				...newNode,
+				data: {
+					props: {
+						actions: [
+							{
+								label: Liferay.Language.get('delete-step'),
+							},
+						],
+						badgeLabel: badgeLabel(newNode.id),
+						errors: newNode.errors,
+						initial: newNode?.initial,
+						isInitialOrFinalSteps: newNode.isInitialOrFinalSteps,
+						name: newNode.name,
+						selected: newNode.id === currentStep.id,
+						stepInfo: stepInfo[newNode.id] ?? [],
+					},
+				},
+				id: `${newNode.id}`,
+			};
+
+			setElements((es) => es.concat(newNode));
+
+			const edge = {
+				arrowHeadType: 'arrowclosed',
+				id: 'e0-1',
+				label: <PlusButton addStep={addStep} />,
+				source: '0',
+				target: '1',
+				type: 'step',
+			};
+
+			setElements((es) => es.concat(edge));
+		}
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [steps.length]);
+
+	const nodeTypes = {
+		plusButton: PlusButton,
+		workflowNode: WorkflowStep,
+	};
+	const onLoad = (reactFlowInstance) => reactFlowInstance.fitView();
+
+	return (
+		<div className="app-builder-workflow-app__builder">
+			<div className="reactflow-wrapper">
+				<ReactFlow
+					elements={elements}
+					nodeTypes={nodeTypes}
+					onElementClick={onClickStep}
+					onLoad={onLoad}
+					snapToGrid
 				/>
-			))}
+			</div>
 		</div>
 	);
 }

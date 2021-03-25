@@ -13,45 +13,15 @@ import ClayBadge from '@clayui/badge';
 import {ClayButtonWithIcon} from '@clayui/button';
 import ClayDropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
+import {ClayTooltipProvider} from '@clayui/tooltip';
 import EditAppContext from 'app-builder-web/js/pages/apps/edit/EditAppContext.es';
 import classNames from 'classnames';
 import {sub} from 'data-engine-js-components-web/js/utils/lang.es';
 import React, {useContext, useState} from 'react';
+import {Handle} from 'react-flow-renderer';
 
 import ButtonInfo from '../../../../components/button-info/ButtonInfo.es';
 import MissingRequiredFieldsPopover from '../MissingRequiredFieldsPopover.es';
-
-const Arrow = ({addStep, selected}) => {
-	return (
-		<div className={classNames('arrow ', selected && 'selected')}>
-			<ClayIcon
-				className={classNames('arrow-point icon')}
-				symbol="live"
-			/>
-
-			{selected && (
-				<div
-					className={classNames('arrow-plus-button')}
-					data-tooltip-align="left"
-					data-tooltip-delay="0"
-					onClick={addStep}
-					title={Liferay.Language.get('create-new-step')}
-				>
-					<ClayIcon className="icon" symbol="plus" />
-				</div>
-			)}
-
-			<div className="arrow-body">
-				<div className="arrow-tail" />
-
-				<ClayIcon
-					className={classNames('arrow-head icon')}
-					symbol="caret-bottom"
-				/>
-			</div>
-		</div>
-	);
-};
 
 const Card = ({
 	actions,
@@ -72,8 +42,8 @@ const Card = ({
 	} = useContext(EditAppContext);
 	const [active, setActive] = useState(false);
 	const [showPopover, setShowPopover] = useState(false);
-
 	const duplicatedFields = errors?.formViews?.duplicatedFields || [];
+
 	const {missingRequiredFields: {customField, nativeField} = {}} = formView;
 
 	const handleOnClick = (event, onClick) => {
@@ -89,25 +59,24 @@ const Card = ({
 		>
 			<div>
 				{name}
-
 				<ButtonInfo items={stepInfo} />
 			</div>
-
 			{duplicatedFields.length > 0 && (
-				<ClayIcon
-					className="error tooltip-popover-icon"
-					data-tooltip-align="bottom"
-					data-tooltip-delay="0"
-					fontSize="26px"
-					symbol="exclamation-full"
-					title={`${Liferay.Language.get(
-						'error'
-					)}: ${Liferay.Language.get(
-						'there-are-form-views-with-duplicated-fields'
-					)}`}
-				/>
+				<ClayTooltipProvider>
+					<ClayIcon
+						className="error tooltip-popover-icon"
+						data-tooltip-align="bottom"
+						data-tooltip-delay="0"
+						fontSize="26px"
+						symbol="exclamation-full"
+						title={`${Liferay.Language.get(
+							'error'
+						)}: ${Liferay.Language.get(
+							'there-are-form-views-with-duplicated-fields'
+						)}`}
+					/>
+				</ClayTooltipProvider>
 			)}
-
 			{!app.active && appId && initial && (customField || nativeField) && (
 				<MissingRequiredFieldsPopover
 					alignPosition="right"
@@ -129,7 +98,6 @@ const Card = ({
 					nativeField={nativeField}
 					onClick={() => {
 						setShowPopover(false);
-
 						openFormViewModal(
 							dataObject.id,
 							dataObject.defaultLanguageId,
@@ -142,36 +110,37 @@ const Card = ({
 					triggerClassName="help-cursor step-card-icon"
 				/>
 			)}
-
 			<div className="d-flex">
 				{!isInitialOrFinalSteps && (
-					<ClayDropDown
-						active={active}
-						data-tooltip-align="bottom"
-						data-tooltip-delay="0"
-						onActiveChange={setActive}
-						title={Liferay.Language.get('options')}
-						trigger={
-							<ClayButtonWithIcon
-								className="border-0"
-								displayType="secondary"
-								symbol="ellipsis-v"
-							/>
-						}
-					>
-						<ClayDropDown.ItemList>
-							{actions.map(({label, onClick}, index) => (
-								<ClayDropDown.Item
-									key={index}
-									onClick={(event) =>
-										handleOnClick(event, onClick)
-									}
-								>
-									{label}
-								</ClayDropDown.Item>
-							))}
-						</ClayDropDown.ItemList>
-					</ClayDropDown>
+					<ClayTooltipProvider>
+						<ClayDropDown
+							active={active}
+							data-tooltip-align="bottom"
+							data-tooltip-delay="0"
+							onActiveChange={setActive}
+							title={Liferay.Language.get('options')}
+							trigger={
+								<ClayButtonWithIcon
+									className="border-0"
+									displayType="secondary"
+									symbol="ellipsis-v"
+								/>
+							}
+						>
+							<ClayDropDown.ItemList>
+								{actions.map(({label, onClick}, index) => (
+									<ClayDropDown.Item
+										key={index}
+										onClick={(event) =>
+											handleOnClick(event, onClick)
+										}
+									>
+										{label}
+									</ClayDropDown.Item>
+								))}
+							</ClayDropDown.ItemList>
+						</ClayDropDown>
+					</ClayTooltipProvider>
 				)}
 			</div>
 		</div>
@@ -179,46 +148,74 @@ const Card = ({
 };
 
 export default function WorkflowStep({
-	actions,
-	addStep,
-	badgeLabel,
-	errors,
-	initial,
-	name,
-	onClick,
-	selected,
-	stepInfo,
+	data: {
+		props: {
+			actions,
+			badgeLabel,
+			errors,
+			initial,
+			name,
+			onClick,
+			selected,
+			stepInfo,
+		},
+	},
 }) {
 	const isInitialOrFinalSteps = initial !== undefined;
+
 	const isFinalStep = isInitialOrFinalSteps && !initial;
 
 	return (
 		<>
-			<div className="step">
-				<div className="step-wrapper">
-					<ClayBadge
-						className={classNames(
-							'step-badge',
-							!isInitialOrFinalSteps && 'index-badge'
-						)}
-						displayType={selected ? 'primary' : 'secondary'}
-						label={badgeLabel}
-					/>
-
-					<Card
-						actions={actions}
-						errors={errors}
-						initial={initial}
-						isInitialOrFinalSteps={isInitialOrFinalSteps}
-						name={name}
-						onClick={onClick}
-						selected={selected}
-						stepInfo={stepInfo}
-					/>
-				</div>
+			<div className="step-wrapper">
+				<ClayBadge
+					className={classNames(
+						'step-badge',
+						!isInitialOrFinalSteps && 'index-badge'
+					)}
+					displayType={selected ? 'primary' : 'secondary'}
+					label={badgeLabel}
+				/>
+				<Card
+					actions={actions}
+					errors={errors}
+					initial={initial}
+					isInitialOrFinalSteps={isInitialOrFinalSteps}
+					name={name}
+					onClick={onClick}
+					selected={selected}
+					stepInfo={stepInfo}
+				/>
 			</div>
 
-			{!isFinalStep && <Arrow addStep={addStep} selected={selected} />}
+			{isInitialOrFinalSteps ? (
+				isFinalStep ? (
+					<Handle
+						position="top"
+						style={{left: '55%'}}
+						type="target"
+					/>
+				) : (
+					<Handle
+						position="bottom"
+						style={{left: '55%'}}
+						type="source"
+					/>
+				)
+			) : (
+				<>
+					<Handle
+						position="bottom"
+						style={{left: '55%'}}
+						type="source"
+					/>
+					<Handle
+						position="top"
+						style={{left: '55%'}}
+						type="target"
+					/>
+				</>
+			)}
 		</>
 	);
 }
