@@ -6,6 +6,9 @@
 			justify-content: space-between;
 		}
 	}
+	td {
+		border-top: 1px solid #e7e7ed !important;
+	}
 
 	td:last-child:not(.actions),
 	th:last-child,
