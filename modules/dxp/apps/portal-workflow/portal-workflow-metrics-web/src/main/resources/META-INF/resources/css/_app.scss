@@ -217,3 +217,14 @@ $font-weight-semi-bold: 600;
 		background-color: #fff;
 	}
 }
+
+@media screen and (max-width: 530px) {
+	.panel .dashboard-panel-header .autofit-row .management-bar {
+		.navbar-nav {
+			flex-direction: column;
+			li {
+				margin-bottom: 8px;
+			}
+		}
+	}
+}
