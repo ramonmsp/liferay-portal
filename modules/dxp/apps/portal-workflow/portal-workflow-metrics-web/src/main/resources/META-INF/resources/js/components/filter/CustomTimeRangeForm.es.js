@@ -9,6 +9,8 @@
  * distribution rights of the Software.
  */
 
+import ClayButton from '@clayui/button';
+import ClayForm, {ClayInput} from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import React, {useEffect, useRef} from 'react';
 import MaskedInput from 'react-text-mask';
@@ -92,7 +94,7 @@ const CustomTimeRangeForm = ({
 					])}
 				</span>
 
-				<div className="form-group-autofit">
+				<ClayForm.Group className="form-group-autofit">
 					<FormGroupItem error={errors['dateStart']}>
 						<label htmlFor="dateStart">
 							{Liferay.Language.get('from')}
@@ -124,19 +126,21 @@ const CustomTimeRangeForm = ({
 							placeholder={dateFormat}
 						/>
 					</FormGroupItem>
-				</div>
+				</ClayForm.Group>
 			</form>
-
 			<div className="dropdown-divider" />
-
 			<div className="custom-range-footer">
-				<button className="btn btn-secondary" onMouseDown={onCancel}>
+				<ClayButton displayType="secondary" onMouseDown={onCancel}>
 					{Liferay.Language.get('cancel')}
-				</button>
+				</ClayButton>
 
-				<button className="btn btn-primary ml-3" onClick={onApply}>
+				<ClayButton
+					className="ml-3"
+					displayType="primary"
+					onClick={onApply}
+				>
 					{Liferay.Language.get('apply')}
-				</button>
+				</ClayButton>
 			</div>
 		</div>
 	);
@@ -144,20 +148,20 @@ const CustomTimeRangeForm = ({
 
 const FormGroupItem = ({children, error}) => (
 	<div className={`form-group-item ${error ? 'has-error' : ''}`}>
-		<div className="input-group">
-			<div className="input-group-item">{children}</div>
-		</div>
+		<ClayInput.Group>
+			<ClayInput.GroupItem>{children}</ClayInput.GroupItem>
+		</ClayInput.Group>
 
 		{error && (
-			<div className="form-feedback-group">
-				<div className="form-feedback-item">
+			<ClayForm.FeedbackGroup>
+				<ClayForm.FeedbackItem>
 					<span className="form-feedback-indicator mr-2">
 						<ClayIcon symbol="exclamation-full" />
 					</span>
 
 					<span className="text-semi-bold">{error}</span>
-				</div>
-			</div>
+				</ClayForm.FeedbackItem>
+			</ClayForm.FeedbackGroup>
 		)}
 	</div>
 );
