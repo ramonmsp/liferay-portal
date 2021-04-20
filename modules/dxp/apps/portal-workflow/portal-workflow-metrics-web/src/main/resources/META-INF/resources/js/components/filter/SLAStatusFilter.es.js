@@ -37,12 +37,12 @@ const slaStatuses = [
 	},
 ];
 
-const SLAStatusFilter = ({
+export default function SLAStatusFilter({
 	className,
 	filterKey = filterConstants.slaStatus.key,
 	options = {},
 	prefixKey = '',
-}) => {
+}) {
 	options = {
 		hideControl: false,
 		multiple: true,
@@ -79,7 +79,6 @@ const SLAStatusFilter = ({
 			{...options}
 		/>
 	);
-};
+}
 
-export default SLAStatusFilter;
 export {slaStatusConstants};

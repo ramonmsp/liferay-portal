@@ -32,12 +32,12 @@ const processStatuses = [
 	},
 ];
 
-const ProcessStatusFilter = ({
+export default function ProcessStatusFilter({
 	className,
 	filterKey = filterConstants.processStatus.key,
 	options = {},
 	prefixKey = '',
-}) => {
+}) {
 	options = {
 		hideControl: false,
 		multiple: true,
@@ -74,7 +74,6 @@ const ProcessStatusFilter = ({
 			{...options}
 		/>
 	);
-};
+}
 
-export default ProcessStatusFilter;
 export {processStatusConstants};

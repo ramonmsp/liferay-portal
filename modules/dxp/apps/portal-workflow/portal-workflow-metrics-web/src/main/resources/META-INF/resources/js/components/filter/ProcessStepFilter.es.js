@@ -22,14 +22,14 @@ const allStepsItem = {
 	name: 'allSteps',
 };
 
-const ProcessStepFilter = ({
+export default function ProcessStepFilter({
 	className,
 	disabled,
 	filterKey = filterConstants.processStep.key,
 	options = {},
 	prefixKey = '',
 	processId,
-}) => {
+}) {
 	options = {
 		hideControl: false,
 		multiple: true,
@@ -76,6 +76,4 @@ const ProcessStepFilter = ({
 			{...options}
 		/>
 	);
-};
-
-export default ProcessStepFilter;
+}

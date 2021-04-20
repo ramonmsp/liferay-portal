@@ -23,14 +23,14 @@ const unassigned = {
 	name: Liferay.Language.get('unassigned'),
 };
 
-const AssigneeFilter = ({
+export default function AssigneeFilter({
 	className,
 	filterKey = filterConstants.assignee.key,
 	options = {},
 	prefixKey = '',
 	processId,
 	staticData,
-}) => {
+}) {
 	options = {
 		hideControl: false,
 		multiple: true,
@@ -72,6 +72,4 @@ const AssigneeFilter = ({
 			{...options}
 		/>
 	);
-};
-
-export default AssigneeFilter;
+}

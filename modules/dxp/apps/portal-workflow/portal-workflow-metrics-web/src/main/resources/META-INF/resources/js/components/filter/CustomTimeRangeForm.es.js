@@ -22,13 +22,13 @@ import {getMaskByDateFormat} from '../../shared/util/date.es';
 import {sub} from '../../shared/util/lang.es';
 import {useCustomTimeRange} from './hooks/useCustomTimeRange.es';
 
-const CustomTimeRangeForm = ({
+export default function CustomTimeRangeForm({
 	handleSelectFilter,
 	items,
 	prefixKey = '',
 	setFormVisible,
 	withoutRouteParams,
-}) => {
+}) {
 	const {
 		applyCustomFilter,
 		dateEnd,
@@ -140,7 +140,7 @@ const CustomTimeRangeForm = ({
 			</div>
 		</div>
 	);
-};
+}
 
 const FormGroupItem = ({children, error}) => (
 	<div className={`form-group-item ${error ? 'has-error' : ''}`}>
@@ -161,5 +161,3 @@ const FormGroupItem = ({children, error}) => (
 		)}
 	</div>
 );
-
-export {CustomTimeRangeForm};

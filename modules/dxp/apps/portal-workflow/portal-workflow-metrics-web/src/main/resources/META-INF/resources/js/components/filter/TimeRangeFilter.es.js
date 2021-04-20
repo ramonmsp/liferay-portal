@@ -26,17 +26,17 @@ import {useRouter} from '../../shared/hooks/useRouter.es';
 import {useRouterParams} from '../../shared/hooks/useRouterParams.es';
 import {useSessionStorage} from '../../shared/hooks/useStorage.es';
 import {AppContext} from '../AppContext.es';
-import {CustomTimeRangeForm} from './CustomTimeRangeForm.es';
+import CustomTimeRangeForm from './CustomTimeRangeForm.es';
 import {getCustomTimeRange, parseDateItems} from './util/timeRangeUtil.es';
 
-const TimeRangeFilter = ({
+export default function TimeRangeFilter({
 	buttonClassName,
 	className,
 	disabled,
 	filterKey = filterConstants.timeRange.key,
 	options = {},
 	prefixKey = '',
-}) => {
+}) {
 	options = {
 		hideControl: true,
 		multiple: false,
@@ -161,6 +161,4 @@ const TimeRangeFilter = ({
 			)}
 		</Filter>
 	);
-};
-
-export default TimeRangeFilter;
+}
