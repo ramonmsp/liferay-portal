@@ -17,9 +17,9 @@ import RetryButton from '../../../../../../shared/components/list/RetryButton.es
 import PaginationBar from '../../../../../../shared/components/pagination-bar/PaginationBar.es';
 import {usePaginationState} from '../../../../../../shared/hooks/usePaginationState.es';
 import {AppContext} from '../../../../../AppContext.es';
-import {Table} from './SelectAssigneesStepTable.es';
+import Table from './SelectAssigneesStepTable.es';
 
-const Body = ({data, setRetry, tasks}) => {
+function Body({data, setRetry, tasks}) {
 	const {
 		deltaValues: [initialPageSize],
 	} = useContext(AppContext);
@@ -59,8 +59,8 @@ const Body = ({data, setRetry, tasks}) => {
 			</ContentView>
 		</ClayModal.Body>
 	);
-};
+}
 
 Body.Table = Table;
 
-export {Body};
+export default Body;

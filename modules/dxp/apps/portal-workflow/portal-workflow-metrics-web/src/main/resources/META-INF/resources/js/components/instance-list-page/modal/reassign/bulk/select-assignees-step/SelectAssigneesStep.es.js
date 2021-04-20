@@ -14,10 +14,10 @@ import React, {useContext, useMemo, useState} from 'react';
 import PromisesResolver from '../../../../../../shared/components/promises-resolver/PromisesResolver.es';
 import {usePost} from '../../../../../../shared/hooks/usePost.es';
 import {ModalContext} from '../../../ModalProvider.es';
-import {Body} from './SelectAssigneesStepBody.es';
-import {Header} from './SelectAssigneesStepHeader.es';
+import Body from './SelectAssigneesStepBody.es';
+import Header from './SelectAssigneesStepHeader.es';
 
-const SelectAssigneesStep = ({setErrorToast}) => {
+function SelectAssigneesStep({setErrorToast}) {
 	const {
 		selectTasks: {tasks},
 	} = useContext(ModalContext);
@@ -66,7 +66,7 @@ const SelectAssigneesStep = ({setErrorToast}) => {
 			</PromisesResolver>
 		</div>
 	);
-};
+}
 
 SelectAssigneesStep.Body = Body;
 SelectAssigneesStep.Header = Header;

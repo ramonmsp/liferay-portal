@@ -18,7 +18,7 @@ import {Autocomplete} from '../../../../../../shared/components/autocomplete/Aut
 import PromisesResolver from '../../../../../../shared/components/promises-resolver/PromisesResolver.es';
 import {ModalContext} from '../../../ModalProvider.es';
 
-const Header = ({data}) => {
+export default function Header({data}) {
 	const {
 		bulkReassign,
 		selectTasks: {tasks},
@@ -110,6 +110,4 @@ const Header = ({data}) => {
 			</ClayManagementToolbar>
 		</PromisesResolver.Resolved>
 	);
-};
-
-export {Header};
+}

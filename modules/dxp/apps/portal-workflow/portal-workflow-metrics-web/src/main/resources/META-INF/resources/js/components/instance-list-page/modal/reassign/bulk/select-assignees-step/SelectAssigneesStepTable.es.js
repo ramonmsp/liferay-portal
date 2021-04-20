@@ -16,7 +16,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {Autocomplete} from '../../../../../../shared/components/autocomplete/Autocomplete.es';
 import {ModalContext} from '../../../ModalProvider.es';
 
-const Item = ({
+function Item({
 	assetTitle,
 	assetType,
 	assignee: currentAssignee,
@@ -24,7 +24,7 @@ const Item = ({
 	id,
 	instanceId,
 	label,
-}) => {
+}) {
 	const {bulkReassign, setBulkReassign} = useContext(ModalContext);
 	const {reassignedTasks, reassigning, useSameAssignee} = bulkReassign;
 
@@ -107,9 +107,9 @@ const Item = ({
 			</ClayTable.Cell>
 		</ClayTable.Row>
 	);
-};
+}
 
-const Table = ({data, items}) => {
+function Table({data, items}) {
 	return (
 		<ClayTable>
 			<ClayTable.Head>
@@ -186,7 +186,7 @@ const Table = ({data, items}) => {
 			</ClayTable.Body>
 		</ClayTable>
 	);
-};
+}
 
 Table.Item = Item;
-export {Table};
+export default Table;
