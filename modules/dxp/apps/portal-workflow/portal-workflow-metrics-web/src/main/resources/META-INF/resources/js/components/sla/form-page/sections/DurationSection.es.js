@@ -26,7 +26,7 @@ import {
 import {SLAFormContext} from '../SLAFormPageProvider.es';
 import {validateDuration, validateHours} from '../util/slaFormUtil.es';
 
-const DurationSection = ({onChangeHandler}) => {
+export default function DurationSection({onChangeHandler}) {
 	const {
 		calendars,
 		defaultCalendar,
@@ -167,6 +167,4 @@ const DurationSection = ({onChangeHandler}) => {
 			</ClayLayout.Row>
 		</>
 	);
-};
-
-export {DurationSection};
+}

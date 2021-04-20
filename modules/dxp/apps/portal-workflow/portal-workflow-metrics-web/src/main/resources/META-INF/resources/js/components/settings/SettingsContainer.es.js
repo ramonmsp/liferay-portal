@@ -15,7 +15,7 @@ import {Route, Switch} from 'react-router-dom';
 import {usePageTitle} from '../../shared/hooks/usePageTitle.es';
 import IndexesPage from './indexes-page/IndexesPage.es';
 
-const SettingsContainer = () => {
+export default function SettingsContainer() {
 	usePageTitle(Liferay.Language.get('settings'));
 
 	return (
@@ -23,6 +23,4 @@ const SettingsContainer = () => {
 			<Route component={IndexesPage} exact path="/settings/indexes" />
 		</Switch>
 	);
-};
-
-export default SettingsContainer;
+}

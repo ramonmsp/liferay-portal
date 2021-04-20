@@ -24,7 +24,7 @@ import {
 import {SLAFormContext} from '../SLAFormPageProvider.es';
 import {validateNodeKeys} from '../util/slaFormUtil.es';
 
-const TimeFrameSection = () => {
+export default function TimeFrameSection() {
 	const {
 		changeNodesKeys,
 		changePauseNodes,
@@ -164,6 +164,4 @@ const TimeFrameSection = () => {
 			</ClayLayout.Row>
 		</>
 	);
-};
-
-export {TimeFrameSection};
+}

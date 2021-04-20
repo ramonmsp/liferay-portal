@@ -25,7 +25,7 @@ import {
 } from './util/chart.es';
 import {HOURS, MONTHS, WEEKS, YEARS} from './util/chartConstants.es';
 
-const VelocityChart = ({timeRange, velocityData = {}, velocityUnit}) => {
+function VelocityChart({timeRange, velocityData = {}, velocityUnit}) {
 	const {isAmPm} = useContext(AppContext);
 
 	const {key: unitKey, name: unitName} = velocityUnit;
@@ -133,7 +133,7 @@ const VelocityChart = ({timeRange, velocityData = {}, velocityUnit}) => {
 			)}
 		</div>
 	);
-};
+}
 
 const Tooltip = (isAmPm, timeRange, unitKey, unitName) => (dataPoints) => {
 	const isValidDate = (date) => {
