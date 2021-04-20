@@ -24,7 +24,7 @@ import {InstanceListContext} from '../../InstanceListPageProvider.es';
 import {ModalContext} from '../ModalProvider.es';
 import UpdateDueDateStep from './UpdateDueDateStep.es';
 
-const SingleUpdateDueDateModal = () => {
+export default function SingleUpdateDueDateModal() {
 	const [errorToast, setErrorToast] = useState(false);
 	const [retry, setRetry] = useState(0);
 	const [sendingPost, setSendingPost] = useState(false);
@@ -178,6 +178,4 @@ const SingleUpdateDueDateModal = () => {
 			</PromisesResolver>
 		</>
 	);
-};
-
-export default SingleUpdateDueDateModal;
+}

@@ -14,9 +14,9 @@ import React, {useContext, useMemo, useState} from 'react';
 import PromisesResolver from '../../../../../../shared/components/promises-resolver/PromisesResolver.es';
 import {usePost} from '../../../../../../shared/hooks/usePost.es';
 import {ModalContext} from '../../../ModalProvider.es';
-import {Body} from './SelectTransitionStepBody.es';
+import Body from './SelectTransitionStepBody.es';
 
-const SelectTransitionStep = ({setErrorToast}) => {
+function SelectTransitionStep({setErrorToast}) {
 	const {
 		selectTasks: {tasks},
 	} = useContext(ModalContext);
@@ -61,7 +61,7 @@ const SelectTransitionStep = ({setErrorToast}) => {
 			</PromisesResolver>
 		</div>
 	);
-};
+}
 
 SelectTransitionStep.Body = Body;
 

@@ -18,7 +18,7 @@ import React, {useContext, useEffect, useState} from 'react';
 
 import {ModalContext} from '../../../ModalProvider.es';
 
-const Card = ({cardIndex, nextTransitions = [], tasks}) => {
+function Card({cardIndex, nextTransitions = [], tasks}) {
 	const {
 		bulkTransition: {transition, transitionTasks},
 		setBulkTransition,
@@ -189,9 +189,9 @@ const Card = ({cardIndex, nextTransitions = [], tasks}) => {
 			<Card.Footer comment={comment} setComment={setComment} />
 		</>
 	);
-};
+}
 
-const Footer = ({comment, setComment}) => {
+function Footer({comment, setComment}) {
 	const [addComment, setAddComment] = useState(false);
 
 	return (
@@ -225,8 +225,8 @@ const Footer = ({comment, setComment}) => {
 			)}
 		</ClayPanel.Footer>
 	);
-};
+}
 
 Card.Footer = Footer;
 
-export {Card};
+export default Card;

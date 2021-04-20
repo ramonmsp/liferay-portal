@@ -16,9 +16,9 @@ import React, {useMemo} from 'react';
 import ContentView from '../../../../../../shared/components/content-view/ContentView.es';
 import RetryButton from '../../../../../../shared/components/list/RetryButton.es';
 import {capitalize} from '../../../../../../shared/util/util.es';
-import {Card} from './SelectTransitionStepCard.es';
+import Card from './SelectTransitionStepCard.es';
 
-const Body = ({data, setRetry, tasks}) => {
+function Body({data, setRetry, tasks}) {
 	const {workflowTaskTransitions = []} = data;
 
 	const taskSteps = useMemo(() => {
@@ -119,8 +119,8 @@ const Body = ({data, setRetry, tasks}) => {
 			</ContentView>
 		</ClayModal.Body>
 	);
-};
+}
 
 Body.Card = Card;
 
-export {Body};
+export default Body;

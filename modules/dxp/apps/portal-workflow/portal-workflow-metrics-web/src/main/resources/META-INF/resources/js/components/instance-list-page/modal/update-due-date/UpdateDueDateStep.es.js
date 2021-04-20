@@ -56,7 +56,7 @@ const getTimeOptions = (isAmPm) => {
 	return times;
 };
 
-const UpdateDueDateStep = ({className, dueDate = new Date()}) => {
+function UpdateDueDateStep({className, dueDate = new Date()}) {
 	const {isAmPm} = useContext(AppContext);
 	const {setUpdateDueDate, updateDueDate} = useContext(ModalContext);
 
@@ -146,9 +146,9 @@ const UpdateDueDateStep = ({className, dueDate = new Date()}) => {
 			</ClayModal.Body>
 		</div>
 	);
-};
+}
 
-const TimePickerInputWithOptions = ({format, isAmPm, setValue, value}) => {
+function TimePickerInputWithOptions({format, isAmPm, setValue, value}) {
 	const [invalidTime, setInvalidTime] = useState(false);
 	const [showOptions, setShowOptions] = useState(false);
 	const inputRef = useRef();
@@ -199,7 +199,7 @@ const TimePickerInputWithOptions = ({format, isAmPm, setValue, value}) => {
 			)}
 		</div>
 	);
-};
+}
 
 UpdateDueDateStep.TimePickerInput = TimePickerInputWithOptions;
 

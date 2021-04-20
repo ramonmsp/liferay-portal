@@ -21,7 +21,7 @@ import SelectTasksStep from '../shared/select-tasks-step/SelectTasksStep.es';
 import {useFetchTasks} from '../shared/select-tasks-step/hooks/useFetchTasks.es';
 import UpdateDueDateStep from './UpdateDueDateStep.es';
 
-const BulkUpdateDueDateModal = () => {
+export default function BulkUpdateDueDateModal() {
 	const {setSelectAll, setSelectedItems} = useContext(InstanceListContext);
 	const {
 		closeModal,
@@ -182,6 +182,4 @@ const BulkUpdateDueDateModal = () => {
 			visible={visibleModal === 'bulkUpdateDueDate'}
 		/>
 	);
-};
-
-export default BulkUpdateDueDateModal;
+}
