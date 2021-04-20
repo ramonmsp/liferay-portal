@@ -13,7 +13,7 @@ import React, {createContext, useState} from 'react';
 
 const InstanceListContext = createContext(null);
 
-const InstanceListPageProvider = ({children}) => {
+export default function InstanceListPageProvider({children}) {
 	const [instanceId, setInstanceId] = useState();
 	const [selectAll, setSelectAll] = useState(false);
 	const [selectedItems, setSelectedItems] = useState([]);
@@ -33,7 +33,6 @@ const InstanceListPageProvider = ({children}) => {
 			{children}
 		</InstanceListContext.Provider>
 	);
-};
+}
 
 export {InstanceListContext};
-export default InstanceListPageProvider;

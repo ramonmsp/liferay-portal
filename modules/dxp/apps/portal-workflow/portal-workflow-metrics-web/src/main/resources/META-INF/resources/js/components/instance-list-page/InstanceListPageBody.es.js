@@ -27,12 +27,7 @@ import SingleTransitionModal from './modal/transition/single/SingleTransitionMod
 import BulkUpdateDueDateModal from './modal/update-due-date/BulkUpdateDueDateModal.es';
 import SingleUpdateDueDateModal from './modal/update-due-date/SingleUpdateDueDateModal.es';
 
-const Body = ({
-	data: {items, totalCount},
-	fetchData,
-	filtered,
-	routeParams,
-}) => {
+function Body({data: {items, totalCount}, fetchData, filtered, routeParams}) {
 	const {fetchOnClose, visibleModal} = useContext(ModalContext);
 	const previousFetchData = usePrevious(fetchData);
 	const promises = useMemo(() => {
@@ -85,9 +80,9 @@ const Body = ({
 			<Body.ModalWrapper />
 		</PromisesResolver>
 	);
-};
+}
 
-const ModalWrapper = () => {
+function ModalWrapper() {
 	return (
 		<>
 			<BulkReassignModal />
@@ -105,9 +100,9 @@ const ModalWrapper = () => {
 			<SingleUpdateDueDateModal />
 		</>
 	);
-};
+}
 
 Body.Table = Table;
 Body.ModalWrapper = ModalWrapper;
 
-export {Body};
+export default Body;

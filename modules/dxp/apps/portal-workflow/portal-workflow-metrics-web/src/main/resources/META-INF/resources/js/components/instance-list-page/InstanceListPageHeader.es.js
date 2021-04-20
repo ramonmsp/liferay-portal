@@ -30,13 +30,13 @@ import TimeRangeFilter from '../filter/TimeRangeFilter.es';
 import {InstanceListContext} from './InstanceListPageProvider.es';
 import {ModalContext} from './modal/ModalProvider.es';
 
-const Header = ({
+export default function Header({
 	filterKeys,
 	items = [],
 	routeParams,
 	selectedFilters,
 	totalCount,
-}) => {
+}) {
 	const {userId} = useContext(AppContext);
 	const {
 		selectAll,
@@ -228,6 +228,4 @@ const Header = ({
 			)}
 		</>
 	);
-};
-
-export {Header};
+}

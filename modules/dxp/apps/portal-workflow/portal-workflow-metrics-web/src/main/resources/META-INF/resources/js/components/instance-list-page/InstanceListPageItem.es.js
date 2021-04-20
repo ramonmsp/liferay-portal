@@ -57,8 +57,7 @@ const getDueDateFormatted = (dateOverdue) => {
 
 	return moment.utc(dateOverdue).format(format);
 };
-
-const Item = ({totalCount, ...instance}) => {
+function Item({totalCount, ...instance}) {
 	const {userId} = useContext(AppContext);
 	const {
 		selectedItems = [],
@@ -190,9 +189,9 @@ const Item = ({totalCount, ...instance}) => {
 			</ClayTable.Cell>
 		</ClayTable.Row>
 	);
-};
+}
 
-const QuickActionMenu = ({disabled, instance}) => {
+function QuickActionMenu({disabled, instance}) {
 	const {openModal, setSingleTransition} = useContext(ModalContext);
 	const {setSelectedItems} = useContext(InstanceListContext);
 	const {transitions = [], taskNames = []} = instance;
@@ -264,8 +263,8 @@ const QuickActionMenu = ({disabled, instance}) => {
 			<QuickActionKebab disabled={disabled} items={kebabItems} />
 		</ClayLayout.ContentCol>
 	);
-};
+}
 
 Item.QuickActionMenu = QuickActionMenu;
 
-export {Item};
+export default Item;

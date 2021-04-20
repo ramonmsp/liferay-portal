@@ -12,7 +12,7 @@
 import ClayTable from '@clayui/table';
 import React from 'react';
 
-import {Item} from './InstanceListPageItem.es';
+import Item from './InstanceListPageItem.es';
 
 const Table = ({items, totalCount}) => {
 	return (
