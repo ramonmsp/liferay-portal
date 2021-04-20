@@ -14,9 +14,9 @@ import React, {useMemo} from 'react';
 
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
 import {useFetch} from '../../../shared/hooks/useFetch.es';
-import {Body} from './IndexesPageBody.es';
+import Body from './IndexesPageBody.es';
 
-const IndexesPage = () => {
+function IndexesPage() {
 	const {data, fetchData} = useFetch({url: '/indexes'});
 
 	const promises = useMemo(() => [fetchData()], [fetchData]);
@@ -32,7 +32,7 @@ const IndexesPage = () => {
 			</PromisesResolver>
 		</ClayLayout.ContainerFluid>
 	);
-};
+}
 
 IndexesPage.Body = Body;
 
