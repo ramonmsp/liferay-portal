@@ -21,7 +21,7 @@ import AssigneeFilter from '../../../../filter/AssigneeFilter.es';
 import ProcessStepFilter from '../../../../filter/ProcessStepFilter.es';
 import {ModalContext} from '../../ModalProvider.es';
 
-const Header = ({items = [], instanceIds, totalCount, withoutUnassigned}) => {
+function Header({items = [], instanceIds, totalCount, withoutUnassigned}) {
 	const {userId, userName} = useContext(AppContext);
 	const filterKeys = ['processStep', 'assignee'];
 	const prefixKey = 'bulk';
@@ -179,6 +179,6 @@ const Header = ({items = [], instanceIds, totalCount, withoutUnassigned}) => {
 			)}
 		</>
 	);
-};
+}
 
-export {Header};
+export default Header;

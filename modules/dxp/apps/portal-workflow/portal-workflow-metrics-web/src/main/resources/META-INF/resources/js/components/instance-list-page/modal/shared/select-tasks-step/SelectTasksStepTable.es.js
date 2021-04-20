@@ -15,7 +15,7 @@ import React, {useContext} from 'react';
 
 import {ModalContext} from '../../ModalProvider.es';
 
-const Item = ({totalCount, ...task}) => {
+function Item({totalCount, ...task}) {
 	const {
 		selectTasks: {tasks},
 		setSelectTasks,
@@ -54,9 +54,9 @@ const Item = ({totalCount, ...task}) => {
 			</ClayTable.Cell>
 		</ClayTable.Row>
 	);
-};
+}
 
-const Table = ({items, totalCount}) => {
+function Table({items, totalCount}) {
 	return (
 		<ClayTable>
 			<ClayTable.Head>
@@ -128,8 +128,8 @@ const Table = ({items, totalCount}) => {
 			</ClayTable.Body>
 		</ClayTable>
 	);
-};
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;

@@ -15,9 +15,9 @@ import React from 'react';
 import ContentView from '../../../../../shared/components/content-view/ContentView.es';
 import RetryButton from '../../../../../shared/components/list/RetryButton.es';
 import PaginationBar from '../../../../../shared/components/pagination-bar/PaginationBar.es';
-import {Table} from './SelectTasksStepTable.es';
+import Table from './SelectTasksStepTable.es';
 
-const Body = ({filtered, items, pagination, setRetry, totalCount}) => {
+function Body({filtered, items, pagination, setRetry, totalCount}) {
 	const statesProps = {
 		emptyProps: {
 			className: 'py-4',
@@ -49,8 +49,8 @@ const Body = ({filtered, items, pagination, setRetry, totalCount}) => {
 			</ContentView>
 		</ClayModal.Body>
 	);
-};
+}
 
 Body.Table = Table;
 
-export {Body};
+export default Body;

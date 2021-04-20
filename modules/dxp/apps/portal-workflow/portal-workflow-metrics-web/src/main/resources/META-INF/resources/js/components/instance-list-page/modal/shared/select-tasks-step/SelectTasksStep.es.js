@@ -16,11 +16,11 @@ import {useFilter} from '../../../../../shared/hooks/useFilter.es';
 import {usePaginationState} from '../../../../../shared/hooks/usePaginationState.es';
 import {AppContext} from '../../../../AppContext.es';
 import {ModalContext} from '../../ModalProvider.es';
-import {Body} from './SelectTasksStepBody.es';
-import {Header} from './SelectTasksStepHeader.es';
+import Body from './SelectTasksStepBody.es';
+import Header from './SelectTasksStepHeader.es';
 import {useFetchTasks} from './hooks/useFetchTasks.es';
 
-const SelectTasksStep = ({setErrorToast, withoutUnassigned}) => {
+function SelectTasksStep({setErrorToast, withoutUnassigned}) {
 	const {deltaValues} = useContext(AppContext);
 	const {setSelectTasks} = useContext(ModalContext);
 
@@ -83,7 +83,7 @@ const SelectTasksStep = ({setErrorToast, withoutUnassigned}) => {
 			</PromisesResolver>
 		</div>
 	);
-};
+}
 
 SelectTasksStep.Body = Body;
 SelectTasksStep.Header = Header;
