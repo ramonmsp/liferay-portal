@@ -21,7 +21,7 @@ import SelectTasksStep from '../../shared/select-tasks-step/SelectTasksStep.es';
 import {useFetchTasks} from '../../shared/select-tasks-step/hooks/useFetchTasks.es';
 import SelectTransitionStep from './select-transition-step/SelectTransitionStep.es';
 
-const BulkTransitionModal = () => {
+export default function BulkTransitionModal() {
 	const {setSelectAll, setSelectedItems} = useContext(InstanceListContext);
 	const {
 		bulkTransition: {
@@ -189,6 +189,4 @@ const BulkTransitionModal = () => {
 			visible={visibleModal === 'bulkTransition'}
 		/>
 	);
-};
-
-export default BulkTransitionModal;
+}

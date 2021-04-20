@@ -22,9 +22,9 @@ import {useFetch} from '../../../../../shared/hooks/useFetch.es';
 import {usePost} from '../../../../../shared/hooks/usePost.es';
 import {InstanceListContext} from '../../../InstanceListPageProvider.es';
 import {ModalContext} from '../../ModalProvider.es';
-import {Table} from './SingleReassignModalTable.es';
+import Table from './SingleReassignModalTable.es';
 
-const SingleReassignModal = () => {
+function SingleReassignModal() {
 	const [errorToast, setErrorToast] = useState(false);
 	const [assigneeId, setAssigneeId] = useState();
 	const [retry, setRetry] = useState(0);
@@ -169,7 +169,7 @@ const SingleReassignModal = () => {
 			</PromisesResolver>
 		</>
 	);
-};
+}
 
 SingleReassignModal.Table = Table;
 

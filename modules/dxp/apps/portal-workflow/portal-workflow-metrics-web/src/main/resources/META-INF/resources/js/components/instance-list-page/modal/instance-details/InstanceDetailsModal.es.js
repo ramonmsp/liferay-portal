@@ -18,9 +18,9 @@ import PromisesResolver from '../../../../shared/components/promises-resolver/Pr
 import {useFetch} from '../../../../shared/hooks/useFetch.es';
 import {InstanceListContext} from '../../InstanceListPageProvider.es';
 import {ModalContext} from '../ModalProvider.es';
-import {Body} from './InstanceDetailsModalBody.es';
+import Body from './InstanceDetailsModalBody.es';
 
-const Header = ({completed, id = '', slaResults = [], slaStatus}) => {
+function Header({completed, id = '', slaResults = [], slaStatus}) {
 	const iconClasses = {
 		Empty: 'hr',
 		Overdue: 'exclamation-circle',
@@ -50,9 +50,9 @@ const Header = ({completed, id = '', slaResults = [], slaStatus}) => {
 			</PromisesResolver.Resolved>
 		</ClayModal.Header>
 	);
-};
+}
 
-const InstanceDetailsModal = () => {
+function InstanceDetailsModal() {
 	const [retry, setRetry] = useState(0);
 	const {instanceId, setInstanceId} = useContext(InstanceListContext);
 	const {closeModal, processId, visibleModal} = useContext(ModalContext);
@@ -91,7 +91,7 @@ const InstanceDetailsModal = () => {
 	) : (
 		<></>
 	);
-};
+}
 
 InstanceDetailsModal.Body = Body;
 InstanceDetailsModal.Header = Header;

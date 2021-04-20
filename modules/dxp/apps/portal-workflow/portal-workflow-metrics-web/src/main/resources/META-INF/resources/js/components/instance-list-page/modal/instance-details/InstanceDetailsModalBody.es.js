@@ -19,7 +19,7 @@ import ContentView from '../../../../shared/components/content-view/ContentView.
 import RetryButton from '../../../../shared/components/list/RetryButton.es';
 import moment from '../../../../shared/util/moment.es';
 
-const Body = ({
+function Body({
 	assetTitle,
 	assetType,
 	assignees = [{name: Liferay.Language.get('unassigned')}],
@@ -31,7 +31,7 @@ const Body = ({
 	id,
 	slaResults = [],
 	taskNames = [],
-}) => {
+}) {
 	const SLAs = {open: [], resolved: []};
 
 	slaResults.forEach((result) => {
@@ -169,23 +169,23 @@ const Body = ({
 			</ContentView>
 		</ClayModal.Body>
 	);
-};
+}
 
-const SectionTitle = ({children, className = ''}) => {
+function SectionTitle({children, className = ''}) {
 	const classNames = `${className} font-weight-medium mb-4`;
 
 	return <h4 className={classNames}>{children}</h4>;
-};
+}
 
-const SectionSubTitle = ({children}) => {
+function SectionSubTitle({children}) {
 	return (
 		<h5 className="font-weight-medium mb-4 mt-4 text-secondary">
 			{children}
 		</h5>
 	);
-};
+}
 
-const SectionAttribute = ({description, detail}) => {
+function SectionAttribute({description, detail}) {
 	return (
 		<ClayLayout.Row containerElement="p">
 			<ClayLayout.Col
@@ -201,9 +201,9 @@ const SectionAttribute = ({description, detail}) => {
 			</ClayLayout.Col>
 		</ClayLayout.Row>
 	);
-};
+}
 
-const SLAResultItem = ({dateOverdue, name, onTime, remainingTime, status}) => {
+function SLAResultItem({dateOverdue, name, onTime, remainingTime, status}) {
 	const bgColor = onTime ? 'success' : 'danger';
 	const iconName = onTime ? 'check-circle' : 'exclamation-circle';
 
@@ -257,11 +257,11 @@ const SLAResultItem = ({dateOverdue, name, onTime, remainingTime, status}) => {
 			<span className="small">{getStatusText(status)}</span>
 		</div>
 	);
-};
+}
 
 Body.SLAResultItem = SLAResultItem;
 Body.SectionTitle = SectionTitle;
 Body.SectionSubTitle = SectionSubTitle;
 Body.SectionAttribute = SectionAttribute;
 
-export {Body};
+export default Body;

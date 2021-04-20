@@ -13,7 +13,7 @@ import React, {createContext, useState} from 'react';
 
 const ModalContext = createContext();
 
-const ModalProvider = ({children, processId}) => {
+export default function ModalProvider({children, processId}) {
 	const [bulkReassign, setBulkReassign] = useState({
 		reassignedTasks: [],
 		reassigning: false,
@@ -67,7 +67,6 @@ const ModalProvider = ({children, processId}) => {
 			{children}
 		</ModalContext.Provider>
 	);
-};
+}
 
 export {ModalContext};
-export default ModalProvider;

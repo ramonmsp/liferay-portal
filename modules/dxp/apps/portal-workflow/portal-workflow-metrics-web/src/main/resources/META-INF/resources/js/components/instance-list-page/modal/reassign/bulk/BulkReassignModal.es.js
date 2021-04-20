@@ -22,7 +22,7 @@ import SelectTasksStep from '../../shared/select-tasks-step/SelectTasksStep.es';
 import {useFetchTasks} from '../../shared/select-tasks-step/hooks/useFetchTasks.es';
 import SelectAssigneesStep from './select-assignees-step/SelectAssigneesStep.es';
 
-const BulkReassignModal = () => {
+export default function BulkReassignModal() {
 	const {
 		bulkReassign: {reassignedTasks, reassigning},
 		closeModal,
@@ -185,6 +185,4 @@ const BulkReassignModal = () => {
 			visible={visibleModal === 'bulkReassign'}
 		/>
 	);
-};
-
-export default BulkReassignModal;
+}

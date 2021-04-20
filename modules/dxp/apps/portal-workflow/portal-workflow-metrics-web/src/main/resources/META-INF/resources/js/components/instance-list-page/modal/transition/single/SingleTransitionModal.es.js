@@ -21,7 +21,7 @@ import {usePost} from '../../../../../shared/hooks/usePost.es';
 import {InstanceListContext} from '../../../InstanceListPageProvider.es';
 import {ModalContext} from '../../ModalProvider.es';
 
-const SingleTransitionModal = () => {
+export default function SingleTransitionModal() {
 	const [comment, setComment] = useState('');
 	const {
 		closeModal,
@@ -143,6 +143,4 @@ const SingleTransitionModal = () => {
 			)}
 		</>
 	);
-};
-
-export default SingleTransitionModal;
+}
