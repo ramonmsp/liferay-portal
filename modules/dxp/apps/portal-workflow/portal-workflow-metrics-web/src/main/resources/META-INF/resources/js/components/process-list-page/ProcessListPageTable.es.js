@@ -15,12 +15,12 @@ import React from 'react';
 import ListHeadItem from '../../shared/components/list/ListHeadItem.es';
 import ChildLink from '../../shared/components/router/ChildLink.es';
 
-const Item = ({
+function Item({
 	instanceCount,
 	onTimeInstanceCount,
 	overdueInstanceCount,
 	process: {id, title},
-}) => {
+}) {
 	return (
 		<ClayTable.Row>
 			<ClayTable.Cell className="table-title">
@@ -40,9 +40,9 @@ const Item = ({
 			</ClayTable.Cell>
 		</ClayTable.Row>
 	);
-};
+}
 
-const Table = ({items}) => {
+function Table({items}) {
 	const onTimeTitle = Liferay.Language.get('on-time');
 	const overdueTitle = Liferay.Language.get('overdue');
 	const processNameTitle = Liferay.Language.get('process-name');
@@ -86,8 +86,8 @@ const Table = ({items}) => {
 			</ClayTable.Body>
 		</ClayTable>
 	);
-};
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;

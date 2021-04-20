@@ -32,7 +32,7 @@ import PendingItemsCard from './process-items/PendingItemsCard.es';
 import WorkloadByAssigneeCard from './workload-by-assignee-card/WorkloadByAssigneeCard.es';
 import WorkloadByStepCard from './workload-by-step-card/WorkloadByStepCard.es';
 
-const DashboardTab = (props) => {
+function DashboardTab(props) {
 	return (
 		<ClayLayout.ContainerFluid>
 			<ClayLayout.Row>
@@ -52,9 +52,9 @@ const DashboardTab = (props) => {
 			</ClayLayout.Row>
 		</ClayLayout.ContainerFluid>
 	);
-};
+}
 
-const PerformanceTab = (props) => {
+function PerformanceTab(props) {
 	useTimeRangeFetch();
 
 	return (
@@ -65,9 +65,9 @@ const PerformanceTab = (props) => {
 			<PerformanceByAssigneeCard {...props} />
 		</ClayLayout.ContainerFluid>
 	);
-};
+}
 
-const ProcessMetricsContainer = ({history, processId, query}) => {
+export default function ProcessMetricsContainer({history, processId, query}) {
 	const {defaultDelta} = useContext(AppContext);
 
 	useProcessTitle(processId);
@@ -136,6 +136,4 @@ const ProcessMetricsContainer = ({history, processId, query}) => {
 			</Switch>
 		</div>
 	);
-};
-
-export default ProcessMetricsContainer;
+}

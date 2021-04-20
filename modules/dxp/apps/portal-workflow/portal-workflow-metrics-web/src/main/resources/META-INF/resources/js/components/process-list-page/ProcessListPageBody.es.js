@@ -15,9 +15,9 @@ import React from 'react';
 import ContentView from '../../shared/components/content-view/ContentView.es';
 import ReloadButton from '../../shared/components/list/ReloadButton.es';
 import PaginationBar from '../../shared/components/pagination-bar/PaginationBar.es';
-import {Table} from './ProcessListPageTable.es';
+import Table from './ProcessListPageTable.es';
 
-const Body = ({filtered, items, page, pageSize, totalCount}) => {
+function Body({filtered, items, page, pageSize, totalCount}) {
 	const statesProps = {
 		emptyProps: {
 			filtered,
@@ -53,8 +53,8 @@ const Body = ({filtered, items, page, pageSize, totalCount}) => {
 			</ContentView>
 		</ClayLayout.ContainerFluid>
 	);
-};
+}
 
 Body.Table = Table;
 
-export {Body};
+export default Body;
