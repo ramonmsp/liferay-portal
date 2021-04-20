@@ -12,7 +12,7 @@
 import {cleanup, render} from '@testing-library/react';
 import React from 'react';
 
-import {CustomTimeRangeForm} from '../../../src/main/resources/META-INF/resources/js/components/filter/CustomTimeRangeForm.es';
+import CustomTimeRangeForm from '../../../src/main/resources/META-INF/resources/js/components/filter/CustomTimeRangeForm.es';
 import {MockRouter} from '../../mock/MockRouter.es';
 
 const query =
