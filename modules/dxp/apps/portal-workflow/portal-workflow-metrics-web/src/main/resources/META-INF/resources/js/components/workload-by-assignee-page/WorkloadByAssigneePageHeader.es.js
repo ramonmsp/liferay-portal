@@ -18,7 +18,12 @@ import SearchField from '../../shared/components/search-field/SearchField.es';
 import ProcessStepFilter from '../filter/ProcessStepFilter.es';
 import RoleFilter from '../filter/RoleFilter.es';
 
-const Header = ({filterKeys, routeParams, selectedFilters, totalCount}) => {
+export default function Header({
+	filterKeys,
+	routeParams,
+	selectedFilters,
+	totalCount,
+}) {
 	const showFiltersResult = routeParams.search || selectedFilters.length > 0;
 
 	return (
@@ -71,6 +76,4 @@ const Header = ({filterKeys, routeParams, selectedFilters, totalCount}) => {
 			)}
 		</>
 	);
-};
-
-export {Header};
+}

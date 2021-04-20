@@ -12,9 +12,9 @@
 import React from 'react';
 
 import ListHeadItem from '../../../shared/components/list/ListHeadItem.es';
-import {Item} from './WorkloadByStepCardItem.es';
+import Item from './WorkloadByStepCardItem.es';
 
-const Table = ({items, processId}) => {
+function Table({items, processId}) {
 	const onTimeTitle = Liferay.Language.get('on-time');
 	const overdueTitle = Liferay.Language.get('overdue');
 	const stepNameTitle = Liferay.Language.get('step-name');
@@ -68,7 +68,7 @@ const Table = ({items, processId}) => {
 			</table>
 		</div>
 	);
-};
+}
 
 Table.Item = Item;
-export {Table};
+export default Table;

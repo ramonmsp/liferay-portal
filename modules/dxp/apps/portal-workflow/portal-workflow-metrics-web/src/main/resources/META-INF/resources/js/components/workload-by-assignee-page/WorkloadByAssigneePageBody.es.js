@@ -15,9 +15,9 @@ import React from 'react';
 import ContentView from '../../shared/components/content-view/ContentView.es';
 import ReloadButton from '../../shared/components/list/ReloadButton.es';
 import PaginationBar from '../../shared/components/pagination-bar/PaginationBar.es';
-import {Table} from './WorkloadByAssigneePageTable.es';
+import Table from './WorkloadByAssigneePageTable.es';
 
-const Body = ({
+function Body({
 	filtered,
 	items,
 	page,
@@ -25,7 +25,7 @@ const Body = ({
 	processId,
 	taskNames,
 	totalCount,
-}) => {
+}) {
 	const statesProps = {
 		emptyProps: {filtered},
 		errorProps: {
@@ -59,8 +59,8 @@ const Body = ({
 			</ContentView>
 		</ClayLayout.ContainerFluid>
 	);
-};
+}
 
 Body.Table = Table;
 
-export {Body};
+export default Body;

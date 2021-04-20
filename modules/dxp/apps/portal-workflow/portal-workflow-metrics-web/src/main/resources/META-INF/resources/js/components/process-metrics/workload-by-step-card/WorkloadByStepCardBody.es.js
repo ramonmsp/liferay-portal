@@ -15,9 +15,9 @@ import React from 'react';
 import ContentView from '../../../shared/components/content-view/ContentView.es';
 import ReloadButton from '../../../shared/components/list/ReloadButton.es';
 import PaginationBar from '../../../shared/components/pagination-bar/PaginationBar.es';
-import {Table} from './WorkloadByStepCardTable.es';
+import Table from './WorkloadByStepCardTable.es';
 
-const Body = ({items, page, pageSize, processId, totalCount}) => {
+function Body({items, page, pageSize, processId, totalCount}) {
 	const statesProps = {
 		emptyProps: {
 			className: 'py-6',
@@ -52,8 +52,8 @@ const Body = ({items, page, pageSize, processId, totalCount}) => {
 			</ContentView>
 		</ClayPanel.Body>
 	);
-};
+}
 
 Body.Table = Table;
 
-export {Body};
+export default Body;

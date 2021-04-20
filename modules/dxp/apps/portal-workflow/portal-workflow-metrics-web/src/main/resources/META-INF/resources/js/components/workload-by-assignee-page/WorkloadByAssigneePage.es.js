@@ -16,10 +16,10 @@ import {parse} from '../../shared/components/router/queryString.es';
 import {useFilter} from '../../shared/hooks/useFilter.es';
 import {usePost} from '../../shared/hooks/usePost.es';
 import {useProcessTitle} from '../../shared/hooks/useProcessTitle.es';
-import {Body} from './WorkloadByAssigneePageBody.es';
-import {Header} from './WorkloadByAssigneePageHeader.es';
+import Body from './WorkloadByAssigneePageBody.es';
+import Header from './WorkloadByAssigneePageHeader.es';
 
-const WorkloadByAssigneePage = ({query, routeParams}) => {
+function WorkloadByAssigneePage({query, routeParams}) {
 	const {processId, ...paginationParams} = routeParams;
 
 	const {search = null} = parse(query);
@@ -62,7 +62,7 @@ const WorkloadByAssigneePage = ({query, routeParams}) => {
 			/>
 		</PromisesResolver>
 	);
-};
+}
 
 WorkloadByAssigneePage.Body = Body;
 WorkloadByAssigneePage.Header = Header;

@@ -15,9 +15,9 @@ import React, {useMemo} from 'react';
 import PanelHeaderWithOptions from '../../../shared/components/panel-header-with-options/PanelHeaderWithOptions.es';
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
 import {useFetch} from '../../../shared/hooks/useFetch.es';
-import {Body} from './WorkloadByStepCardBody.es';
+import Body from './WorkloadByStepCardBody.es';
 
-const WorkloadByStepCard = ({processId, routeParams}) => {
+function WorkloadByStepCard({processId, routeParams}) {
 	const {data, fetchData} = useFetch({
 		params: routeParams,
 		url: `/processes/${processId}/nodes/metrics`,
@@ -41,7 +41,7 @@ const WorkloadByStepCard = ({processId, routeParams}) => {
 			</ClayPanel>
 		</PromisesResolver>
 	);
-};
+}
 
 WorkloadByStepCard.Body = Body;
 

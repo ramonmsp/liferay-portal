@@ -19,14 +19,14 @@ import {AppContext} from '../AppContext.es';
 import {processStatusConstants} from '../filter/ProcessStatusFilter.es';
 import {slaStatusConstants} from '../filter/SLAStatusFilter.es';
 
-const Item = ({
+function Item({
 	assignee: {id, image, name},
 	onTimeTaskCount,
 	overdueTaskCount,
 	processId,
 	taskCount,
 	taskNames,
-}) => {
+}) {
 	const {defaultDelta} = useContext(AppContext);
 
 	const getFiltersQuery = (slaStatus) => ({
@@ -87,9 +87,9 @@ const Item = ({
 			</td>
 		</tr>
 	);
-};
+}
 
-const Table = ({items, processId, taskNames}) => {
+function Table({items, processId, taskNames}) {
 	return (
 		<div className="table-responsive workflow-process-dashboard">
 			<table className="table table-heading-nowrap table-hover table-list">
@@ -142,8 +142,8 @@ const Table = ({items, processId, taskNames}) => {
 			</table>
 		</div>
 	);
-};
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;

@@ -16,13 +16,13 @@ import ChildLink from '../../../shared/components/router/ChildLink.es';
 import {AppContext} from '../../AppContext.es';
 import {processStatusConstants} from '../../filter/ProcessStatusFilter.es';
 
-const Item = ({
+function Item({
 	instanceCount,
 	node: {label, name},
 	onTimeInstanceCount,
 	overdueInstanceCount,
 	processId,
-}) => {
+}) {
 	const {defaultDelta} = useContext(AppContext);
 	const getFiltersQuery = (slaStatusFilter) => {
 		return {
@@ -72,6 +72,6 @@ const Item = ({
 			</td>
 		</tr>
 	);
-};
+}
 
-export {Item};
+export default Item;

@@ -18,7 +18,7 @@ import {AppContext} from '../../AppContext.es';
 import {processStatusConstants} from '../../filter/ProcessStatusFilter.es';
 import {slaStatusConstants} from '../../filter/SLAStatusFilter.es';
 
-const Item = ({
+function Item({
 	assignee: {id, name},
 	currentTab,
 	onTimeTaskCount,
@@ -26,7 +26,7 @@ const Item = ({
 	processId,
 	processStepKey,
 	taskCount,
-}) => {
+}) {
 	const {defaultDelta} = useContext(AppContext);
 
 	const counts = {
@@ -72,26 +72,28 @@ const Item = ({
 			</td>
 		</tr>
 	);
-};
+}
 
-const Table = ({currentTab, items = [], processId, processStepKey}) => (
-	<div className="mb-3 table-fit-panel">
-		<table className="table table-autofit table-hover">
-			<tbody>
-				{items.map((item, index) => (
-					<Table.Item
-						{...item}
-						currentTab={currentTab}
-						key={index}
-						processId={processId}
-						processStepKey={processStepKey}
-					/>
-				))}
-			</tbody>
-		</table>
-	</div>
-);
+function Table({currentTab, items = [], processId, processStepKey}) {
+	return (
+		<div className="mb-3 table-fit-panel">
+			<table className="table table-autofit table-hover">
+				<tbody>
+					{items.map((item, index) => (
+						<Table.Item
+							{...item}
+							currentTab={currentTab}
+							key={index}
+							processId={processId}
+							processStepKey={processStepKey}
+						/>
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;
