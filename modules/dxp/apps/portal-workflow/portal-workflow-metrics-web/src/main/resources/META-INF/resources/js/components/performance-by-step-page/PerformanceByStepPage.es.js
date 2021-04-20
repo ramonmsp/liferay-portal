@@ -18,10 +18,10 @@ import {useFilter} from '../../shared/hooks/useFilter.es';
 import {useProcessTitle} from '../../shared/hooks/useProcessTitle.es';
 import {useTimeRangeFetch} from '../filter/hooks/useTimeRangeFetch.es';
 import {getTimeRangeParams} from '../filter/util/timeRangeUtil.es';
-import {Body} from './PerformanceByStepPageBody.es';
-import {Header} from './PerformanceByStepPageHeader.es';
+import Body from './PerformanceByStepPageBody.es';
+import Header from './PerformanceByStepPageHeader.es';
 
-const PerformanceByStepPage = ({query, routeParams}) => {
+function PerformanceByStepPage({query, routeParams}) {
 	useTimeRangeFetch();
 
 	const {processId, ...paginationParams} = routeParams;
@@ -57,7 +57,7 @@ const PerformanceByStepPage = ({query, routeParams}) => {
 			<PerformanceByStepPage.Body {...data} filtered={search} />
 		</PromisesResolver>
 	);
-};
+}
 
 PerformanceByStepPage.Body = Body;
 PerformanceByStepPage.Header = Header;

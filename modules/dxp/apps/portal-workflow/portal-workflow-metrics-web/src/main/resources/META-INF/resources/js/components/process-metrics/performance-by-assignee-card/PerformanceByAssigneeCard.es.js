@@ -22,7 +22,7 @@ import TimeRangeFilter from '../../filter/TimeRangeFilter.es';
 import {getTimeRangeParams} from '../../filter/util/timeRangeUtil.es';
 import {Body, Footer} from './PerformanceByAssigneeCardBody.es';
 
-const Header = ({disableFilters, prefixKey, processId}) => {
+function Header({disableFilters, prefixKey, processId}) {
 	return (
 		<PanelHeaderWithOptions
 			className="dashboard-panel-header"
@@ -56,9 +56,9 @@ const Header = ({disableFilters, prefixKey, processId}) => {
 			</ClayLayout.ContentCol>
 		</PanelHeaderWithOptions>
 	);
-};
+}
 
-const PerformanceByAssigneeCard = ({routeParams}) => {
+function PerformanceByAssigneeCard({routeParams}) {
 	const {processId} = routeParams;
 	const filterKeys = ['processStep', 'timeRange'];
 	const prefixKey = 'assignee';
@@ -128,7 +128,7 @@ const PerformanceByAssigneeCard = ({routeParams}) => {
 			</PromisesResolver>
 		</ClayPanel>
 	);
-};
+}
 
 PerformanceByAssigneeCard.Body = Body;
 PerformanceByAssigneeCard.Footer = Footer;

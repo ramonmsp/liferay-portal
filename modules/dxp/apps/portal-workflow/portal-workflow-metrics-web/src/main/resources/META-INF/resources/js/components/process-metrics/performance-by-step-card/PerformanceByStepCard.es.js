@@ -21,25 +21,29 @@ import TimeRangeFilter from '../../filter/TimeRangeFilter.es';
 import {getTimeRangeParams} from '../../filter/util/timeRangeUtil.es';
 import {Body, Footer} from './PerformanceByStepCardBody.es';
 
-const Header = ({disableFilters, prefixKey, totalCount}) => (
-	<PanelHeaderWithOptions
-		className="dashboard-panel-header"
-		description={Liferay.Language.get('performance-by-step-description')}
-		title={Liferay.Language.get('performance-by-step')}
-	>
-		<ClayLayout.ContentCol className="m-0 management-bar management-bar-light navbar">
-			<ul className="navbar-nav">
-				<TimeRangeFilter
-					disabled={!totalCount || disableFilters}
-					options={{position: 'right'}}
-					prefixKey={prefixKey}
-				/>
-			</ul>
-		</ClayLayout.ContentCol>
-	</PanelHeaderWithOptions>
-);
+function Header({disableFilters, prefixKey, totalCount}) {
+	return (
+		<PanelHeaderWithOptions
+			className="dashboard-panel-header"
+			description={Liferay.Language.get(
+				'performance-by-step-description'
+			)}
+			title={Liferay.Language.get('performance-by-step')}
+		>
+			<ClayLayout.ContentCol className="m-0 management-bar management-bar-light navbar">
+				<ul className="navbar-nav">
+					<TimeRangeFilter
+						disabled={!totalCount || disableFilters}
+						options={{position: 'right'}}
+						prefixKey={prefixKey}
+					/>
+				</ul>
+			</ClayLayout.ContentCol>
+		</PanelHeaderWithOptions>
+	);
+}
 
-const PerformanceByStepCard = ({routeParams}) => {
+function PerformanceByStepCard({routeParams}) {
 	const {processId} = routeParams;
 	const filterKeys = ['timeRange'];
 	const prefixKey = 'step';
@@ -98,7 +102,7 @@ const PerformanceByStepCard = ({routeParams}) => {
 			</PromisesResolver>
 		</ClayPanel>
 	);
-};
+}
 
 PerformanceByStepCard.Body = Body;
 PerformanceByStepCard.Footer = Footer;

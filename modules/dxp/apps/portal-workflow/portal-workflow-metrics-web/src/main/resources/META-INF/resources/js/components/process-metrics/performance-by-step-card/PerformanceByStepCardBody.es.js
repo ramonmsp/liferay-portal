@@ -17,9 +17,9 @@ import ContentView from '../../../shared/components/content-view/ContentView.es'
 import ReloadButton from '../../../shared/components/list/ReloadButton.es';
 import ChildLink from '../../../shared/components/router/ChildLink.es';
 import {AppContext} from '../../AppContext.es';
-import {Table} from './PerformanceByStepCardTable.es';
+import Table from './PerformanceByStepCardTable.es';
 
-const Body = ({items, totalCount}) => {
+function Body({items, totalCount}) {
 	const statesProps = {
 		emptyProps: {
 			className: 'mt-5 py-8',
@@ -45,9 +45,9 @@ const Body = ({items, totalCount}) => {
 			</ContentView>
 		</ClayPanel.Body>
 	);
-};
+}
 
-const Footer = ({processId, timeRange, totalCount}) => {
+function Footer({processId, timeRange, totalCount}) {
 	const {defaultDelta} = useContext(AppContext);
 	const filters = {};
 
@@ -80,7 +80,7 @@ const Footer = ({processId, timeRange, totalCount}) => {
 			</div>
 		</ClayPanel.Footer>
 	);
-};
+}
 
 Body.Table = Table;
 

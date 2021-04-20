@@ -17,12 +17,12 @@ import {
 	isValidNumber,
 } from '../../../shared/util/util.es';
 
-const Item = ({
+function Item({
 	breachedInstanceCount,
 	breachedInstancePercentage,
 	durationAvg,
 	node: {label},
-}) => {
+}) {
 	const formattedDuration = formatDuration(durationAvg);
 	const formattedPercentage = getFormattedPercentage(
 		breachedInstancePercentage,
@@ -43,36 +43,38 @@ const Item = ({
 			<td className="text-right">{formattedDuration}</td>
 		</tr>
 	);
-};
+}
 
-const Table = ({items = []}) => (
-	<div className="mb-3 table-responsive table-scrollable">
-		<table className="table table-autofit table-heading-nowrap table-hover table-list">
-			<thead>
-				<tr>
-					<th style={{width: '60%'}}>
-						{Liferay.Language.get('step-name')}
-					</th>
+function Table({items = []}) {
+	return (
+		<div className="mb-3 table-responsive table-scrollable">
+			<table className="table table-autofit table-heading-nowrap table-hover table-list">
+				<thead>
+					<tr>
+						<th style={{width: '60%'}}>
+							{Liferay.Language.get('step-name')}
+						</th>
 
-					<th className="text-right" style={{width: '20%'}}>
-						{Liferay.Language.get('sla-breached-percent')}
-					</th>
+						<th className="text-right" style={{width: '20%'}}>
+							{Liferay.Language.get('sla-breached-percent')}
+						</th>
 
-					<th className="text-right" style={{width: '20%'}}>
-						{Liferay.Language.get('average-completion-time')}
-					</th>
-				</tr>
-			</thead>
+						<th className="text-right" style={{width: '20%'}}>
+							{Liferay.Language.get('average-completion-time')}
+						</th>
+					</tr>
+				</thead>
 
-			<tbody>
-				{items.map((item, index) => (
-					<Table.Item {...item} key={index} />
-				))}
-			</tbody>
-		</table>
-	</div>
-);
+				<tbody>
+					{items.map((item, index) => (
+						<Table.Item {...item} key={index} />
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;

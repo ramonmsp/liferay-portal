@@ -16,7 +16,7 @@ import ResultsBar from '../../shared/components/results-bar/ResultsBar.es';
 import SearchField from '../../shared/components/search-field/SearchField.es';
 import TimeRangeFilter from '../filter/TimeRangeFilter.es';
 
-const Header = ({filterKeys, routeParams, totalCount}) => {
+export default function Header({filterKeys, routeParams, totalCount}) {
 	return (
 		<>
 			<ClayManagementToolbar className="mb-0">
@@ -58,6 +58,4 @@ const Header = ({filterKeys, routeParams, totalCount}) => {
 			)}
 		</>
 	);
-};
-
-export {Header};
+}

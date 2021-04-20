@@ -14,7 +14,7 @@ import React from 'react';
 import UserAvatar from '../../../shared/components/user-avatar/UserAvatar.es';
 import {formatDuration} from '../../../shared/util/duration.es';
 
-const Item = ({assignee: {image, name}, durationTaskAvg, id, taskCount}) => {
+function Item({assignee: {image, name}, durationTaskAvg, id, taskCount}) {
 	const formattedDuration = formatDuration(durationTaskAvg);
 
 	return (
@@ -33,9 +33,9 @@ const Item = ({assignee: {image, name}, durationTaskAvg, id, taskCount}) => {
 			</td>
 		</tr>
 	);
-};
+}
 
-const Table = ({items}) => {
+function Table({items}) {
 	return (
 		<div className="mb-3 table-responsive table-scrollable">
 			<table className="table table-autofit table-heading-nowrap table-hover table-list">
@@ -71,8 +71,8 @@ const Table = ({items}) => {
 			</table>
 		</div>
 	);
-};
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;

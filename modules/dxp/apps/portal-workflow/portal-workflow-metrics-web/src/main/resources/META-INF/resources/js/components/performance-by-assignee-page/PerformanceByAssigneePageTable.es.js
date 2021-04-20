@@ -16,7 +16,7 @@ import ListHeadItem from '../../shared/components/list/ListHeadItem.es';
 import UserAvatar from '../../shared/components/user-avatar/UserAvatar.es';
 import {formatDuration} from '../../shared/util/duration.es';
 
-const Item = ({assignee: {image, name}, durationTaskAvg, id, taskCount}) => {
+function Item({assignee: {image, name}, durationTaskAvg, id, taskCount}) {
 	const formattedDuration = formatDuration(durationTaskAvg);
 
 	return (
@@ -38,9 +38,9 @@ const Item = ({assignee: {image, name}, durationTaskAvg, id, taskCount}) => {
 			</ClayTable.Cell>
 		</ClayTable.Row>
 	);
-};
+}
 
-const Table = ({items}) => {
+function Table({items}) {
 	return (
 		<ClayTable>
 			<ClayTable.Head>
@@ -74,8 +74,8 @@ const Table = ({items}) => {
 			</ClayTable.Body>
 		</ClayTable>
 	);
-};
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;

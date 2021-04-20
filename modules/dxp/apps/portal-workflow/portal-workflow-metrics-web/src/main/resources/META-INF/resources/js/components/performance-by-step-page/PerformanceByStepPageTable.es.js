@@ -16,12 +16,12 @@ import ListHeadItem from '../../shared/components/list/ListHeadItem.es';
 import {formatDuration} from '../../shared/util/duration.es';
 import {getFormattedPercentage, isValidNumber} from '../../shared/util/util.es';
 
-const Item = ({
+function Item({
 	breachedInstanceCount,
 	breachedInstancePercentage,
 	durationAvg,
 	node: {label},
-}) => {
+}) {
 	const formattedDuration = formatDuration(durationAvg);
 	const formattedPercentage = getFormattedPercentage(
 		breachedInstancePercentage,
@@ -44,9 +44,9 @@ const Item = ({
 			</ClayTable.Cell>
 		</ClayTable.Row>
 	);
-};
+}
 
-const Table = ({items}) => {
+function Table({items}) {
 	return (
 		<ClayTable>
 			<ClayTable.Head>
@@ -88,8 +88,8 @@ const Table = ({items}) => {
 			</ClayTable.Body>
 		</ClayTable>
 	);
-};
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;

@@ -18,9 +18,9 @@ import ReloadButton from '../../../shared/components/list/ReloadButton.es';
 import PromisesResolver from '../../../shared/components/promises-resolver/PromisesResolver.es';
 import ChildLink from '../../../shared/components/router/ChildLink.es';
 import {AppContext} from '../../AppContext.es';
-import {Table} from './PerformanceByAssigneeCardTable.es';
+import Table from './PerformanceByAssigneeCardTable.es';
 
-const Body = ({filtered, items, totalCount}) => {
+function Body({filtered, items, totalCount}) {
 	const statesProps = {
 		emptyProps: {
 			className: 'mt-5 py-8',
@@ -47,9 +47,9 @@ const Body = ({filtered, items, totalCount}) => {
 			</ContentView>
 		</ClayPanel.Body>
 	);
-};
+}
 
-const Footer = ({processId, processStep, timeRange, totalCount}) => {
+function Footer({processId, processStep, timeRange, totalCount}) {
 	const {defaultDelta} = useContext(AppContext);
 	const filters = {};
 	const {dateEnd, dateStart, key} = timeRange;
@@ -90,7 +90,7 @@ const Footer = ({processId, processStep, timeRange, totalCount}) => {
 			) : null}
 		</PromisesResolver.Resolved>
 	);
-};
+}
 
 Body.Table = Table;
 
