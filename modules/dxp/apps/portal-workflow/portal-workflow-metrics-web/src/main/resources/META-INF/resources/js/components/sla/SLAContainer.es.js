@@ -18,7 +18,7 @@ import SLAListPage from './list-page/SLAListPage.es';
 
 const SLAContext = createContext();
 
-const SLAContainer = () => {
+export default function SLAContainer() {
 	const [SLAUpdated, setSLAUpdated] = useState(false);
 
 	return (
@@ -44,7 +44,6 @@ const SLAContainer = () => {
 			</Switch>
 		</SLAContext.Provider>
 	);
-};
+}
 
 export {SLAContext};
-export default SLAContainer;

@@ -12,7 +12,7 @@
 import ClayAlert from '@clayui/alert';
 import React, {useState} from 'react';
 
-const AlertChange = () => {
+function AlertChange() {
 	const [visible, setVisible] = useState(true);
 
 	return (
@@ -28,12 +28,14 @@ const AlertChange = () => {
 			</ClayAlert>
 		)
 	);
-};
+}
 
-const AlertMessage = ({message}) => (
-	<ClayAlert displayType="danger" title={Liferay.Language.get('error')}>
-		{message}
-	</ClayAlert>
-);
+function AlertMessage({message}) {
+	return (
+		<ClayAlert displayType="danger" title={Liferay.Language.get('error')}>
+			{message}
+		</ClayAlert>
+	);
+}
 
 export {AlertChange, AlertMessage};

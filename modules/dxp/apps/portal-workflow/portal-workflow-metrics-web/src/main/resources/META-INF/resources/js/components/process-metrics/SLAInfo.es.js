@@ -18,7 +18,7 @@ import {useFetch} from '../../shared/hooks/useFetch.es';
 import {sub} from '../../shared/util/lang.es';
 import {AppContext} from '../AppContext.es';
 
-const SLAInfo = ({processId}) => {
+function SLAInfo({processId}) {
 	const [alert, setAlert] = useState(null);
 	const {defaultDelta} = useContext(AppContext);
 
@@ -91,6 +91,6 @@ const SLAInfo = ({processId}) => {
 			)}
 		</>
 	);
-};
+}
 
 export default SLAInfo;

@@ -18,7 +18,7 @@ import {useSLANodes} from './hooks/useSLANodes.es';
 
 const SLAFormContext = createContext({});
 
-const SLAFormPageProvider = ({children, id, processId}) => {
+function SLAFormPageProvider({children, id, processId}) {
 	const [errors, setErrors] = useState({});
 
 	const {fetchCalendars, ...calendarsData} = useCalendars();
@@ -55,7 +55,7 @@ const SLAFormPageProvider = ({children, id, processId}) => {
 			</SLAFormContext.Provider>
 		</PromisesResolver>
 	);
-};
+}
 
 export {SLAFormContext};
 export default SLAFormPageProvider;

@@ -33,8 +33,8 @@ import {
 } from './SLAFormConstants.es';
 import {AlertChange, AlertMessage} from './SLAFormPageAlerts.es';
 import {SLAFormContext} from './SLAFormPageProvider.es';
-import {DurationSection} from './sections/DurationSection.es';
-import {TimeFrameSection} from './sections/TimeFrameSection.es';
+import DurationSection from './sections/DurationSection.es';
+import TimeFrameSection from './sections/TimeFrameSection.es';
 import {
 	hasErrors,
 	validateDuration,
@@ -43,7 +43,7 @@ import {
 	validateNodeKeys,
 } from './util/slaFormUtil.es';
 
-const Body = ({history, id, processId, query}) => {
+function Body({history, id, processId, query}) {
 	const {defaultDelta} = useContext(AppContext);
 	const {setSLAUpdated} = useContext(SLAContext);
 	const {
@@ -262,11 +262,11 @@ const Body = ({history, id, processId, query}) => {
 			</ClayForm>
 		</ContentView>
 	);
-};
+}
 
 Body.AlertChange = AlertChange;
 Body.AlertMessage = AlertMessage;
 Body.DurationSection = DurationSection;
 Body.TimeFrameSection = TimeFrameSection;
 
-export {Body};
+export default Body;

@@ -12,9 +12,9 @@
 import ClayTable from '@clayui/table';
 import React from 'react';
 
-import {Item} from './SLAListPageTableItem.es';
+import Item from './SLAListPageTableItem.es';
 
-const Table = ({items}) => {
+function Table({items}) {
 	const blockedItems = items.filter(({status}) => status === 2);
 	const unblockedItems = items.filter(({status}) => status !== 2);
 
@@ -76,8 +76,8 @@ const Table = ({items}) => {
 			</ClayTable.Body>
 		</ClayTable>
 	);
-};
+}
 
 Table.Item = Item;
 
-export {Table};
+export default Table;

@@ -14,9 +14,9 @@ import React from 'react';
 import ContentView from '../../../shared/components/content-view/ContentView.es';
 import ReloadButton from '../../../shared/components/list/ReloadButton.es';
 import PaginationBar from '../../../shared/components/pagination-bar/PaginationBar.es';
-import {Table} from './SLAListPageTable.es';
+import Table from './SLAListPageTable.es';
 
-const Body = ({items, page, pageSize, totalCount}) => {
+export default function Body({items, page, pageSize, totalCount}) {
 	const statesProps = {
 		emptyProps: {
 			hideAnimation: false,
@@ -49,6 +49,4 @@ const Body = ({items, page, pageSize, totalCount}) => {
 			)}
 		</ContentView>
 	);
-};
-
-export {Body};
+}

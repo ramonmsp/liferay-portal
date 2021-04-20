@@ -11,10 +11,10 @@
 
 import React from 'react';
 
-import {Body} from './SLAFormPageBody.es';
+import Body from './SLAFormPageBody.es';
 import SLAFormPageProvider from './SLAFormPageProvider.es';
 
-const SLAFormPage = (props) => {
+function SLAFormPage(props) {
 	return (
 		<div className="sla-form">
 			<SLAFormPageProvider {...props}>
@@ -22,7 +22,7 @@ const SLAFormPage = (props) => {
 			</SLAFormPageProvider>
 		</div>
 	);
-};
+}
 
 SLAFormPage.Body = Body;
 

@@ -15,7 +15,7 @@ import React from 'react';
 
 import ChildLink from '../../../shared/components/router/ChildLink.es';
 
-const Header = ({processId}) => {
+export default function Header({processId}) {
 	return (
 		<ClayManagementToolbar>
 			<ClayManagementToolbar.ItemList expand>
@@ -38,6 +38,4 @@ const Header = ({processId}) => {
 			</ClayManagementToolbar.ItemList>
 		</ClayManagementToolbar>
 	);
-};
-
-export {Header};
+}
