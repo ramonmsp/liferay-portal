@@ -21,9 +21,9 @@ import TimeRangeFilter from '../../filter/TimeRangeFilter.es';
 import VelocityUnitFilter from '../../filter/VelocityUnitFilter.es';
 import {getTimeRangeParams} from '../../filter/util/timeRangeUtil.es';
 import {getVelocityUnits} from '../../filter/util/velocityUnitUtil.es';
-import {Body} from './CompletionVelocityCardBody.es';
+import Body from './CompletionVelocityCardBody.es';
 
-const CompletionVelocityCard = ({routeParams}) => {
+function CompletionVelocityCard({routeParams}) {
 	const {processId} = routeParams;
 	const filterKeys = ['timeRange', 'velocityUnit'];
 	const prefixKey = 'completion';
@@ -88,9 +88,9 @@ const CompletionVelocityCard = ({routeParams}) => {
 			</ClayPanel>
 		</PromisesResolver>
 	);
-};
+}
 
-const Header = ({disableFilters, prefixKey, timeRange}) => {
+function Header({disableFilters, prefixKey, timeRange}) {
 	return (
 		<PanelHeaderWithOptions
 			className="dashboard-panel-header pb-0"
@@ -117,7 +117,7 @@ const Header = ({disableFilters, prefixKey, timeRange}) => {
 			</ClayLayout.ContentCol>
 		</PanelHeaderWithOptions>
 	);
-};
+}
 
 CompletionVelocityCard.Header = Header;
 CompletionVelocityCard.Body = Body;
