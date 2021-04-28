@@ -72,7 +72,7 @@ const mockProps = {
 };
 
 describe('The App component should', () => {
-	let container, getByText;
+	let container, findByText, getByText;
 
 	beforeAll(() => {
 		const header = document.createElement('div');
@@ -86,6 +86,7 @@ describe('The App component should', () => {
 
 		container = renderResult.container;
 		getByText = renderResult.getByText;
+		findByText = renderResult.findByText;
 	});
 
 	test('Navigate to settings indexes page', () => {
@@ -122,6 +123,7 @@ describe('The App component should', () => {
 		);
 
 		const tabs = container.querySelectorAll('a.nav-link');
+		const metricsCalculated = findByText('SLA Metrics calculated');
 
 		expect(tabs[0]).toHaveTextContent('dashboard');
 		expect(tabs[0].className.includes('active')).toBe(true);
@@ -130,6 +132,8 @@ describe('The App component should', () => {
 		expect(window.location.hash).toContain(
 			'#/metrics/1234/dashboard/20/1/overdueInstanceCount%3Aasc'
 		);
+
+		expect(metricsCalculated).toBeTruthy();
 
 		fireEvent.click(tabs[1]);
 	});
