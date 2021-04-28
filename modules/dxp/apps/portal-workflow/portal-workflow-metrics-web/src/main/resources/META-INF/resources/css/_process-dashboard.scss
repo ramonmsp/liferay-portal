@@ -180,6 +180,16 @@ $c: '.workflow-process-dashboard';
 	}
 }
 
+.updated-info-container {
+	.metrics-calculated-info {
+		color: #6b6c7e;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: normal;
+		line-height: 23.38px;
+	}
+}
+
 .workload-by-assignee-card {
 	.assignee-name {
 		font-size: 0.75rem;
