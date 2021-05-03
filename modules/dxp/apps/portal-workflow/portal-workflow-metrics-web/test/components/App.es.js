@@ -139,6 +139,7 @@ describe('The App component should', () => {
 	});
 
 	test('Render the process metrics page on performance tab and back to dashboard', () => {
+		const metricsCalculated = findByText('SLA Metrics calculated');
 		const tabs = container.querySelectorAll('a.nav-link');
 
 		expect(tabs[0]).toHaveTextContent('dashboard');
@@ -146,6 +147,8 @@ describe('The App component should', () => {
 		expect(tabs[1].className.includes('active')).toBe(true);
 
 		expect(window.location.hash).toContain('#/metrics/1234/performance');
+
+		expect(metricsCalculated).toBeTruthy();
 
 		fireEvent.click(tabs[0]);
 
