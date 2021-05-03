@@ -77,16 +77,35 @@ const DashboardTab = ({processId, routeParams}) => {
 	);
 };
 
-function PerformanceTab(props) {
+function PerformanceTab({processId, routeParams}) {
+	const {dateModified, fetchData} = useDateModified({processId});
+
+	const previousFetchData = usePrevious(fetchData);
+	const promises = useMemo(() => {
+		if (previousFetchData !== fetchData) {
+			return [fetchData()];
+		}
+
+		return [];
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fetchData]);
+
 	useTimeRangeFetch();
 
 	return (
-		<ClayLayout.ContainerFluid>
-			<CompletedItemsCard {...props} />
-			<CompletionVelocityCard {...props} />
-			<PerformanceByStepCard {...props} />
-			<PerformanceByAssigneeCard {...props} />
-		</ClayLayout.ContainerFluid>
+		<PromisesResolver promises={promises}>
+			<MetricsCalculatedInfo dateModified={dateModified} />
+
+			<ClayLayout.ContainerFluid>
+				<CompletedItemsCard routeParams={routeParams} />
+
+				<CompletionVelocityCard routeParams={routeParams} />
+
+				<PerformanceByStepCard routeParams={routeParams} />
+
+				<PerformanceByAssigneeCard routeParams={routeParams} />
+			</ClayLayout.ContainerFluid>
+		</PromisesResolver>
 	);
 }
 
