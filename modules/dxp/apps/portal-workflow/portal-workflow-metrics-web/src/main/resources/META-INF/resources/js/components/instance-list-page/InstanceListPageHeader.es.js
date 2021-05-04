@@ -12,12 +12,15 @@
 import ClayLayout from '@clayui/layout';
 import ClayManagementToolbar from '@clayui/management-toolbar';
 import {usePrevious} from '@liferay/frontend-js-react-web';
-import React, {useCallback, useContext, useEffect} from 'react';
+import React, {useCallback, useContext, useEffect, useMemo} from 'react';
 
 import filterConstants from '../../shared/components/filter/util/filterConstants.es';
+import MetricsCalculatedInfo from '../../shared/components/last-updated-info/MetricsCalculatedInfo.es';
+import PromisesResolver from '../../shared/components/promises-resolver/PromisesResolver.es';
 import QuickActionKebab from '../../shared/components/quick-action-kebab/QuickActionKebab.es';
 import ResultsBar from '../../shared/components/results-bar/ResultsBar.es';
 import ToolbarWithSelection from '../../shared/components/toolbar-with-selection/ToolbarWithSelection.es';
+import {useDateModified} from '../../shared/hooks/useDateModified.es';
 import {capitalize} from '../../shared/util/util.es';
 import {AppContext} from '../AppContext.es';
 import AssigneeFilter from '../filter/AssigneeFilter.es';
@@ -33,10 +36,13 @@ import {ModalContext} from './modal/ModalProvider.es';
 export default function Header({
 	filterKeys,
 	items = [],
+	processId,
 	routeParams,
 	selectedFilters,
 	totalCount,
 }) {
+	const {dateModified, fetchData} = useDateModified({processId});
+
 	const {userId} = useContext(AppContext);
 	const {
 		selectAll,
@@ -46,6 +52,17 @@ export default function Header({
 	} = useContext(InstanceListContext);
 	const {openModal} = useContext(ModalContext);
 	const previousCount = usePrevious(totalCount);
+
+	const previousFetchData = usePrevious(fetchData);
+
+	const promises = useMemo(() => {
+		if (previousFetchData !== fetchData) {
+			return [fetchData()];
+		}
+
+		return [];
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fetchData]);
 
 	const handleClick = useCallback(
 		(bulkModal, singleModal) => {
@@ -158,7 +175,7 @@ export default function Header({
 	);
 
 	return (
-		<>
+		<PromisesResolver promises={promises}>
 			<ToolbarWithSelection
 				{...checkbox}
 				active={toolbarActive}
@@ -226,6 +243,8 @@ export default function Header({
 					/>
 				</ResultsBar>
 			)}
-		</>
+
+			<MetricsCalculatedInfo dateModified={dateModified} />
+		</PromisesResolver>
 	);
 }
