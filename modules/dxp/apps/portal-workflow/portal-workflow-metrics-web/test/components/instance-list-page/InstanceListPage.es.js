@@ -56,7 +56,7 @@ describe('The instance list card should', () => {
 			.fn()
 			.mockResolvedValue({data: {items, totalCount: items.length + 1}}),
 	};
-	let container, getByText;
+	let container, findByText, getByText;
 
 	beforeAll(() => {
 		const renderResult = render(
@@ -67,6 +67,7 @@ describe('The instance list card should', () => {
 		);
 
 		container = renderResult.container;
+		findByText = renderResult.findByText;
 		getByText = renderResult.getByText;
 	});
 
@@ -163,5 +164,11 @@ describe('The instance list card should', () => {
 		label = getByText('all-selected');
 
 		expect(label).toBeTruthy();
+	});
+
+	test('Show last metrics calculated info', () => {
+		const metricsCalculated = findByText('Metrics calculated');
+
+		expect(metricsCalculated).toBeTruthy();
 	});
 });
