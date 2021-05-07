@@ -22,24 +22,26 @@ String redirect = ParamUtil.getString(request, "redirect");
 CalendarResource calendarResource = (CalendarResource)request.getAttribute(CalendarWebKeys.CALENDAR_RESOURCE);
 %>
 
-<liferay-ui:header
-	backURL="<%= redirect %>"
-	localizeTitle="<%= false %>"
-	title='<%= LanguageUtil.format(request, "x-calendars", calendarResource.getName(locale), false) %>'
-/>
+<clay:container-fluid>
+	<liferay-ui:header
+		backURL="<%= redirect %>"
+		localizeTitle="<%= false %>"
+		title='<%= LanguageUtil.format(request, "x-calendars", calendarResource.getName(locale), false) %>'
+	/>
 
-<c:if test="<%= CalendarResourcePermission.contains(permissionChecker, calendarResource, CalendarActionKeys.ADD_CALENDAR) %>">
-	<aui:button-row>
-		<liferay-portlet:renderURL var="editCalendarURL">
-			<liferay-portlet:param name="mvcPath" value="/edit_calendar.jsp" />
-			<liferay-portlet:param name="redirect" value="<%= currentURL %>" />
-			<liferay-portlet:param name="backURL" value="<%= currentURL %>" />
-			<liferay-portlet:param name="calendarResourceId" value="<%= String.valueOf(calendarResource.getCalendarResourceId()) %>" />
-		</liferay-portlet:renderURL>
+	<c:if test="<%= CalendarResourcePermission.contains(permissionChecker, calendarResource, CalendarActionKeys.ADD_CALENDAR) %>">
+		<aui:button-row>
+			<liferay-portlet:renderURL var="editCalendarURL">
+				<liferay-portlet:param name="mvcPath" value="/edit_calendar.jsp" />
+				<liferay-portlet:param name="redirect" value="<%= currentURL %>" />
+				<liferay-portlet:param name="backURL" value="<%= currentURL %>" />
+				<liferay-portlet:param name="calendarResourceId" value="<%= String.valueOf(calendarResource.getCalendarResourceId()) %>" />
+			</liferay-portlet:renderURL>
 
-		<aui:button href="<%= editCalendarURL %>" primary="<%= true %>" value="add-calendar" />
-	</aui:button-row>
-</c:if>
+			<aui:button href="<%= editCalendarURL %>" primary="<%= true %>" value="add-calendar" />
+		</aui:button-row>
+	</c:if>
+</clay:container-fluid>
 
 <clay:container-fluid>
 	<liferay-ui:search-container
