@@ -17,9 +17,7 @@ import moment from '../../util/moment.es';
 
 export default function MetricsCalculatedInfo({dateModified}) {
 	const date = dateModified
-		? moment
-				.utc(dateModified)
-				.format(Liferay.Language.get('mmm-dd-hh-mm-a'))
+		? moment.utc(dateModified).format(Liferay.Language.get('mmm-dd-lt'))
 		: null;
 
 	const infoLabel = sub(Liferay.Language.get('sla-metrics-calculated'), [
