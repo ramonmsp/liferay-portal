@@ -280,12 +280,12 @@ function DueDateSLAResults({slaResults, slaStatusIconInfo}) {
 
 		if (sameYear) {
 			format = fullDatetime
-				? Liferay.Language.get('mmm-dd-hh-mm-a')
+				? Liferay.Language.get('mmm-dd-lt')
 				: Liferay.Language.get('mmm-dd');
 		}
 		else {
 			format = fullDatetime
-				? Liferay.Language.get('mmm-dd-yyyy-hh-mm-a')
+				? Liferay.Language.get('mmm-dd-yyyy-lt')
 				: Liferay.Language.get('mmm-dd-yyyy');
 		}
 
