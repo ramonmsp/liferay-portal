@@ -1131,7 +1131,12 @@ public class InstanceResourceImpl
 
 		Sort sort = (Sort)ArrayUtil.getValue(sorts, 0);
 
-		if (StringUtil.equals(sort.getFieldName(), "createDate")) {
+		if (StringUtil.startsWith(sort.getFieldName(), "assetType")) {
+			fieldSort = _sorts.field(
+				sort.getFieldName(),
+				sort.isReverse() ? SortOrder.DESC : SortOrder.ASC);
+		}
+		else if (StringUtil.equals(sort.getFieldName(), "createDate")) {
 			fieldSort = _sorts.field(
 				"createDate",
 				sort.isReverse() ? SortOrder.DESC : SortOrder.ASC);
