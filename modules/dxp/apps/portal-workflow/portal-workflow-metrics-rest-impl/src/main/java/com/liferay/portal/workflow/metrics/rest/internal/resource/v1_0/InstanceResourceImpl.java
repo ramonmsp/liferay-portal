@@ -1154,6 +1154,10 @@ public class InstanceResourceImpl
 
 			fieldSort.setSortMode(SortMode.MIN);
 		}
+		else if (StringUtil.equals(sort.getFieldName(), "userName")) {
+			fieldSort = _sorts.field(
+				"userName", sort.isReverse() ? SortOrder.DESC : SortOrder.ASC);
+		}
 
 		return fieldSort;
 	}
