@@ -17,6 +17,7 @@ package com.liferay.portal.workflow.metrics.rest.internal.odata.entity.v1_0;
 import com.liferay.portal.odata.entity.DateTimeEntityField;
 import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.portal.odata.entity.StringEntityField;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -30,6 +31,7 @@ public class InstanceEntityModel implements EntityModel {
 
 	public InstanceEntityModel() {
 		_entityFieldsMap = Stream.of(
+			new StringEntityField("userName", locale -> "userName"),
 			new DateTimeEntityField(
 				"dateCreated", locale -> "createDate", locale -> "createDate"),
 			new DateTimeEntityField(
