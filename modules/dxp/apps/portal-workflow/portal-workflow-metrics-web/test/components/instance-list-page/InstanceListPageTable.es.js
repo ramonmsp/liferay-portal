@@ -67,6 +67,14 @@ describe('The instance list table should', () => {
 		expect(instanceRows.length).toBe(3);
 	});
 
+	test('Should order by Assignee', () => {
+		const orderLinks = container.querySelectorAll('.inline-item');
+
+		expect(orderLinks[2].href).toContain(
+			'/1/20/assigneeName%3Adesc?backPath=%2F'
+		);
+	});
+
 	test('Should order by Item Subject', () => {
 		const orderLinks = container.querySelectorAll('.inline-item');
 
@@ -78,7 +86,7 @@ describe('The instance list table should', () => {
 	test('Should order by User Creator', () => {
 		const orderLinks = container.querySelectorAll('.inline-item');
 
-		expect(orderLinks[2].href).toContain(
+		expect(orderLinks[3].href).toContain(
 			'/1/20/userName%3Adesc?backPath=%2F'
 		);
 	});
