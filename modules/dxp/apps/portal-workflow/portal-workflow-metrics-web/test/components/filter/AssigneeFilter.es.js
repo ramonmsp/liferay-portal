@@ -10,7 +10,7 @@
  */
 
 import '@testing-library/jest-dom/extend-expect';
-import {cleanup, render} from '@testing-library/react';
+import {act, cleanup, render} from '@testing-library/react';
 import React from 'react';
 
 import AssigneeFilter from '../../../src/main/resources/META-INF/resources/js/components/filter/AssigneeFilter.es';
@@ -38,13 +38,17 @@ const wrapper = ({children}) => (
 describe('The assignee filter component should', () => {
 	afterEach(cleanup);
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		render(<AssigneeFilter processId={12345} />, {
 			wrapper,
 		});
+
+		await act(async () => {
+			jest.runAllTimers();
+		});
 	});
 
-	test('Be rendered with filter item names', () => {
+	it('Be rendered with filter item names', () => {
 		const filterItems = document.querySelectorAll('.dropdown-item');
 
 		expect(filterItems[0].innerHTML).toContain('unassigned');
@@ -52,7 +56,7 @@ describe('The assignee filter component should', () => {
 		expect(filterItems[2].innerHTML).toContain('User 2');
 	});
 
-	test('Be rendered with active option "User 1"', () => {
+	it('Be rendered with active option "User 1"', () => {
 		const activeItem = document.querySelector('.active');
 
 		expect(activeItem).toHaveTextContent('User 1');
