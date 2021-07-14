@@ -40,7 +40,10 @@ function PerformanceByStepPage({query, routeParams}) {
 		params: {
 			completed: true,
 			key: search,
-			processVersion,
+			processVersion:
+				processVersion?.indexOf('allVersions') == -1
+					? processVersion
+					: undefined,
 			...paginationParams,
 			...getTimeRangeParams(dateStart, dateEnd),
 		},
