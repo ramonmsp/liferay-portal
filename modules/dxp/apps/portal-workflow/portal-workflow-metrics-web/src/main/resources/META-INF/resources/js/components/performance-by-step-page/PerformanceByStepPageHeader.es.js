@@ -25,6 +25,13 @@ export default function Header({
 	totalCount,
 }) {
 	const showFiltersResult = routeParams.search || selectedFilters.length > 0;
+	const processVersion = selectedFilters.find(
+		(filter) => filter.key === 'processVersion'
+	);
+
+	const allVersionsSelected = processVersion?.items.find(
+		(item) => item.key === 'allVersions'
+	);
 
 	return (
 		<>
@@ -38,6 +45,11 @@ export default function Header({
 
 					<ProcessVersionFilter
 						filterKey={filterConstants.processVersion.key}
+						options={{
+							hideControl: true,
+							multiple: false,
+							withAllVersions: true,
+						}}
 						processId={routeParams.processId}
 					/>
 				</ClayManagementToolbar.ItemList>
@@ -61,14 +73,17 @@ export default function Header({
 
 					<ResultsBar.FilterItems
 						filters={selectedFilters}
+						showRemoveIcon={!allVersionsSelected}
 						{...routeParams}
 					/>
 
-					<ResultsBar.Clear
-						filterKeys={filterKeys}
-						filters={selectedFilters}
-						{...routeParams}
-					/>
+					{!allVersionsSelected && (
+						<ResultsBar.Clear
+							filterKeys={filterKeys}
+							filters={selectedFilters}
+							{...routeParams}
+						/>
+					)}
 				</ResultsBar>
 			)}
 		</>
