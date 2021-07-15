@@ -74,12 +74,7 @@ const Clear = ({filters = [], filterKeys = [], withoutRouteParams}) => {
 	);
 };
 
-const FilterItem = ({
-	filter,
-	item,
-	showRemoveIcon = true,
-	withoutRouteParams,
-}) => {
+const FilterItem = ({filter, item, withoutRouteParams}) => {
 	const {dispatch, filterState} = useFilter({withoutRouteParams});
 	const routerProps = useRouter();
 
@@ -120,7 +115,7 @@ const FilterItem = ({
 						</div>
 					</span>
 
-					{!filter.pinned && showRemoveIcon && (
+					{!filter.pinned && (
 						<span className="label-item label-item-after">
 							<ClayButton
 								className="text-dark"

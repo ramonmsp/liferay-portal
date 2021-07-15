@@ -25,13 +25,13 @@ export default function Header({
 	totalCount,
 }) {
 	const showFiltersResult = routeParams.search || selectedFilters.length > 0;
-	const processVersion = selectedFilters.find(
-		(filter) => filter.key === 'processVersion'
-	);
+	// const processVersion = selectedFilters.find(
+	// 	(filter) => filter.key === 'processVersion'
+	// );
 
-	const allVersionsSelected = processVersion?.items.find(
-		(item) => item.key === 'allVersions'
-	);
+	// const allVersionsSelected = processVersion?.items.find(
+	// 	(item) => item.key === 'allVersions'
+	// );
 
 	return (
 		<>
@@ -73,17 +73,14 @@ export default function Header({
 
 					<ResultsBar.FilterItems
 						filters={selectedFilters}
-						showRemoveIcon={!allVersionsSelected}
 						{...routeParams}
 					/>
 
-					{!allVersionsSelected && (
-						<ResultsBar.Clear
-							filterKeys={filterKeys}
-							filters={selectedFilters}
-							{...routeParams}
-						/>
-					)}
+					<ResultsBar.Clear
+						filterKeys={filterKeys}
+						filters={selectedFilters}
+						{...routeParams}
+					/>
 				</ResultsBar>
 			)}
 		</>
