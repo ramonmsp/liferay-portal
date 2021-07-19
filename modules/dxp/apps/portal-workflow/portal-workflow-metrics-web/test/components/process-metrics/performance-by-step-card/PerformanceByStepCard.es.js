@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, render} from '@testing-library/react';
+import {act, cleanup, render} from '@testing-library/react';
 import React from 'react';
 
 import PerformanceByStepCard from '../../../../src/main/resources/META-INF/resources/js/components/process-metrics/performance-by-step-card/PerformanceByStepCard.es';
@@ -85,7 +85,7 @@ describe('The performance by step card component should', () => {
 	});
 
 	describe('Be rendered with results', () => {
-		beforeAll(() => {
+		beforeAll(async () => {
 			const clientMock = {
 				get: jest.fn().mockResolvedValue({data}),
 				request: jest.fn().mockResolvedValue({data: processVersions}),
@@ -104,16 +104,20 @@ describe('The performance by step card component should', () => {
 
 			getAllByText = renderResult.getAllByText;
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Be rendered with time range filter', async () => {
+		it('Be rendered with time range filter', async () => {
 			const activeItems = document.querySelectorAll('.active');
 
 			expect(getAllByText('Last 7 Days').length).toEqual(2);
 			expect(activeItems[1]).toHaveTextContent('Last 7 Days');
 		});
 
-		test('Be rendered with "View All Steps" button and total "(3)"', () => {
+		it('Be rendered with "View All Steps" button and total "(3)"', () => {
 			const viewAllSteps = getByText('view-all-steps (3)');
 
 			expect(viewAllSteps).toBeTruthy();
@@ -126,7 +130,7 @@ describe('The performance by step card component should', () => {
 	describe('Be rendered without results', () => {
 		afterEach(cleanup);
 
-		beforeEach(() => {
+		beforeEach(async () => {
 			const clientMock = {
 				get: jest
 					.fn()
@@ -146,9 +150,13 @@ describe('The performance by step card component should', () => {
 			);
 
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Be rendered with empty state view', () => {
+		it('Be rendered with empty state view', () => {
 			const emptyStateMessage = getByText(
 				'there-is-no-data-at-the-moment'
 			);
