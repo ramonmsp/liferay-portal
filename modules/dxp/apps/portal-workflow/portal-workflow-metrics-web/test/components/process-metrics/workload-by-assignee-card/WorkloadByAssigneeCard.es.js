@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, render} from '@testing-library/react';
+import {act, cleanup, render} from '@testing-library/react';
 import React from 'react';
 
 import WorkloadByAssigneeCard from '../../../../src/main/resources/META-INF/resources/js/components/process-metrics/workload-by-assignee-card/WorkloadByAssigneeCard.es';
@@ -48,7 +48,7 @@ describe('The workload by assignee card should', () => {
 
 	afterEach(cleanup);
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		const renderResult = render(
 			<MockRouter client={clientMock}>
 				<WorkloadByAssigneeCard routeParams={{processId: 12345}} />
@@ -56,9 +56,13 @@ describe('The workload by assignee card should', () => {
 		);
 
 		getByText = renderResult.getByText;
+
+		await act(async () => {
+			jest.runAllTimers();
+		});
 	});
 
-	test('Be rendered with "User 1" and "User 2" items', async () => {
+	it('Be rendered with "User 1" and "User 2" items', async () => {
 		const assigneeName1 = getByText('User 1');
 		const assigneeName2 = getByText('User 2');
 
