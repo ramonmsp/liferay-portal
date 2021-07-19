@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {render} from '@testing-library/react';
+import {act, render} from '@testing-library/react';
 import React from 'react';
 
 import CompletionVelocityCard from '../../../../src/main/resources/META-INF/resources/js/components/process-metrics/completion-velocity/CompletionVelocityCard.es';
@@ -85,7 +85,7 @@ const timeRangeData = {
 describe('The completion velocity card component should', () => {
 	let getAllByText, getByText;
 
-	beforeAll(() => {
+	beforeAll(async () => {
 		jsonSessionStorage.set('timeRanges', timeRangeData);
 
 		const clientMock = {
@@ -100,9 +100,13 @@ describe('The completion velocity card component should', () => {
 
 		getAllByText = renderResult.getAllByText;
 		getByText = renderResult.getByText;
+
+		await act(async () => {
+			jest.runAllTimers();
+		});
 	});
 
-	test('Be rendered with time range filter', () => {
+	it('Be rendered with time range filter', () => {
 		const timeRangeFilter = getByText('Last 30 Days');
 		const activeItem = document.querySelector('.active');
 
@@ -110,7 +114,7 @@ describe('The completion velocity card component should', () => {
 		expect(activeItem).toHaveTextContent('Last 7 Days');
 	});
 
-	test('Be rendered with velocity unit filter', () => {
+	it('Be rendered with velocity unit filter', () => {
 		const velocityUnitFilter = getAllByText('inst-day')[0];
 
 		const activeItem = document.querySelectorAll('.active')[1];
