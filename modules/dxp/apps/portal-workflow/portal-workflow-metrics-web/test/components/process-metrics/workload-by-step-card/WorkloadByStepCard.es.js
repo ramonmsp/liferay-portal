@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, render} from '@testing-library/react';
+import {act, cleanup, render} from '@testing-library/react';
 import React from 'react';
 
 import WorkloadByStepCard from '../../../../src/main/resources/META-INF/resources/js/components/process-metrics/workload-by-step-card/WorkloadByStepCard.es';
@@ -47,7 +47,7 @@ describe('The WorkloadByStepCard component should', () => {
 		get: jest.fn().mockResolvedValue({data}),
 	};
 
-	beforeAll(() => {
+	beforeAll(async () => {
 		const renderResult = render(
 			<MockRouter client={clientMock} withoutRouterProps>
 				<WorkloadByStepCard {...mockProps} routeParams={mockProps} />
@@ -55,9 +55,13 @@ describe('The WorkloadByStepCard component should', () => {
 		);
 
 		container = renderResult.container;
+
+		await act(async () => {
+			jest.runAllTimers();
+		});
 	});
 
-	test('Load table component with request data and navigation links', () => {
+	it('Load table component with request data and navigation links', () => {
 		const workloadByStepTable = container.querySelector('.table');
 		const tableItems = workloadByStepTable.children[1].children[0].children;
 
