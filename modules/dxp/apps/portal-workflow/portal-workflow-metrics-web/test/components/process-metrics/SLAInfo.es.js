@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, fireEvent, render} from '@testing-library/react';
+import {act, cleanup, fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import SLAInfo from '../../../src/main/resources/META-INF/resources/js/components/process-metrics/SLAInfo.es';
@@ -27,7 +27,7 @@ describe('The SLAInfo component should', () => {
 				.mockResolvedValue({data: {items: [], totalCount: 0}}),
 		};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			const renderResult = render(
 				<MockRouter client={clientMock}>
 					<SLAInfo processId="1" />
@@ -36,9 +36,13 @@ describe('The SLAInfo component should', () => {
 
 			container = renderResult.container;
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Show alert with correct data', () => {
+		it('Show alert with correct data', () => {
 			const slaInfoAlert = getByText(
 				'no-slas-are-defined-for-this-process'
 			);
@@ -62,7 +66,7 @@ describe('The SLAInfo component should', () => {
 				.mockResolvedValue({data: {items: [], totalCount: 1}}),
 		};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			const renderResult = render(
 				<MockRouter client={clientMock}>
 					<SLAInfo processId="1" />
@@ -71,9 +75,13 @@ describe('The SLAInfo component should', () => {
 
 			container = renderResult.container;
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Show alert with correct data', () => {
+		it('Show alert with correct data', () => {
 			const slaInfoAlert = getByText(
 				'x-sla-is-blocked fix-the-sla-configuration-to-resume-accurate-reporting'
 			);
@@ -97,7 +105,7 @@ describe('The SLAInfo component should', () => {
 				.mockResolvedValue({data: {items: [], totalCount: 2}}),
 		};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			const renderResult = render(
 				<MockRouter client={clientMock}>
 					<SLAInfo processId="1" />
@@ -106,9 +114,13 @@ describe('The SLAInfo component should', () => {
 
 			container = renderResult.container;
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Show alert with correct data', () => {
+		it('Show alert with correct data', () => {
 			const slaInfoAlert = getByText(
 				'x-slas-are-blocked fix-the-sla-configuration-to-resume-accurate-reporting'
 			);
