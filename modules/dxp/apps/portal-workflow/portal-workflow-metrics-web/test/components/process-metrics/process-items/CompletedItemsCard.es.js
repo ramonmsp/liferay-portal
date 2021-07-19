@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, render} from '@testing-library/react';
+import {act, cleanup, render} from '@testing-library/react';
 import React from 'react';
 
 import CompletedItemsCard from '../../../../src/main/resources/META-INF/resources/js/components/process-metrics/process-items/CompletedItemsCard.es';
@@ -67,7 +67,7 @@ describe('The completed items card component should', () => {
 		jsonSessionStorage.set('timeRanges', timeRangeData);
 	});
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		const clientMock = {
 			get: jest.fn().mockResolvedValue({data}),
 		};
@@ -85,16 +85,20 @@ describe('The completed items card component should', () => {
 
 		container = renderResult.container;
 		getAllByText = renderResult.getAllByText;
+
+		await act(async () => {
+			jest.runAllTimers();
+		});
 	});
 
-	test('Be rendered with time range filter', async () => {
+	it('Be rendered with time range filter', async () => {
 		const activeItem = document.querySelector('.active');
 
 		expect(getAllByText('Last 7 Days').length).toEqual(2);
 		expect(activeItem).toHaveTextContent('Last 7 Days');
 	});
 
-	test('Be rendered with overdue count "1"', () => {
+	it('Be rendered with overdue count "1"', () => {
 		const panelBody = container.querySelector('.panel-body');
 
 		const overdueLink = panelBody.children[0].children[0];
@@ -110,7 +114,7 @@ describe('The completed items card component should', () => {
 		);
 	});
 
-	test('Be rendered with onTime count "2"', () => {
+	it('Be rendered with onTime count "2"', () => {
 		const panelBody = container.querySelector('.panel-body');
 
 		const onTimeLink = panelBody.children[0].children[1];
@@ -126,7 +130,7 @@ describe('The completed items card component should', () => {
 		);
 	});
 
-	test('Be rendered with untracked count "3"', () => {
+	it('Be rendered with untracked count "3"', () => {
 		const panelBody = container.querySelector('.panel-body');
 
 		const untrackedLink = panelBody.children[0].children[2];
@@ -143,7 +147,7 @@ describe('The completed items card component should', () => {
 		);
 	});
 
-	test('Be rendered with total completed count "6"', () => {
+	it('Be rendered with total completed count "6"', () => {
 		const panelBody = container.querySelector('.panel-body');
 
 		const totalLink = panelBody.children[0].children[3];
