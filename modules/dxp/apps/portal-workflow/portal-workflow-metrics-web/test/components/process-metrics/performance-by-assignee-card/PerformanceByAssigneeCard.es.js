@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, render} from '@testing-library/react';
+import {act, cleanup, render} from '@testing-library/react';
 import React from 'react';
 
 import PerformanceByAssigneeCard from '../../../../src/main/resources/META-INF/resources/js/components/process-metrics/performance-by-assignee-card/PerformanceByAssigneeCard.es';
@@ -98,7 +98,7 @@ describe('The performance by assignee card component should', () => {
 	describe('Be rendered with results', () => {
 		afterEach(cleanup);
 
-		beforeEach(() => {
+		beforeEach(async () => {
 			const clientMock = {
 				post: jest.fn().mockResolvedValue({data}),
 				request: jest.fn().mockResolvedValue({data: processStepsData}),
@@ -116,9 +116,13 @@ describe('The performance by assignee card component should', () => {
 			);
 
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Be rendered with "View All Assignees" button and total "(3)"', () => {
+		it('Be rendered with "View All Assignees" button and total "(3)"', () => {
 			const viewAllAssignees = getByText('view-all-assignees (3)');
 
 			expect(viewAllAssignees).toBeTruthy();
@@ -127,7 +131,7 @@ describe('The performance by assignee card component should', () => {
 			);
 		});
 
-		test('Be rendered with process step filter', async () => {
+		it('Be rendered with process step filter', async () => {
 			const processStepFilter = getByText('all-steps');
 			const activeItem = document.querySelectorAll('.active')[0];
 
@@ -135,7 +139,7 @@ describe('The performance by assignee card component should', () => {
 			expect(activeItem).toHaveTextContent('Update');
 		});
 
-		test('Be rendered with time range filter', async () => {
+		it('Be rendered with time range filter', async () => {
 			const timeRangeFilter = getByText('Last 30 Days');
 			const activeItem = document.querySelectorAll('.active')[1];
 
@@ -145,7 +149,7 @@ describe('The performance by assignee card component should', () => {
 	});
 
 	describe('Be rendered without results', () => {
-		beforeAll(() => {
+		beforeAll(async () => {
 			const clientMock = {
 				post: jest
 					.fn()
@@ -162,9 +166,13 @@ describe('The performance by assignee card component should', () => {
 			render(<PerformanceByAssigneeCard routeParams={{processId}} />, {
 				wrapper,
 			});
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Be rendered with empty state view', () => {
+		it('Be rendered with empty state view', () => {
 			const emptyStateMessage = getByText('no-results-were-found');
 
 			expect(emptyStateMessage).toBeTruthy();
