@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, fireEvent, render} from '@testing-library/react';
+import {act, cleanup, fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -137,7 +137,7 @@ describe('The SLAFormPage component should', () => {
 			goBack: jest.fn(),
 		};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			cleanup();
 
 			renderResult = render(
@@ -156,9 +156,13 @@ describe('The SLAFormPage component should', () => {
 
 			container = renderResult.container;
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Be rendered correctly', () => {
+		it('Be rendered correctly', () => {
 			durationDaysField = getByText('days').parentNode;
 			durationHoursField = getByText('hours').parentNode;
 			durationHoursInput = container.querySelector('#slaDurationHours');
@@ -215,7 +219,7 @@ describe('The SLAFormPage component should', () => {
 			expect(durationHoursField.classList).not.toContain('has-error');
 		});
 
-		test('Display errors when submitting the form with empty values', () => {
+		it('Display errors when submitting the form with empty values', () => {
 			fireEvent.click(saveButton);
 
 			alertMessage = getByText('please-fill-in-the-required-fields');
@@ -236,7 +240,7 @@ describe('The SLAFormPage component should', () => {
 			expect(alertMessage).toBeTruthy();
 		});
 
-		test('Display a field error when the duration receives an invalid value', () => {
+		it('Display a field error when the duration receives an invalid value', () => {
 			fireEvent.change(durationHoursInput, {target: {value: '99:99'}});
 
 			fireEvent.blur(durationHoursInput);
@@ -252,7 +256,7 @@ describe('The SLAFormPage component should', () => {
 			expect(durationHoursField.classList).not.toContain('has-error');
 		});
 
-		test('Dismiss errors when the inputs receive valid values and submit', () => {
+		it('Dismiss errors when the inputs receive valid values and submit', async () => {
 			const dropDownListItems = document.querySelectorAll(
 				'.dropdown-item'
 			);
@@ -276,9 +280,13 @@ describe('The SLAFormPage component should', () => {
 			expect(durationHoursField.classList).not.toContain('has-error');
 
 			fireEvent.click(saveButton);
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Display an error when a SLA submission failure happens and resubmit', async () => {
+		it('Display an error when a SLA submission failure happens and resubmit', async () => {
 			const alertToast = await document.querySelector(
 				'.alert-dismissible'
 			);
@@ -294,17 +302,25 @@ describe('The SLAFormPage component should', () => {
 			expect(alertContainer.children[0].children.length).toBe(0);
 
 			fireEvent.click(saveButton);
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Display an error when trying to submit a SLA with a name that already exists', () => {
+		it('Display an error when trying to submit a SLA with a name that already exists', async () => {
 			expect(nameField).toHaveTextContent(
 				'An SLA with the same name already exists.'
 			);
 
 			fireEvent.click(saveButton);
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Redirect to SLAListPage after successful submit', async () => {
+		it('Redirect to SLAListPage after successful submit', async () => {
 			expect(historyMock.goBack).toHaveBeenCalled();
 		});
 	});
@@ -356,7 +372,7 @@ describe('The SLAFormPage component should', () => {
 
 		const contextMock = {setSLAUpdated: jest.fn()};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			cleanup();
 
 			renderResult = render(
@@ -375,9 +391,13 @@ describe('The SLAFormPage component should', () => {
 
 			container = renderResult.container;
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Render form in edit mode with correct data', () => {
+		it('Render form in edit mode with correct data', async () => {
 			const calendar = container.querySelector('#slaCalendarKey');
 			const durationDaysField = getByText('days').parentNode;
 			const durationHoursField = getByText('hours').parentNode;
@@ -405,9 +425,13 @@ describe('The SLAFormPage component should', () => {
 			expect(durationHoursField.classList).not.toContain('has-error');
 
 			fireEvent.click(updateButton);
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Redirect to SLAListPage after successful submit', async () => {
+		it('Redirect to SLAListPage after successful submit', async () => {
 			expect(historyMock.goBack).toHaveBeenCalled();
 			expect(contextMock.setSLAUpdated).toHaveBeenCalledWith(true);
 		});
@@ -471,7 +495,7 @@ describe('The SLAFormPage component should', () => {
 				.mockResolvedValueOnce({data}),
 		};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			cleanup();
 
 			renderResult = render(
@@ -485,9 +509,13 @@ describe('The SLAFormPage component should', () => {
 			);
 
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Handle errors at start and stop node keys', () => {
+		it('Handle errors at start and stop node keys', () => {
 			const alertChange = getByText(
 				'the-time-frame-options-changed-in-the-workflow-definition'
 			);

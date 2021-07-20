@@ -9,7 +9,7 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, fireEvent, render} from '@testing-library/react';
+import {act, cleanup, fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
 import '@testing-library/jest-dom/extend-expect';
@@ -27,7 +27,7 @@ describe('The SLAListPage component should', () => {
 			get: jest.fn().mockResolvedValue({data: {items: []}}),
 		};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			const renderResult = render(
 				<MockRouter client={clientMock}>
 					<ToasterProvider>
@@ -44,16 +44,20 @@ describe('The SLAListPage component should', () => {
 
 			getByText = renderResult.getByText;
 			getByTitle = renderResult.getByTitle;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Show navbar with New SLA button with correct link', () => {
+		it('Show navbar with New SLA button with correct link', () => {
 			const newSLAButton = getByTitle('new-sla');
 			const childLink = newSLAButton.children[0];
 
 			expect(childLink.getAttribute('href')).toContain('/sla/36001/new');
 		});
 
-		test('Display empty state', () => {
+		it('Display empty state', () => {
 			const emptyStateMessage = getByText(
 				'sla-allows-to-define-and-measure-process-performance'
 			);
@@ -87,7 +91,7 @@ describe('The SLAListPage component should', () => {
 
 		const contextMock = {SLAUpdated: true, setSLAUpdated: jest.fn()};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			cleanup();
 
 			const renderResult = render(
@@ -106,9 +110,13 @@ describe('The SLAListPage component should', () => {
 
 			container = renderResult.container;
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Show table columns', () => {
+		it('Show table columns', () => {
 			const slaDateModifiedHead = getByText('last-modified');
 			const slaDescriptionHead = getByText('description');
 			const slaDurationHead = getByText('duration');
@@ -122,7 +130,7 @@ describe('The SLAListPage component should', () => {
 			expect(slaStatusHead).toBeTruthy();
 		});
 
-		test('Show items info and kebab menu', () => {
+		it('Show items info and kebab menu', async () => {
 			const kebab = container.querySelector('.dropdown-toggle');
 			const slaDateModified = getByText('Apr 03');
 			const slaDescription = slaDateModified.parentNode.children[1];
@@ -145,10 +153,12 @@ describe('The SLAListPage component should', () => {
 
 			fireEvent.click(dropDownItems[1]);
 
-			jest.runAllTimers();
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Display modal after clicking on delete option of kebab menu', () => {
+		it('Display modal after clicking on delete option of kebab menu', async () => {
 			const cancelButton = getByText('cancel');
 			const deleteButton = getByText('ok');
 			const deleteModal = getByText(
@@ -160,9 +170,13 @@ describe('The SLAListPage component should', () => {
 			expect(deleteButton).toBeTruthy();
 
 			fireEvent.click(deleteButton);
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Display toast when failure occur while trying to confirm item delete', () => {
+		it('Display toast when failure occur while trying to confirm item delete', async () => {
 			const alertToast = document.querySelector('.alert-dismissible');
 
 			const alertClose = alertToast.children[1];
@@ -178,9 +192,13 @@ describe('The SLAListPage component should', () => {
 			expect(alertContainer.children[0].children.length).toBe(0);
 
 			fireEvent.click(deleteButton);
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Display toast when confirm item delete', () => {
+		it('Display toast when confirm item delete', () => {
 			const alertToast = document.querySelector('.alert-dismissible');
 
 			const alertClose = alertToast.children[1];
@@ -194,7 +212,7 @@ describe('The SLAListPage component should', () => {
 			expect(alertContainer.children[0].children.length).toBe(0);
 		});
 
-		test('Display info alert and toast after a SLA is created or updated', () => {
+		it('Display info alert and toast after a SLA is created or updated', () => {
 			const updateAlert = container.querySelector('.alert-info');
 
 			expect(updateAlert).toHaveTextContent(
@@ -271,7 +289,7 @@ describe('The SLAListPage component should', () => {
 			get: jest.fn().mockResolvedValue({data}),
 		};
 
-		beforeAll(() => {
+		beforeAll(async () => {
 			cleanup();
 
 			const renderResult = render(
@@ -290,9 +308,13 @@ describe('The SLAListPage component should', () => {
 
 			container = renderResult.container;
 			getByText = renderResult.getByText;
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		test('Show alert error', () => {
+		it('Show alert error', () => {
 			const alertBlockedSLA = getByText(
 				'fix-blocked-slas-to-resume-accurate-reporting'
 			);
@@ -304,7 +326,7 @@ describe('The SLAListPage component should', () => {
 			fireEvent.click(alertClose);
 		});
 
-		test('Show dividers', () => {
+		it('Show dividers', () => {
 			const slaBlockedDivider = getByText('BLOCKED');
 			const slaRunningDivider = getByText('RUNNING');
 
@@ -312,7 +334,7 @@ describe('The SLAListPage component should', () => {
 			expect(slaRunningDivider).toBeTruthy();
 		});
 
-		test('Show blocked items info correctly', () => {
+		it('Show blocked items info correctly', () => {
 			const dangerIcon = container.querySelector(
 				'.lexicon-icon-exclamation-full'
 			);
