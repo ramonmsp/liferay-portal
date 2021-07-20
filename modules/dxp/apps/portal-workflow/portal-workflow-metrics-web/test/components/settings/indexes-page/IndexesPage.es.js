@@ -9,7 +9,6 @@
  * distribution rights of the Software.
  */
 
-import {waitForElementToBeRemoved} from '@testing-library/dom';
 import {act, cleanup, fireEvent, render} from '@testing-library/react';
 import React from 'react';
 
@@ -28,12 +27,7 @@ describe('The IndexesPage component should', () => {
 	describe('Render and dispatch actions', () => {
 		jest.runAllTimers();
 
-		let container,
-			indexesItems,
-			getAllByRole,
-			getAllByText,
-			getByText,
-			debug;
+		let container, indexesItems, getAllByRole, getAllByText, getByText;
 
 		const items = [
 			{
@@ -71,7 +65,6 @@ describe('The IndexesPage component should', () => {
 			getAllByRole = renderResult.getAllByRole;
 			getAllByText = renderResult.getAllByText;
 			getByText = renderResult.getByText;
-			debug = renderResult.debug;
 
 			window.location.hash = '/settings/indexes';
 
@@ -89,10 +82,14 @@ describe('The IndexesPage component should', () => {
 			expect(reindexAllLabel).toBeTruthy();
 			expect(reindexAllBtn).toBeTruthy();
 
-			await fireEvent.click(reindexAllBtn);
+			fireEvent.click(reindexAllBtn);
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 		});
 
-		xit('Render error toast when dispatch any reindex action with error', () => {
+		it('Render error toast when dispatch any reindex action with error', () => {
 			const alertToast = getByText('your-request-has-failed');
 			const alertClose = container.querySelector('button.close');
 
@@ -101,7 +98,7 @@ describe('The IndexesPage component should', () => {
 			fireEvent.click(alertClose);
 		});
 
-		xit('Render with items correctly', () => {
+		it('Render with items correctly', () => {
 			indexesItems = getAllByRole('listitem');
 
 			expect(indexesItems[1]).toHaveTextContent('metrics');
@@ -122,10 +119,14 @@ describe('The IndexesPage component should', () => {
 			expect(indexesItems[6].children[1].children[0]).not.toBeDisabled();
 		});
 
-		xit('Render progress status when dispatch any reindex action', async () => {
+		it('Render progress status when dispatch any reindex action', async () => {
 			const reindexAllBtn = getAllByText('reindex-all')[0];
 
-			await fireEvent.click(reindexAllBtn);
+			fireEvent.click(reindexAllBtn);
+
+			await act(async () => {
+				jest.runAllTimers();
+			});
 
 			const reindexAllStatus = container.querySelectorAll(
 				'.progress-group'
@@ -138,11 +139,9 @@ describe('The IndexesPage component should', () => {
 
 			expect(reindexAllStatus.children[1]).toHaveTextContent('0%');
 
-			await jest.runOnlyPendingTimers();
-
-			await waitForElementToBeRemoved(() =>
-				document.querySelector('div.progress')
-			);
+			await act(async () => {
+				jest.runOnlyPendingTimers();
+			});
 
 			let alertToast = getByText('all-x-have-reindexed-successfully');
 
@@ -152,7 +151,9 @@ describe('The IndexesPage component should', () => {
 			expect(indexesItems[5].children[1].children[0]).not.toBeDisabled();
 			expect(indexesItems[6].children[1].children[0]).not.toBeDisabled();
 
-			await jest.runOnlyPendingTimers();
+			await act(async () => {
+				jest.runOnlyPendingTimers();
+			});
 
 			const alertContainer = document.querySelector('.alert-container');
 			expect(alertContainer.children[0].children.length).toBe(0);
@@ -164,11 +165,9 @@ describe('The IndexesPage component should', () => {
 			expect(indexesItems[6].children[1].children[0]).not.toBeDisabled();
 			expect(indexesItems[2]).toHaveTextContent('0%');
 
-			await jest.runOnlyPendingTimers();
-
-			await waitForElementToBeRemoved(() =>
-				document.querySelector('div.progress')
-			);
+			await act(async () => {
+				jest.runOnlyPendingTimers();
+			});
 
 			alertToast = getByText('all-x-have-reindexed-successfully');
 
@@ -185,11 +184,9 @@ describe('The IndexesPage component should', () => {
 			expect(indexesItems[3].children[1].children[0]).not.toBeDisabled();
 			expect(indexesItems[5]).toHaveTextContent('0%');
 
-			await jest.runOnlyPendingTimers();
-
-			await waitForElementToBeRemoved(() =>
-				document.querySelector('div.progress')
-			);
+			await act(async () => {
+				jest.runOnlyPendingTimers();
+			});
 
 			alertToast = getByText('all-x-have-reindexed-successfully');
 
@@ -201,85 +198,89 @@ describe('The IndexesPage component should', () => {
 		});
 	});
 
-	// describe('Render loading reindexes', () => {
-	// 	jest.runAllTimers();
+	describe('Render loading reindexes', () => {
+		jest.runAllTimers();
 
-	// 	let container, getAllByRole;
+		let container, getAllByRole;
 
-	// 	const items = [
-	// 		{
-	// 			group: SLA_INDEXES_KEY,
-	// 			key: 'sla-results',
-	// 			label: 'sla-results',
-	// 		},
-	// 		{
-	// 			group: METRIC_INDEXES_KEY,
-	// 			key: 'metrics-instances',
-	// 			label: 'metrics-instances',
-	// 		},
-	// 	];
+		const items = [
+			{
+				group: SLA_INDEXES_KEY,
+				key: 'sla-results',
+				label: 'sla-results',
+			},
+			{
+				group: METRIC_INDEXES_KEY,
+				key: 'metrics-instances',
+				label: 'metrics-instances',
+			},
+		];
 
-	// 	const clientMock = {
-	// 		get: jest.fn().mockResolvedValue({
-	// 			data: {items},
-	// 		}),
-	// 	};
+		const clientMock = {
+			get: jest.fn().mockResolvedValue({
+				data: {items},
+			}),
+		};
 
-	// 	const mockStatuses = [
-	// 		{
-	// 			completionPercentage: 50,
-	// 			key: ALL_INDEXES_KEY,
-	// 		},
-	// 		{
-	// 			completionPercentage: 20,
-	// 			key: METRIC_INDEXES_KEY,
-	// 		},
-	// 		{
-	// 			completionPercentage: 40,
-	// 			key: 'metrics-instances',
-	// 		},
-	// 		{
-	// 			completionPercentage: 60,
-	// 			key: SLA_INDEXES_KEY,
-	// 		},
-	// 		{
-	// 			completionPercentage: 80,
-	// 			key: 'sla-results',
-	// 		},
-	// 	];
+		const mockStatuses = [
+			{
+				completionPercentage: 50,
+				key: ALL_INDEXES_KEY,
+			},
+			{
+				completionPercentage: 20,
+				key: METRIC_INDEXES_KEY,
+			},
+			{
+				completionPercentage: 40,
+				key: 'metrics-instances',
+			},
+			{
+				completionPercentage: 60,
+				key: SLA_INDEXES_KEY,
+			},
+			{
+				completionPercentage: 80,
+				key: 'sla-results',
+			},
+		];
 
-	// 	beforeAll(() => {
-	// 		cleanup();
+		beforeAll(async () => {
+			cleanup();
 
-	// 		const renderResult = render(
-	// 			<MockRouter
-	// 				client={clientMock}
-	// 				initialReindexStatuses={mockStatuses}
-	// 			>
-	// 				<ToasterProvider>
-	// 					<IndexesPage />
-	// 				</ToasterProvider>
-	// 			</MockRouter>
-	// 		);
+			const renderResult = render(
+				<MockRouter
+					client={clientMock}
+					initialReindexStatuses={mockStatuses}
+				>
+					<ToasterProvider>
+						<IndexesPage />
+					</ToasterProvider>
+				</MockRouter>
+			);
 
-	// 		container = renderResult.container;
-	// 		getAllByRole = renderResult.getAllByRole;
-	// 	});
+			container = renderResult.container;
+			getAllByRole = renderResult.getAllByRole;
 
-	// 	test('Render all indexes on progress', () => {
-	// 		const indexActions = getAllByRole('listitem');
+			await act(async () => {
+				jest.runAllTimers();
+			});
+		});
 
-	// 		const reindexAllStatus = container.querySelectorAll(
-	// 			'.progress-group'
-	// 		)[0];
+		it('Render all indexes on progress', () => {
+			const indexActions = getAllByRole('listitem');
 
-	// 		expect(reindexAllStatus.children[1]).toHaveTextContent('50%');
+			const reindexAllStatus = container.querySelectorAll(
+				'.progress-group'
+			)[0];
 
-	// 		expect(indexActions[2]).toHaveTextContent('0%');
-	// 		expect(indexActions[2]).toHaveTextContent('20%');
-	// 		expect(indexActions[3]).toHaveTextContent('40%');
-	// 		expect(indexActions[5]).toHaveTextContent('60%');
-	// 		expect(indexActions[6]).toHaveTextContent('80%');
-	// 	});
-	// });
+			expect(reindexAllStatus.children[1]).toHaveTextContent('50%');
+
+			expect(indexActions[2]).toHaveTextContent('0%');
+			expect(indexActions[2]).toHaveTextContent('20%');
+			expect(indexActions[3]).toHaveTextContent('40%');
+			expect(indexActions[5]).toHaveTextContent('60%');
+			expect(indexActions[6]).toHaveTextContent('80%');
+		});
+	});
 });
