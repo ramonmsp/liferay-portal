@@ -23,6 +23,7 @@ module.exports = {
 				commander: true,
 				fbjs: ['flow/**'],
 				'iconv-lite': ['lib/extend-node.js', 'lib/streams.js'],
+				lodash: false,
 				rw: true,
 				'safer-buffer': ['tests.js'],
 			},

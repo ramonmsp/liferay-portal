@@ -9,9 +9,11 @@
  * distribution rights of the Software.
  */
 
+import ClayButton from '@clayui/button';
 import ClayLayout from '@clayui/layout';
+import ClayModal, {useModal} from '@clayui/modal';
 import {usePrevious} from '@liferay/frontend-js-react-web';
-import React, {useContext, useMemo} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {Route, Switch} from 'react-router-dom';
 
 import HeaderKebab from '../../shared/components/header/HeaderKebab.es';
@@ -28,6 +30,7 @@ import {useProcessTitle} from '../../shared/hooks/useProcessTitle.es';
 import {AppContext} from '../AppContext.es';
 import {useTimeRangeFetch} from '../filter/hooks/useTimeRangeFetch.es';
 import CompletedItemsCard from '../process-metrics/process-items/CompletedItemsCard.es';
+import LayoutFlow from './LayoutFlow.es';
 import SLAInfo from './SLAInfo.es';
 import CompletionVelocityCard from './completion-velocity/CompletionVelocityCard.es';
 import PerformanceByAssigneeCard from './performance-by-assignee-card/PerformanceByAssigneeCard.es';
@@ -38,6 +41,7 @@ import WorkloadByStepCard from './workload-by-step-card/WorkloadByStepCard.es';
 
 const DashboardTab = ({processId, routeParams}) => {
 	const {fetchDateModified} = useContext(AppContext);
+	const [showModal, setShowModal] = useState(false);
 
 	const {dateModified, fetchData} = useDateModified({
 		fetchDateModified,
@@ -54,31 +58,58 @@ const DashboardTab = ({processId, routeParams}) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetchData]);
 
+	const {observer} = useModal({
+		onClose: () => {
+			setShowModal(false);
+		},
+	});
+
 	return (
-		<PromisesResolver promises={promises}>
-			<MetricsCalculatedInfo dateModified={dateModified} />
+		<>
+			<PromisesResolver promises={promises}>
+				<MetricsCalculatedInfo dateModified={dateModified} />
 
-			<ClayLayout.ContainerFluid>
-				<ClayLayout.Row>
-					<ClayLayout.Col className="p-0" md="9">
-						<ClayLayout.ContainerFluid>
-							<PendingItemsCard processId={processId} />
+				<ClayLayout.ContainerFluid>
+					<ClayLayout.Row>
+						<ClayLayout.Col className="p-0" md="9">
+							<ClayLayout.ContainerFluid>
+								<PendingItemsCard processId={processId} />
 
-							<WorkloadByStepCard
-								processId={processId}
-								routeParams={routeParams}
-							/>
-						</ClayLayout.ContainerFluid>
-					</ClayLayout.Col>
+								<WorkloadByStepCard
+									processId={processId}
+									routeParams={routeParams}
+								/>
+							</ClayLayout.ContainerFluid>
+						</ClayLayout.Col>
 
-					<ClayLayout.Col className="p-0" md="3">
-						<ClayLayout.ContainerFluid>
-							<WorkloadByAssigneeCard routeParams={routeParams} />
-						</ClayLayout.ContainerFluid>
-					</ClayLayout.Col>
-				</ClayLayout.Row>
-			</ClayLayout.ContainerFluid>
-		</PromisesResolver>
+						<ClayLayout.Col className="p-0" md="3">
+							<ClayLayout.ContainerFluid>
+								<WorkloadByAssigneeCard
+									routeParams={routeParams}
+								/>
+
+								<ClayButton
+									displayType="primary"
+									onClick={() => setShowModal(true)}
+								>
+									Workflow Instance Tracker
+								</ClayButton>
+							</ClayLayout.ContainerFluid>
+						</ClayLayout.Col>
+					</ClayLayout.Row>
+				</ClayLayout.ContainerFluid>
+			</PromisesResolver>
+
+			{showModal && (
+				<ClayModal
+					className="layoutflow-modal"
+					observer={observer}
+					size="lg"
+				>
+					<LayoutFlow />
+				</ClayModal>
+			)}
+		</>
 	);
 };
 
