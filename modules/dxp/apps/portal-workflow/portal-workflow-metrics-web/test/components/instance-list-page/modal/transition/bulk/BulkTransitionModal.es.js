@@ -78,53 +78,8 @@ const {data, items, processSteps} = {
 					},
 				],
 				workflowDefinitionVersion: '1',
-				workflowTaskLabel: 'Review',
-				workflowTaskName: 'review',
-			},
-			{
-				transitions: [
-					{
-						label: 'Approve',
-						name: 'approve',
-					},
-					{
-						label: 'Reject',
-						name: 'reject',
-					},
-				],
-				workflowDefinitionVersion: '1',
-				workflowTaskLabel: 'Review',
-				workflowTaskName: 'review',
-			},
-			{
-				transitions: [
-					{
-						label: 'Approve',
-						name: 'approve',
-					},
-					{
-						label: 'Reject',
-						name: 'reject',
-					},
-				],
-				workflowDefinitionVersion: '1',
-				workflowTaskLabel: 'Review',
-				workflowTaskName: 'review',
-			},
-			{
-				transitions: [
-					{
-						label: 'Approve',
-						name: 'approve',
-					},
-					{
-						label: 'Reject',
-						name: 'reject',
-					},
-				],
-				workflowDefinitionVersion: '1',
-				workflowTaskLabel: 'Review',
-				workflowTaskName: 'review',
+				workflowTaskLabel: 'Update',
+				workflowTaskName: 'update',
 			},
 		],
 	},
@@ -143,13 +98,35 @@ const mockTasks = {
 	data: {items, totalCount: items.length + 1},
 };
 
-const ContainerMockPrimary = ({children}) => {
+const clientMock = {
+	patch: jest
+		.fn()
+		.mockRejectedValueOnce(new Error('request-failure'))
+		.mockResolvedValue({data: {}}),
+	post: jest
+		.fn()
+		.mockRejectedValueOnce(new Error('request-failure'))
+		.mockResolvedValueOnce(mockTasks)
+		.mockResolvedValueOnce(mockTasks)
+		.mockRejectedValueOnce(new Error('request-failure'))
+		.mockResolvedValue({data}),
+	request: jest
+		.fn()
+		.mockResolvedValueOnce({data: {items: processSteps}})
+		.mockResolvedValueOnce({data: {items: processSteps}})
+		.mockResolvedValueOnce({data: {items: processSteps}}),
+}
+
+const ContainerMock = ({children}) => {
 	const processId = '12345';
 
+	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const [bulkTransition, setBulkTransition] = useState({
 		transition: {errors: {}, onGoing: false},
 		transitionTasks: [],
 	});
+
+	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const [selectedItems, setSelectedItems] = useState([
 		{
 			assetTitle: 'Blog1',
@@ -168,29 +145,12 @@ const ContainerMockPrimary = ({children}) => {
 			taskNames: ['Review'],
 		},
 	]);
+
+	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const [selectTasks, setSelectTasks] = useState({
 		selectAll: false,
 		tasks: [],
 	});
-
-	const clientMock = {
-		patch: jest
-			.fn()
-			.mockRejectedValueOnce(new Error('request-failure'))
-			.mockResolvedValue({data: {}}),
-		post: jest
-			.fn()
-			.mockRejectedValueOnce(new Error('request-failure'))
-			.mockResolvedValueOnce(mockTasks)
-			.mockResolvedValueOnce(mockTasks)
-			.mockRejectedValueOnce(new Error('request-failure'))
-			.mockResolvedValue({data}),
-		request: jest
-			.fn()
-			.mockResolvedValueOnce({data: {items: processSteps}})
-			.mockResolvedValueOnce({data: {items: processSteps}})
-			.mockResolvedValueOnce({data: {items: processSteps}}),
-	};
 
 	return (
 		<MockRouter client={clientMock}>
@@ -217,84 +177,17 @@ const ContainerMockPrimary = ({children}) => {
 	);
 };
 
-const ContainerMockSecondary = ({children}) => {
-	const processId = '12345';
-
-	const [bulkTransition, setBulkTransition] = useState({
-		transition: {errors: {}, onGoing: false},
-		transitionTasks: [],
-	});
-	const selectAll = true;
-	const [selectedItems, setSelectedItems] = useState([
-		{
-			assetTitle: 'Blog1',
-			assetType: 'Blogs Entry',
-			assignees: [{id: 2, name: 'Test Test'}],
-			id: 1,
-			status: 'In Progress',
-			taskNames: ['Review'],
-		},
-		{
-			assetTitle: 'Blog2',
-			assetType: 'Blogs Entry',
-			assignees: [{id: 2, name: 'Test Test'}],
-			id: 2,
-			status: 'In Progress',
-			taskNames: ['Review'],
-		},
-	]);
-	const [selectTasks, setSelectTasks] = useState({
-		selectAll: false,
-		tasks: [],
-	});
-	const [visibleModal] = useState('bulkTransition');
-
-	const clientMock = {
-		get: jest.fn().mockResolvedValueOnce({data}),
-		post: jest.fn().mockResolvedValue({
-			data: {items, totalCount: items.length + 1},
-		}),
-		request: jest.fn().mockResolvedValueOnce({data: {items: processSteps}}),
-	};
-
-	return (
-		<MockRouter client={clientMock}>
-			<InstanceListContext.Provider
-				value={{
-					selectAll,
-					selectedItems,
-					setSelectedItems,
-				}}
-			>
-				<ModalContext.Provider
-					value={{
-						bulkTransition,
-						processId,
-						selectTasks,
-						setBulkTransition,
-						setSelectTasks,
-						visibleModal,
-					}}
-				>
-					<ToasterProvider>{children}</ToasterProvider>
-				</ModalContext.Provider>
-			</InstanceListContext.Provider>
-		</MockRouter>
-	);
-};
-
 describe('The BulkTransitionModal component should', () => {
-	let getAllByRole, getAllByText, getByText, debug;
+	let getAllByRole, getAllByText, getByText;
 
 	beforeAll(async () => {
 		const component = render(<BulkTransitionModal />, {
-			wrapper: ContainerMockPrimary,
+			wrapper: ContainerMock,
 		});
 
 		getAllByRole = component.getAllByRole;
 		getAllByText = component.getAllByText;
 		getByText = component.getByText;
-		debug = component.debug;
 
 		await act(async () => {
 			jest.runAllTimers();
@@ -383,6 +276,10 @@ describe('The BulkTransitionModal component should', () => {
 
 		fireEvent.click(checkbox1);
 
+		await act(async () => {
+			jest.runAllTimers();
+		});
+
 		label = getByText('x-of-x-selected');
 
 		expect(checkbox1.checked).toBe(true);
@@ -392,11 +289,19 @@ describe('The BulkTransitionModal component should', () => {
 
 		fireEvent.click(checkbox1);
 
+		await act(async () => {
+			jest.runAllTimers();
+		});
+
 		expect(checkbox1.checked).toBe(false);
 		expect(checkbox2.checked).toBe(false);
 		expect(checkAllButton.checked).toBe(false);
 
 		fireEvent.click(checkAllButton);
+
+		await act(async () => {
+			jest.runAllTimers();
+		});
 
 		expect(checkbox1.checked).toBe(true);
 		expect(checkbox2.checked).toBe(true);
@@ -507,20 +412,19 @@ describe('The BulkTransitionModal component should', () => {
 
 	it('Select a transition to "approve", click "Show All" button, add a comment and retry patch request successfully', async () => {
 		const addCommentButton = getAllByText('add-comment')[0];
-		// debug();
-		return;
-
 		const nextBtn = getByText('done');
 		const showAllButton = getByText('show-all');
-		const transitionSelect = document.querySelector('#transitionSelect0_0');
+		const reviewTransitionSelect = document.querySelector('#transitionSelect0_0');
+		const updateTransitionSelect = document.querySelector('#transitionSelect0_1');
 
-		fireEvent.change(transitionSelect, {target: {value: 'approve'}});
+		fireEvent.change(reviewTransitionSelect, {target: {value: 'approve'}});
+		fireEvent.change(updateTransitionSelect, {target: {value: 'approve'}});
 
 		await act(async () => {
 			jest.runAllTimers();
 		});
 
-		expect(transitionSelect.value).toEqual('approve');
+		expect(reviewTransitionSelect.value).toEqual('approve');
 
 		fireEvent.click(showAllButton);
 
@@ -560,52 +464,8 @@ describe('The BulkTransitionModal component should', () => {
 
 		const alertToast = document.querySelectorAll('.alert-dismissible');
 
-		expect(alertToast[0].innerHTML).toContain(
-			'the-selected-steps-have-transitioned-successfull'
+		expect(alertToast[0]).toHaveTextContent(
+			'success:the-selected-steps-have-transitioned-successfully'
 		);
-	});
-
-	xit('Check all tasks and step forward to "Select Transition" step and show loading view', async () => {
-		cleanup();
-		const {debug, getByText} = render(<BulkTransitionModal />, {
-			wrapper: ContainerMockSecondary,
-		});
-
-		await act(async () => {
-			jest.runAllTimers();
-		});
-
-		const checkAllButton = document.querySelectorAll(
-			'.custom-control-input'
-		)[0];
-
-		const nextBtn = getByText('next');
-
-		fireEvent.click(checkAllButton);
-
-		const selectAll = getByText('select-all');
-
-		fireEvent.click(selectAll);
-
-		await act(async () => fireEvent.click(nextBtn));
-		const loadingState = document.querySelector('span.loading-animation');
-
-		await act(async () => {
-			jest.runOnlyPendingTimers();
-		});
-		
-		
-		// debug();
-		// return;
-
-		// debug();
-
-		// return;
-
-		expect(loadingState).toBeTruthy();
-
-		await act(async () => {
-			jest.runAllTimers();
-		});
 	});
 });
