@@ -74,10 +74,9 @@ function Item({totalCount, ...instance}) {
 
 	const slaStatusIconInfo = getSLAStatusIconInfo(slaStatus);
 
-	return (
+	return ( 
 		<ClayTable.Row className={checked ? 'table-active' : ''}>
-			<ClayTable.Cell>
-				<div className="table-first-element-group">
+			<ClayTable.Cell className="table-first-element-group">
 					<ClayCheckbox
 						checked={checked}
 						disabled={disableCheckbox}
@@ -94,7 +93,6 @@ function Item({totalCount, ...instance}) {
 							/>
 						</span>
 					</span>
-				</div>
 			</ClayTable.Cell>
 
 			<ClayTable.Cell>

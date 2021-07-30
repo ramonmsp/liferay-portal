@@ -105,7 +105,6 @@ export default function Header({data}) {
 						<ClayInput.GroupInsetItem after tag="span">
 							<ClayIcon
 								className="m-2"
-								displayType="unstyled"
 								symbol="search"
 							/>
 						</ClayInput.GroupInsetItem>
