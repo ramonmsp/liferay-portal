@@ -54,7 +54,7 @@ function Item({
 				<ChildLink
 					className="workload-by-assignee-link"
 					query={{filters}}
-					to={`/instance/${processId}/${defaultDelta}/1/dateCreated:asc`}
+					to={`/instance/${processId}/${defaultDelta}/1/dateOverdue:asc`}
 				>
 					<span>{name}</span>
 				</ChildLink>
