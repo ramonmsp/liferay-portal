@@ -15,6 +15,7 @@
 import dagre from 'dagre';
 import {isEdge, isNode} from 'react-flow-renderer';
 
+import JoinNode from '../components/nodes/JoinNode';
 import TaskNode from '../components/nodes/TaskNode';
 import BorderStateNode from '../components/nodes/state-node/BorderStateNode';
 import StateNode from '../components/nodes/state-node/StateNode';
@@ -156,6 +157,8 @@ const getNodeType = (type) => {
 		case 'INITIAL_STATE':
 		case 'TERMINAL_STATE':
 			return 'borderState';
+		case 'JOIN':
+			return 'join';
 		default:
 			return 'task';
 	}
@@ -171,6 +174,7 @@ const isVisited = (visitedNodes = [], node) => {
 
 const nodeTypes = {
 	borderState: BorderStateNode,
+	join: JoinNode,
 	state: StateNode,
 	task: TaskNode,
 };
