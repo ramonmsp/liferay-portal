@@ -12,7 +12,7 @@
  * details.
  */
 
-export const nodeHandles = [
+const nodeHandles = [
 	{id: 'leftSource1', position: 'left', style: {top: '20%'}, type: 'source'},
 	{id: 'leftTarget1', position: 'left', style: {top: '40%'}, type: 'target'},
 	{id: 'leftSource2', position: 'left', style: {top: '60%'}, type: 'source'},
@@ -70,3 +70,49 @@ export const nodeHandles = [
 		type: 'source',
 	},
 ];
+
+const hexagonNodeHandlesStyles = [
+	{style: {top: '20%'}},
+	{style: {left: '-26px', top: '40%'}},
+	{style: {top: '60%'}},
+	{
+		style: {left: '-26px', top: '80%'},
+	},
+	{style: {left: '20%'}},
+	{
+		style: {left: '40%', top: '-10px'},
+	},
+	{style: {left: '60%'}},
+	{
+		style: {left: '80%', top: '-10px'},
+	},
+	{style: {top: '20%'}},
+	{
+		style: {right: '-26px', top: '40%'},
+	},
+	{
+		style: {top: '60%'},
+	},
+	{
+		style: {right: '-26px', top: '80%'},
+	},
+	{
+		style: {bottom: '-10px', left: '20%'},
+	},
+	{
+		style: {left: '40%'},
+	},
+	{
+		style: {bottom: '-10px', left: '60%'},
+	},
+	{
+		style: {left: '80%'},
+	},
+];
+
+const hexagonNodeHandles = hexagonNodeHandlesStyles.map(({style}, index) => ({
+	...nodeHandles[index],
+	style,
+}));
+
+export {nodeHandles, hexagonNodeHandles};
