@@ -57,7 +57,17 @@ export default function CurrentNodes({nodesNames = []}) {
 
 	const {nodes} = store.getState();
 
-	const focusNode = (node) => () => {
+	const currentNodes = nodes.filter((node) => nodesNames.includes(node.id));
+
+	const nodesLabels = currentNodes.map(
+		(currentNode) => currentNode.data.label
+	);
+
+	const focusNode = (nodeLabel) => () => {
+		const node = currentNodes.find(
+			(currentNode) => currentNode.data.label === nodeLabel
+		);
+
 		if (node) {
 			const x = node.__rf.position.x + node.__rf.width / 2;
 			const y = node.__rf.position.y + node.__rf.height / 2;
@@ -67,12 +77,12 @@ export default function CurrentNodes({nodesNames = []}) {
 		}
 	};
 
-	let firstNodes = nodes;
+	let firstNodes = nodesLabels;
 	let moreNodes = [];
 
-	if (nodes.length > 4) {
-		firstNodes = nodes.slice(0, 3);
-		moreNodes = nodes.slice(3);
+	if (nodesLabels.length > 4) {
+		firstNodes = nodesLabels.slice(0, 3);
+		moreNodes = nodesLabels.slice(3);
 	}
 
 	return (
