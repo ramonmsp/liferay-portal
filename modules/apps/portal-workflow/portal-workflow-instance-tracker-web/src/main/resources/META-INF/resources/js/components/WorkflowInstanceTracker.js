@@ -60,7 +60,7 @@ export default function WorkflowInstanceTracker({workflowInstanceId}) {
 
 	useEffect(() => {
 		if (data.length) {
-			setCurrentNodes(data[0].state.toLowerCase());
+			setCurrentNodes(data[0].currentNodeNames);
 			const visitedNodes = data[1].items.map((item) => item.state);
 
 			setVisitedNodes(visitedNodes);
@@ -128,7 +128,7 @@ export default function WorkflowInstanceTracker({workflowInstanceId}) {
 
 					<Controls showInteractive={false} />
 
-					<CurrentNodes nodesNames={[currentNodes]} />
+					<CurrentNodes nodesNames={currentNodes} />
 				</ReactFlowProvider>
 			)}
 		</div>
