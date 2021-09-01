@@ -17,7 +17,7 @@ import {render} from '@testing-library/react';
 import React from 'react';
 import {ReactFlowProvider} from 'react-flow-renderer';
 
-import JoinNode from '../../../src/main/resources/META-INF/resources/js/components/nodes/JoinNode';
+import JoinNode from '../../../../src/main/resources/META-INF/resources/js/components/nodes/hexagon-nodes/JoinNode';
 
 describe('The JoinNode component should', () => {
 	it('Be rendered with join icon and name', () => {

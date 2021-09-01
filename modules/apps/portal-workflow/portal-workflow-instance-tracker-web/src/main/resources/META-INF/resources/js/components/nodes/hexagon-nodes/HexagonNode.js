@@ -16,9 +16,9 @@ import {ClayTooltipProvider} from '@clayui/tooltip';
 import React from 'react';
 import {Handle} from 'react-flow-renderer';
 
-import {hexagonNodeHandles} from '../../util/nodeHandles';
+import {hexagonNodeHandles} from '../../../util/nodeHandles';
 
-import '../../../css/main.scss';
+import '../../../../css/main.scss';
 
 export default function HexagonNode({children, title}) {
 	return (
