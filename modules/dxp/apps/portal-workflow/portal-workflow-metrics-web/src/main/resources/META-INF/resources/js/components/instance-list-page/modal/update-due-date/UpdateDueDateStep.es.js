@@ -58,11 +58,10 @@ const getTimeOptions = (isAmPm) => {
 };
 
 function UpdateDueDateStep({className, dueDate = new Date()}) {
-	const {isAmPm} = useContext(AppContext);
+	const {isAmPm, timeFormat} = useContext(AppContext);
 	const {setUpdateDueDate, updateDueDate} = useContext(ModalContext);
 
 	const dateFormat = getLocaleDateFormat();
-	const timeFormat = getLocaleDateFormat('LT');
 
 	const dateMask = getMaskByDateFormat(dateFormat);
 
