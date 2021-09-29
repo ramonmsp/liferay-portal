@@ -153,7 +153,7 @@ function TimePickerInputWithOptions({format, isAmPm, setValue, value}) {
 	const [invalidTime, setInvalidTime] = useState(false);
 	const [showOptions, setShowOptions] = useState(false);
 	const inputRef = useRef();
-	const options = getTimeOptions(isAmPm);
+	const options = getTimeOptions(format, isAmPm);
 
 	useEffect(() => {
 		setInvalidTime(!isValidDate(value, format));
