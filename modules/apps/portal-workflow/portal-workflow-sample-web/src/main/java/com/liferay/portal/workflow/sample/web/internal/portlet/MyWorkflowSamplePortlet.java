@@ -59,9 +59,17 @@ public class MyWorkflowSamplePortlet extends MVCPortlet {
 				_npmResolver.resolveModuleName(
 					"dynamic-data-mapping-form-field-type/Captcha/Captcha.es"));
 		System.out.println(
-			"resolveModuleName 2 = " +
+			"resolveModuleName 3 = " +
 				_npmResolver.resolveModuleName(
-					"portal-workflow-instance-tracker-web/js/Components/WorkflowInstanceTracker"));
+					"dynamic-data-mapping-form-field-type"));
+		System.out.println(
+			"resolveModuleName 3 = " +
+				_npmResolver.resolveModuleName(
+					"commerce-shop-by-diagram-web"));
+		System.out.println(
+			"resolveModuleName 4 = " +
+				_npmResolver.resolveModuleName(
+					"portal-workflow-instance-tracker-web"));
 
 		super.render(renderRequest, renderResponse);
 	}
