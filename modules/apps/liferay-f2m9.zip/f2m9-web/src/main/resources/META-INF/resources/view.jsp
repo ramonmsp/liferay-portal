@@ -10,6 +10,8 @@ taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
 page import="com.acme.f2m9.service.TodoLocalServiceUtil" %>
 
 <%@ page import="java.util.List" %>
+<%@ page
+	import="com.acme.f2m9.web.internal.portlet.display.context.F2M9DisplayContext" %>
 
 <liferay-theme:defineObjects />
 
@@ -28,27 +30,29 @@ page import="com.acme.f2m9.service.TodoLocalServiceUtil" %>
 </p>
 
 <%
-List<Todo> todoList = TodoLocalServiceUtil.getTodos(-1, -1);
-Map<Todo, Long> todoWorkflowInstanceIds = (Map<Todo, Long>) request.getAttribute("todoWorkflowInstanceIds");
+	F2M9DisplayContext f2M9DisplayContext = (F2M9DisplayContext)renderRequest.getAttribute("f2M9DisplayContext");
+
+	List<Todo> todoList = TodoLocalServiceUtil.getTodos(-1, -1);
 %>
 
 <h5>Todos</h5>
 <c:choose>
-	<c:when test="<%= (todoList != null) && (todoList.size() > 0) %>">
+	<c:when test="<%= (todoList != null) && !todoList.isEmpty() %>">
 		<table>
 			<tbody>
-				<c:forEach items="<%= todoList %>" var="todo">
-					<tr>
-						<td>${todo.name }</td>
-						<td>${todo.status }</td>
-					</tr>
-				</c:forEach>
-				<c:forEach items="<%= todoWorkflowInstanceIds %>" var="todo">
-					<tr>
-						<td>${todo.name }</td>
-						<td>${todo.status }</td>
-					</tr>
-				</c:forEach>
+				<%for(Todo todo: todoList) {%>
+				<tr>
+					<td><%= todo.getName()%></td>
+					<td><%= todo.getStatus()%></td>
+					<td>
+						<%
+							Long workflowInstanceId = f2M9DisplayContext.getWorkflowInstanceId(todo);
+						%>
+
+						<%= workflowInstanceId != null ? String.valueOf(workflowInstanceId) : "--"%>
+					</td>
+				</tr>
+				<%}%>
 			</tbody>
 		</table>
 	</c:when>
