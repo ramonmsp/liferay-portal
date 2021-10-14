@@ -4,13 +4,17 @@
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
 taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
-taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %>
+taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
+taglib uri="http://liferay.com/tld/react" prefix="react" %>
 
 <%@ page import="com.acme.f2m9.model.Todo" %><%@
 page import="com.acme.f2m9.service.TodoLocalServiceUtil" %>
 
 <%@ page import="java.util.List" %>
+<%@ page
+	import="com.acme.f2m9.web.internal.portlet.display.context.F2M9DisplayContext" %>
 
+<%@ include file="/instance_tracker.jsp" %>
 <liferay-theme:defineObjects />
 
 <portlet:defineObjects />
@@ -28,27 +32,32 @@ page import="com.acme.f2m9.service.TodoLocalServiceUtil" %>
 </p>
 
 <%
-List<Todo> todoList = TodoLocalServiceUtil.getTodos(-1, -1);
-Map<Todo, Long> todoWorkflowInstanceIds = (Map<Todo, Long>) request.getAttribute("todoWorkflowInstanceIds");
+	F2M9DisplayContext f2M9DisplayContext = (F2M9DisplayContext)renderRequest.getAttribute("f2M9DisplayContext");
+
+	List<Todo> todoList = TodoLocalServiceUtil.getTodos(-1, -1);
 %>
 
 <h5>Todos</h5>
 <c:choose>
-	<c:when test="<%= (todoList != null) && (todoList.size() > 0) %>">
+	<c:when test="<%= (todoList != null) && !todoList.isEmpty() %>">
 		<table>
 			<tbody>
-				<c:forEach items="<%= todoList %>" var="todo">
-					<tr>
-						<td>${todo.name }</td>
-						<td>${todo.status }</td>
-					</tr>
-				</c:forEach>
-				<c:forEach items="<%= todoWorkflowInstanceIds %>" var="todo">
-					<tr>
-						<td>${todo.name }</td>
-						<td>${todo.status }</td>
-					</tr>
-				</c:forEach>
+				<%for(Todo todo: todoList) {%>
+				<tr>
+					<td><%= todo.getName()%></td>
+					<td><%= todo.getStatus()%></td>
+					<td>
+						<%
+							Long workflowInstanceId = f2M9DisplayContext.getWorkflowInstanceId(todo);
+						%>
+
+						<%= workflowInstanceId != null ? String.valueOf(workflowInstanceId) : "--"%>
+					</td>
+					<td>
+						<a href="/instance_tracker.jsp">Track Workflow</a>
+					</td>
+				</tr>
+				<%}%>
 			</tbody>
 		</table>
 	</c:when>
@@ -56,3 +65,7 @@ Map<Todo, Long> todoWorkflowInstanceIds = (Map<Todo, Long>) request.getAttribute
 		<em>None</em>
 	</c:otherwise>
 </c:choose>
+
+<react:component
+	module="js/Teste"
+/>
