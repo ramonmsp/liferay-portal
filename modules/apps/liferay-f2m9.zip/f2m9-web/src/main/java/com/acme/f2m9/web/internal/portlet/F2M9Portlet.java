@@ -4,6 +4,7 @@ import com.acme.f2m9.model.Todo;
 import com.acme.f2m9.service.TodoLocalService;
 
 import com.acme.f2m9.service.TodoLocalServiceUtil;
+import com.acme.f2m9.web.internal.portlet.display.context.F2M9DisplayContext;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.WorkflowInstanceLink;
@@ -63,16 +64,18 @@ public class F2M9Portlet extends MVCPortlet {
 			user.getUserId(), user.getFullName(), item, serviceContext);
 	}
 
-	public Long getInstanceTracker(Todo todo) {
-		WorkflowInstanceLink workflowDefinitionLink = _workflowInstanceLinkLocalService.fetchWorkflowInstanceLink(todo.getCompanyId(), todo.getGroupId(), Todo.class.getName(), todo.getPrimaryKey());
+	@Override
+	public void render(
+		RenderRequest renderRequest, RenderResponse renderResponse)
+		throws IOException, PortletException {
 
-		if(workflowDefinitionLink != null) {
-			return workflowDefinitionLink.getWorkflowInstanceId();
-		}
-		return 0L;
+		renderRequest.setAttribute(
+			"f2M9DisplayContext",
+			new F2M9DisplayContext(_workflowInstanceLinkLocalService));
+
+		super.render(renderRequest, renderResponse);
+
 	}
-
-
 
 	@Reference
 	private Portal _portal;
