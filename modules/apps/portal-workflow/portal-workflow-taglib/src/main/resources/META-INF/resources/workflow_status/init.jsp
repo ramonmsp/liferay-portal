@@ -17,6 +17,5 @@
 <%@ include file="/init.jsp" %>
 
 <%
-WorkflowStatusTaglibHelper workflowStatusTaglibHelper =
-	new WorkflowStatusTaglibHelper(request, resourceBundle);
+WorkflowStatusTaglibHelper workflowStatusTaglibHelper = new WorkflowStatusTaglibHelper(request, resourceBundle);
 %>
