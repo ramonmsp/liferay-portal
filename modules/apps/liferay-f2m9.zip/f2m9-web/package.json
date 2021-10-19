@@ -1,0 +1,11 @@
+{
+	"name": "f2m9",
+	"private": true,
+	"scripts": {
+		"build": "liferay-npm-scripts build"
+	},
+	"version": "1.0.0",
+	"devDependencies": {
+		"@liferay/npm-scripts": "^46.7.0"
+	}
+}
