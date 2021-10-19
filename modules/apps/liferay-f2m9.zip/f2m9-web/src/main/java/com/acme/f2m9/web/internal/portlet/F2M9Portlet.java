@@ -2,12 +2,10 @@ package com.acme.f2m9.web.internal.portlet;
 
 import com.acme.f2m9.model.Todo;
 import com.acme.f2m9.service.TodoLocalService;
-
-import com.acme.f2m9.service.TodoLocalServiceUtil;
 import com.acme.f2m9.web.internal.portlet.display.context.F2M9DisplayContext;
+
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.User;
-import com.liferay.portal.kernel.model.WorkflowInstanceLink;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
@@ -18,9 +16,6 @@ import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -44,15 +39,13 @@ import org.osgi.service.component.annotations.Reference;
 public class F2M9Portlet extends MVCPortlet {
 
 	public void addTodo(
-		ActionRequest actionRequest, ActionResponse actionResponse)
+			ActionRequest actionRequest, ActionResponse actionResponse)
 		throws PortalException {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
 		String item = ParamUtil.getString(actionRequest, "item");
-
-		System.out.println("item" + item);
 
 		User user = _portal.getUser(actionRequest);
 
@@ -66,7 +59,7 @@ public class F2M9Portlet extends MVCPortlet {
 
 	@Override
 	public void render(
-		RenderRequest renderRequest, RenderResponse renderResponse)
+			RenderRequest renderRequest, RenderResponse renderResponse)
 		throws IOException, PortletException {
 
 		renderRequest.setAttribute(
@@ -74,7 +67,6 @@ public class F2M9Portlet extends MVCPortlet {
 			new F2M9DisplayContext(_workflowInstanceLinkLocalService));
 
 		super.render(renderRequest, renderResponse);
-
 	}
 
 	@Reference

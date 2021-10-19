@@ -76,6 +76,6 @@ public class TodoAssetRenderer extends BaseJSPAssetRenderer<Todo> {
 		return _todo.getUuid();
 	}
 
-	private Todo _todo;
+	private final Todo _todo;
 
 }
