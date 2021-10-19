@@ -3,18 +3,17 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
 
 <%@ taglib uri="http://liferay.com/tld/aui" prefix="aui" %><%@
-taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %><%@
-taglib uri="http://liferay.com/tld/ui" prefix="liferay-ui" %><%@
-taglib uri="http://liferay.com/tld/react" prefix="react" %>
+taglib uri="http://liferay.com/tld/react" prefix="react" %><%@
+taglib uri="http://liferay.com/tld/theme" prefix="liferay-theme" %>
 
 <%@ page import="com.acme.f2m9.model.Todo" %><%@
-page import="com.acme.f2m9.service.TodoLocalServiceUtil" %>
+page import="com.acme.f2m9.service.TodoLocalServiceUtil" %><%@
+page import="com.acme.f2m9.web.internal.portlet.display.context.F2M9DisplayContext" %>
+
+<%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %>
 
 <%@ page import="java.util.List" %>
-<%@ page
-	import="com.acme.f2m9.web.internal.portlet.display.context.F2M9DisplayContext" %>
 
-<%@ include file="/instance_tracker.jsp" %>
 <liferay-theme:defineObjects />
 
 <portlet:defineObjects />
@@ -32,9 +31,9 @@ page import="com.acme.f2m9.service.TodoLocalServiceUtil" %>
 </p>
 
 <%
-	F2M9DisplayContext f2M9DisplayContext = (F2M9DisplayContext)renderRequest.getAttribute("f2M9DisplayContext");
+F2M9DisplayContext f2M9DisplayContext = (F2M9DisplayContext)renderRequest.getAttribute("f2M9DisplayContext");
 
-	List<Todo> todoList = TodoLocalServiceUtil.getTodos(-1, -1);
+List<Todo> todoList = TodoLocalServiceUtil.getTodos(-1, -1);
 %>
 
 <h5>Todos</h5>
@@ -42,22 +41,31 @@ page import="com.acme.f2m9.service.TodoLocalServiceUtil" %>
 	<c:when test="<%= (todoList != null) && !todoList.isEmpty() %>">
 		<table>
 			<tbody>
-				<%for(Todo todo: todoList) {%>
+				<%for(Todo todo: todoList) { %>
 				<tr>
-					<td><%= todo.getName()%></td>
-					<td><%= todo.getStatus()%></td>
+					<td><%= todo.getName() %></td>
+					<td><%= todo.getStatus() %></td>
 					<td>
+
 						<%
-							Long workflowInstanceId = f2M9DisplayContext.getWorkflowInstanceId(todo);
+						Long workflowInstanceId = f2M9DisplayContext.getWorkflowInstanceId(todo);
+
+						if (workflowInstanceId != null) {
 						%>
 
-						<%= workflowInstanceId != null ? String.valueOf(workflowInstanceId) : "--"%>
-					</td>
-					<td>
-						<a href="/instance_tracker.jsp">Track Workflow</a>
+						<react:component
+							module="js/Index"
+							props='<%=
+								HashMapBuilder.<String, Object>put(
+									"workflowInstanceId", workflowInstanceId
+								).build()
+							%>'
+						/>
+
+						<%} %>
 					</td>
 				</tr>
-				<%}%>
+				<%} %>
 			</tbody>
 		</table>
 	</c:when>
@@ -65,7 +73,3 @@ page import="com.acme.f2m9.service.TodoLocalServiceUtil" %>
 		<em>None</em>
 	</c:otherwise>
 </c:choose>
-
-<react:component
-	module="js/Teste"
-/>
