@@ -1,0 +1,7 @@
+{
+	"name": "@liferay/portal-workflow-taglib",
+	"scripts": {
+		"build": "liferay-npm-scripts build"
+	},
+	"version": "1.0.0"
+}

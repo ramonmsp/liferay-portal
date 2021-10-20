@@ -196,7 +196,7 @@ public class WorkflowStatusTag extends BaseWorkflowTag {
 		}
 
 		if (Validator.isNull(getHelpMessage()) &&
-			(getStatus() == WorkflowConstants.STATUS_APPROVED) &&
+			Objects.equals(getStatus(), WorkflowConstants.STATUS_APPROVED) &&
 			Validator.isNotNull(getVersion())) {
 
 			setNamespacedAttribute(

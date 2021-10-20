@@ -15,8 +15,21 @@
 --%>
 
 <%@ include file="/workflow_status/init.jsp" %>
+<%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %>
+<%@ taglib uri="http://liferay.com/tld/react" prefix="react" %>
 
-<span class="taglib-workflow-status">
+<react:component
+	module="workflow_status/js/Index"
+	props='<%=
+				HashMapBuilder.<String, Object>put(
+					"workflowInstanceId", workflowStatusTaglibHelper.getInstanceId()
+				).put(
+					"statusMessage", workflowStatusTaglibHelper.getStatusMessage()
+				).build()
+			%>'
+/>
+
+<%--<span class="taglib-workflow-status">
 	<c:if test="<%= Validator.isNotNull(workflowStatusTaglibHelper.getId()) %>">
 		<span class="mr-2 workflow-id">
 			<span class="workflow-label"><liferay-ui:message key="id" />:</span>
@@ -45,4 +58,4 @@
 	<c:if test="<%= workflowStatusTaglibHelper.getShowHelpMessage() && Validator.isNotNull(workflowStatusTaglibHelper.getHelpMessage()) %>">
 		<liferay-ui:icon-help message="<%= workflowStatusTaglibHelper.getHelpMessage() %>" />
 	</c:if>
-</span>
+</span>--%>
