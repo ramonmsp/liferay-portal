@@ -15,47 +15,58 @@
 --%>
 
 <%@ include file="/workflow_status/init.jsp" %>
-<%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %>
 <%@ taglib uri="http://liferay.com/tld/react" prefix="react" %>
 
+<%@ page import="com.liferay.portal.kernel.util.HashMapBuilder" %>
+
 <react:component
-	module="workflow_status/js/Index"
+	module="workflow_status/js/WorkflowStatus"
 	props='<%=
-				HashMapBuilder.<String, Object>put(
-					"workflowInstanceId", workflowStatusTaglibHelper.getInstanceId()
-				).put(
-					"statusMessage", workflowStatusTaglibHelper.getStatusMessage()
-				).build()
+		HashMapBuilder.<String, Object>put(
+			"additionalText", workflowStatusTaglibHelper.getAdditionalText()
+		).put(
+			"helpMessage", workflowStatusTaglibHelper.getHelpMessage()
+		).put(
+			"id", HtmlUtil.escape(workflowStatusTaglibHelper.getId())
+		).put(
+			"showIcon", workflowStatusTaglibHelper.getShowHelpMessage()
+		).put(
+			"showLabel", workflowStatusTaglibHelper.getShowLabel()
+		).put(
+			"statusMessage", workflowStatusTaglibHelper.getStatusMessage()
+		).put(
+			"statusStyle", WorkflowConstants.getStatusStyle(workflowStatusTaglibHelper.getStatus())
+		).put(
+			"version", workflowStatusTaglibHelper.getVersion()
+		).put(
+			"workflowInstanceId", workflowStatusTaglibHelper.getInstanceId()
+		).put(
+			"showInstancetracker", true
+		).build()
 			%>'
 />
 
 <%--<span class="taglib-workflow-status">
-	<c:if test="<%= Validator.isNotNull(workflowStatusTaglibHelper.getId()) %>">
+
 		<span class="mr-2 workflow-id">
 			<span class="workflow-label"><liferay-ui:message key="id" />:</span>
-			<span class="workflow-value"><%= HtmlUtil.escape(workflowStatusTaglibHelper.getId()) %></span>
+			<span class="workflow-value">value id</span>
 		</span>
-	</c:if>
-
-	<c:if test="<%= Validator.isNotNull(workflowStatusTaglibHelper.getVersion()) %>">
 		<span class="mr-2 workflow-version">
 			<span class="workflow-label"><liferay-ui:message key="version" />:</span>
 
-			<strong class="workflow-value"><%= workflowStatusTaglibHelper.getVersion() %></strong>
+			<strong class="workflow-value">version id</strong>
 		</span>
-	</c:if>
 
-	<span class="<%= workflowStatusTaglibHelper.getShowIcon() ? "icon-file-alt workflow-status" : "workflow-status" %>">
-		<c:if test="<%= workflowStatusTaglibHelper.getShowLabel() %>">
+	<span class="icon-file-alt workflow-status">
+
 			<span class="workflow-label"><liferay-ui:message key="status" />:</span>
-		</c:if>
 
 		<strong class="label label-<%= WorkflowConstants.getStatusStyle(workflowStatusTaglibHelper.getStatus()) %> status text-uppercase workflow-status-<%= WorkflowConstants.getStatusLabel(workflowStatusTaglibHelper.getStatus()) %> <%= WorkflowConstants.getStatusCssClass(workflowStatusTaglibHelper.getStatus()) %> workflow-value">
-			<liferay-ui:message key="<%= workflowStatusTaglibHelper.getStatusMessage() %>" /><%= workflowStatusTaglibHelper.getAdditionalText() %>
+			<liferay-ui:message key="label" />oto value
 		</strong>
 	</span>
 
-	<c:if test="<%= workflowStatusTaglibHelper.getShowHelpMessage() && Validator.isNotNull(workflowStatusTaglibHelper.getHelpMessage()) %>">
-		<liferay-ui:icon-help message="<%= workflowStatusTaglibHelper.getHelpMessage() %>" />
-	</c:if>
+		<liferay-ui:icon-help message="icon" />
+
 </span>--%>
