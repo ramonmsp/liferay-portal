@@ -13,6 +13,8 @@
  * details.
  */
 --%>
+<%@ taglib uri="http://liferay.com/tld/portal-workflow" prefix="liferay-portal-workflow" %>
+
 
 <c:choose>
 	<c:when test='<%= displayStyle.equals("descriptive") %>'>
@@ -49,7 +51,13 @@
 			</p>
 
 			<span class="text-default">
-				<aui:workflow-status markupView="lexicon" showIcon="<%= false %>" showLabel="<%= false %>" status="<%= entry.getStatus() %>" />
+				<liferay-portal-workflow:status
+					bean="<%= entry %>"
+					model="<%= BlogsEntry.class %>"
+					showHelpMessage="<%= false %>"
+					showIcon="<%= false %>"
+					showLabel="<%= false %>"
+					status="<%= entry.getStatus() %>" />
 			</span>
 		</liferay-ui:search-container-column-text>
 
