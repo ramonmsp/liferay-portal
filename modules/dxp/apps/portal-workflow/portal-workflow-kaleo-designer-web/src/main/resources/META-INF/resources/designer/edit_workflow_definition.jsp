@@ -29,6 +29,8 @@ portletDisplay.setURLBack(
 
 String title = (kaleoDefinitionVersion == null) ? LanguageUtil.get(request, "new-workflow") : kaleoDefinitionVersion.getTitle(locale);
 
+Map<Locale, String> translations = (kaleoDefinitionVersion == null) ? new HashMap<>() : kaleoDefinitionVersion.getTitleMap();
+
 renderResponse.setTitle(title);
 %>
 
@@ -36,7 +38,13 @@ renderResponse.setTitle(title);
 	module="designer/js/definition-builder/DefinitionBuilder"
 	props='<%=
 		HashMapBuilder.<String, Object>put(
+			"displayNames", LocaleUtil.toDisplayNames(LanguageUtil.getAvailableLocales(), locale)
+		).put(
+			"languageIds", LocaleUtil.toLanguageIds(LanguageUtil.getAvailableLocales())
+		).put(
 			"title", title
+		).put(
+			"translations", translations
 		).put(
 			"version", (kaleoDefinitionVersion == null) ? "0" : kaleoDefinitionVersion.getVersion()
 		).build()
