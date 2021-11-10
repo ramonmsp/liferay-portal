@@ -49,7 +49,7 @@ export default function UpperToolbar({
 	};
 
 	const onInputBlur = () => {
-		if (selectedLanguageId) {
+		if (definitionTitle && selectedLanguageId) {
 			translations[selectedLanguageId] = definitionTitle;
 		}
 	};
@@ -89,7 +89,7 @@ export default function UpperToolbar({
 							)}
 							ref={inputRef}
 							type="text"
-							value={definitionTitle || title}
+							value={definitionTitle || ''}
 						/>
 					</ClayToolbar.Item>
 
