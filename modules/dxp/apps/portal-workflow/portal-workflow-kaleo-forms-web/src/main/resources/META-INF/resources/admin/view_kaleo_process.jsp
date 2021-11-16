@@ -180,7 +180,9 @@ KaleoProcess kaleoProcess = kaleoFormsViewRecordsDisplayContext.getKaleoProcess(
 
 <clay:container-fluid>
 	<liferay-ui:search-paginator
+		markupView="lexicon"
 		searchContainer="<%= kaleoFormsViewRecordsDisplayContext.getSearch() %>"
+		type="article"
 	/>
 </clay:container-fluid>
 
