@@ -79,20 +79,18 @@ export default function DiagramBuilder({version}) {
 
 		if (isPositionAvailable(elements, position)) {
 			setAvailableArea(true);
-
-			event.preventDefault();
-
-			event.dataTransfer.dropEffect = 'move';
 		}
 		else {
 			setAvailableArea(false);
 		}
+
+		event.preventDefault();
+
+		event.dataTransfer.dropEffect = 'move';
 	};
 
 	const onDrop = useCallback(
 		(event) => {
-			setAvailableArea(null);
-
 			const reactFlowBounds = reactFlowWrapperRef.current.getBoundingClientRect();
 
 			const position = reactFlowInstance.project({
@@ -115,6 +113,8 @@ export default function DiagramBuilder({version}) {
 
 				setElements((elements) => elements.concat(newNode));
 			}
+
+			setAvailableArea(null);
 		},
 		[elements, reactFlowInstance]
 	);
@@ -179,6 +179,7 @@ export default function DiagramBuilder({version}) {
 		availableArea,
 		selectedNode,
 		selectedNodeNewId,
+		setAvailableArea,
 		setElements,
 		setSelectedNode,
 		setSelectedNodeNewId,
