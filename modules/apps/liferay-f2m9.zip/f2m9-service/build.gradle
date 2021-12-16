@@ -5,17 +5,19 @@ dependencies {
 	compileOnly group: "org.osgi", name: "org.osgi.service.component", version: "1.3.0"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component.annotations", version: "1.3.0"
 	compileOnly group: "org.osgi", name: "osgi.core", version: "6.0.0"
-	compileOnly project(":apps:portal:portal-aop-api")
-	compileOnly project(":core:petra:petra-function")
-	compileOnly project(":core:petra:petra-sql-dsl-api")
-	compileOnly project(":apps:liferay-f2m9.zip:f2m9-api")
-	compileOnly project(":core:petra:petra-lang")
-	compileOnly project(":core:petra:petra-sql-dsl-api")
-	compileOnly project(":core:petra:petra-string")
-	compileOnly project(":apps:portal-search:portal-search-api")
-	compileOnly project(":apps:portal-search:portal-search-spi")
+	compileOnly group: 'com.liferay', name: 'com.liferay.petra.lang', version: '5.1.2'
+	compileOnly group: 'com.liferay', name: 'com.liferay.petra.string', version: '5.0.4'
+	compileOnly group: 'com.liferay', name: 'com.liferay.portal.search.api', version: '5.4.3'
+	implementation group: 'com.liferay', name: 'com.liferay.portal.search.spi', version: '5.3.3'
+	implementation group: 'com.liferay', name: 'com.liferay.petra.sql.dsl.api', version: '2.2.2'
+	implementation group: 'com.liferay', name: 'com.liferay.portal.aop.api', version: '3.0.4'
+	compileOnly project(":f2m9-api")
 }
 
 buildService {
 	apiDir = "../f2m9-api/src/main/java"
+}
+
+liferay {
+   deployDir = file("/home/me/dev/projects/bundles/deploy")
 }
