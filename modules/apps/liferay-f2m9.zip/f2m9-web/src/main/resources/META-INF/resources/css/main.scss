@@ -1,0 +1,11 @@
+.modal-full-screen {
+	display: flex !important;
+	justify-content: center !important;
+	
+	.modal-body {
+		width: 100% !important;
+		height: 100% !important;
+		overflow: hidden !important;
+		padding: 0 !important;
+	}
+}

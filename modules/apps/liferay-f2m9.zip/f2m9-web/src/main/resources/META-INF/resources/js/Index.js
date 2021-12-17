@@ -28,6 +28,8 @@ import ClayModal, {useModal} from '@clayui/modal';
 import WorkflowInstanceTracker from '@liferay/portal-workflow-instance-tracker-web/js/components/WorkflowInstanceTracker';
 import React, {useState} from 'react';
 
+import '../css/main.scss'
+
 export default function Index({workflowInstanceId}) {
 	const [showInstanceTrackerModal, setShowInstanceTrackerModal] = useState(
 		false
