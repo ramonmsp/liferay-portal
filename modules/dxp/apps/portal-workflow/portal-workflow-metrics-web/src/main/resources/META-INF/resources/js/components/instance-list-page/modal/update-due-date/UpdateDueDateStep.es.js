@@ -31,7 +31,9 @@ import {ModalContext} from '../ModalProvider.es';
 const getTimeOptions = (isAmPm) => {
 	const parse = (number) => (number < 10 ? `0${number}` : number);
 
-	if (isAmPm) {
+	console.log(isAmPm);
+
+	if (isAmPm == 'h:mm a') {
 		const times = {
 			AM: ['12:00 AM', '12:30 AM'],
 			PM: ['12:00 PM', '12:30 PM'],
@@ -53,6 +55,9 @@ const getTimeOptions = (isAmPm) => {
 		times.push(`${parse(i)}:00`);
 		times.push(`${parse(i)}:30`);
 	}
+
+	console.log('times ' + times);
+	console.log('aqui');
 
 	return times;
 };
