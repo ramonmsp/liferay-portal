@@ -81,9 +81,15 @@ function UpdateDueDateStep({className, dueDate = new Date()}) {
 
 	useEffect(() => {
 		let newDueDate = null;
-		const validDate = isValidDate(date, dateFormat);
+		
+		console.log('time ' + time);
+		console.log('timeFormat ', timeFormat);
+		console.log('dateFormat ', dateFormat);
 
-		if (validDate && isValidDate(time, timeFormat)) {
+		const validDate = isValidDate(date, dateFormat);
+		const validTime = isValidDate(time, timeFormat);
+
+		if (validDate && validTime) {
 			const newDateTime = formatDate(
 				`${date} ${time}`,
 				defaultDateFormat,

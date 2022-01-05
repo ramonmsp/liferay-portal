@@ -37,7 +37,7 @@ const getMaskByDateFormat = (format) => {
 };
 
 const isValidDate = (date, format = 'L') => {
-	return moment.utc(date, format, false).isValid();
+	return moment.utc(date, format, true).isValid();
 };
 
 export {
